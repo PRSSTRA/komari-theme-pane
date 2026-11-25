@@ -4,6 +4,8 @@ Komari Pane 是 [Komari Monitor](https://github.com/komari-monitor/komari) 的�
 
 `v1.0.0` · `Solid Glass` · [MIT](./LICENSE) · [English overview](#english-overview)
 
+![Komari Pane 深色仪表盘预览（开发演示数据）](./preview.png)
+
 ## 安装与快速开始
 
 1. 按[本地打包和开发](#本地打包和开发)生成 `komari-theme-pane-1.0.0.zip`；发布后可从 [GitHub Releases](https://github.com/PRSSTRA/komari-theme-pane/releases) 下载。不要上传 GitHub 自动生成的源码包。

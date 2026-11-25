@@ -5,6 +5,7 @@
   "version": "1.0.0",
   "author": "Prstra",
   "url": "https://github.com/PRSSTRA/komari-theme-pane",
+  "preview": "preview.png",
   "configuration": {
     "type": "managed",
     "data": [
