@@ -87,7 +87,10 @@ export async function logout() {
 
 export async function saveThemeSettings(settings) {
   const query = new URLSearchParams({ theme: manifest.short });
-  await requestData(`/api/admin/theme/settings?${query}`, postJson(settings));
+  await requestData(`/api/admin/theme/settings?${query}`, postJson({
+    ...settings,
+    featured_nodes: JSON.stringify(settings.featured_nodes),
+  }));
 }
 
 function countryCode(value) {

@@ -8,8 +8,8 @@
     "name": { "zh-CN": "主题配置", "en": "Theme Settings" },
     "data": [
       { "key": "hero_title", "name": { "zh-CN": "顶部自定义标语", "en": "Hero Wordmark" }, "type": "string", "default": "Komari Pane" },
-      { "key": "featured_nodes", "name": { "zh-CN": "置顶服务器", "en": "Pinned Servers" }, "type": "nodes", "default": [] },
-      { "key": "site_notice", "name": { "zh-CN": "公告", "en": "Announcement" }, "type": "textbox", "default": "" }
+      { "key": "featured_nodes", "name": { "zh-CN": "置顶服务器", "en": "Pinned Servers" }, "type": "nodes", "default": "[]" },
+      { "key": "site_notice", "name": { "zh-CN": "公告", "en": "Announcement" }, "type": "richtext", "default": "" }
     ]
   }
 }
