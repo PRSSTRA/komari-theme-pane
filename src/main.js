@@ -45,8 +45,8 @@ function renderOverviewLayout() {
 
   // Keep wordmark tucked behind the top panels when hero is visible; cleanly spaced if all hero panels are hidden
   wordmarkWrap.className = hasHero
-    ? "pointer-events-none relative z-0 -mb-3 select-none text-center sm:-mb-5"
-    : "pointer-events-none relative z-0 mb-1 select-none text-center";
+    ? "pointer-events-none relative z-0 -mb-3 overflow-x-clip select-none text-center sm:-mb-5"
+    : "pointer-events-none relative z-0 mb-1 overflow-x-clip select-none text-center";
 
   // Reset base panel classes cleanly (applying hidden AFTER base classes so toggles always work reliably)
   if (!hasHero) {
