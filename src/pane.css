@@ -12,7 +12,7 @@
   --color-primary-foreground: var(--sg-primary-fg);
   --color-secondary: var(--sg-secondary);
   --color-secondary-foreground: var(--sg-fg);
-  --color-accent: var(--sg-hover-bg);
+  --color-accent: var(--sg-hover);
   --color-accent-foreground: var(--sg-fg);
   --color-border: var(--sg-border);
   --color-input: var(--sg-border);
@@ -24,8 +24,8 @@ html {
   font-family: ui-sans-serif, system-ui, -apple-system, "Segoe UI", "PingFang SC", "Hiragino Sans GB", "Microsoft YaHei", sans-serif;
   background-color: var(--sg-bg);
   color: var(--sg-fg);
-  --glass-state: var(--sg-chosen-bg);
-  --glass-control: var(--sg-control-bg);
+  --glass-state: var(--sg-state);
+  --glass-control: var(--sg-control);
   --glass-rim: var(--sg-rim);
   --glass-inner: var(--sg-inner);
   --glass-edge: var(--sg-edge);
@@ -35,11 +35,14 @@ html {
   --popover: var(--sg-popover);
 }
 
-/* Scoped Solid Glass tokens on #sg-stage — preset=03011202022 (Thin / Zinc / Ink / Neutral / System / Roomy / Soft Rim / Heavy Blur) */
-#sg-stage {
+/* Solid Glass preset 03011202022; shared with body-level portals. */
+html {
   --sg-radius: 0.875rem;
   --sg-radius-control: 0.7rem;
   --sg-radius-sm: 0.525rem;
+}
+
+#sg-stage {
   color: var(--sg-fg);
   min-height: 100vh;
   transition: background-color 180ms ease, color 180ms ease;
@@ -705,120 +708,6 @@ html:not(.dark) {
   background-color: var(--sg-primary-fg);
 }
 
-/* ---- Native Top-Layer <dialog> Modals & Right-Side Drawer (modern-web-guidance: dialog & navigation-drawer) ---- */
-dialog.sg-native-dialog {
-  margin: 0;
-  padding: 0;
-  border: 0;
-  background: transparent;
-  color: inherit;
-  max-width: none;
-  max-height: none;
-  overflow: visible;
-}
-dialog.sg-native-dialog:modal {
-  overscroll-behavior: contain;
-}
-dialog.sg-native-dialog::backdrop {
-  background: oklch(0 0 0 / 48%);
-  -webkit-backdrop-filter: blur(2px);
-  backdrop-filter: blur(2px);
-  overflow: hidden;
-  overscroll-behavior: contain;
-}
-
-#managed-drawer[open] {
-  inset: 0;
-  width: 100%;
-  height: 100%;
-  display: flex;
-  justify-content: flex-end;
-}
-#managed-drawer-panel {
-  border-top-left-radius: var(--sg-radius);
-  border-bottom-left-radius: var(--sg-radius);
-  height: 100svh;
-  transform: translateX(100%);
-  transition: transform 240ms cubic-bezier(0.22, 1, 0.36, 1);
-}
-#managed-drawer[data-open="true"] #managed-drawer-panel {
-  transform: translateX(0);
-}
-
-#detail-modal[open],
-#auth-modal[open] {
-  inset: 0;
-  width: 100%;
-  height: 100%;
-  display: flex;
-  align-items: center;
-  justify-content: center;
-  padding: 1rem;
-}
-#managed-drawer::backdrop,
-#detail-modal::backdrop,
-#auth-modal::backdrop {
-  opacity: 0;
-  transition: opacity 150ms cubic-bezier(0.4, 0, 1, 1);
-}
-#managed-drawer[data-open="true"]::backdrop,
-#detail-modal[data-open="true"]::backdrop,
-#auth-modal[data-open="true"]::backdrop {
-  opacity: 1;
-  transition: opacity 200ms cubic-bezier(0.16, 1, 0.3, 1);
-}
-.sg-popover-anim {
-  opacity: 0;
-  transform: translateY(-4px) scale(0.96);
-  transform-origin: top right;
-  visibility: hidden;
-  pointer-events: none;
-  will-change: opacity, transform;
-  transition:
-    opacity 120ms cubic-bezier(0.4, 0, 1, 1),
-    transform 120ms cubic-bezier(0.4, 0, 1, 1),
-    visibility 0ms linear 120ms;
-}
-.sg-popover-anim[data-open="true"] {
-  opacity: 1;
-  transform: translateY(0) scale(1);
-  visibility: visible;
-  pointer-events: auto;
-  transition:
-    opacity 160ms cubic-bezier(0.16, 1, 0.3, 1),
-    transform 170ms cubic-bezier(0.16, 1, 0.3, 1),
-    visibility 0ms linear 0ms;
-}
-#detail-dialog,
-#auth-dialog {
-  opacity: 0;
-  transform: scale(0.95) translateY(4px);
-  will-change: opacity, transform;
-  transition:
-    opacity 145ms cubic-bezier(0.4, 0, 1, 1),
-    transform 145ms cubic-bezier(0.4, 0, 1, 1);
-}
-#detail-modal[data-open="true"] #detail-dialog,
-#auth-modal[data-open="true"] #auth-dialog {
-  opacity: 1;
-  transform: scale(1) translateY(0);
-  transition:
-    opacity 190ms cubic-bezier(0.16, 1, 0.3, 1),
-    transform 210ms cubic-bezier(0.16, 1, 0.3, 1);
-}
-@media (prefers-reduced-motion: reduce) {
-  #detail-modal::backdrop,
-  #detail-modal[data-open="true"]::backdrop,
-  #detail-dialog,
-  #detail-modal[data-open="true"] #detail-dialog,
-  #auth-modal::backdrop,
-  #auth-modal[data-open="true"]::backdrop,
-  #auth-dialog,
-  #auth-modal[data-open="true"] #auth-dialog {
-    transition-duration: 1ms;
-    transform: none;
-  }
-}
 .sg-legend-chip {
   display: inline-flex;
   align-items: center;
@@ -937,60 +826,6 @@ html:not(.dark) .sg-flag {
   background-clip: text;
   background-image: linear-gradient(180deg, var(--sg-wordmark-alert-top) 0%, var(--sg-wordmark-alert-bot) 100%);
 }
-.sg-shuffle-cell {
-  position: relative;
-  display: inline-flex;
-  align-items: center;
-  justify-content: center;
-  height: 1.08em;
-  line-height: 1.08;
-  margin-inline: 0.055em;
-  flex-shrink: 0;
-  translate: 0px;
-  clip-path: inset(0.05em -1.6em -0.06em -1.6em);
-}
-.sg-shuffle-exit-cell {
-  position: absolute;
-  top: 0;
-  left: 50%;
-  display: inline-flex;
-  align-items: center;
-  justify-content: center;
-  height: 1.08em;
-  line-height: 1.08;
-  clip-path: inset(0.05em -1.6em -0.06em -1.6em);
-  pointer-events: none;
-  translate: 0px;
-}
-.sg-shuffle-space {
-  display: inline-block;
-  width: 0.42em;
-  margin-inline: 0.055em;
-  flex-shrink: 0;
-}
-.sg-shuffle-track {
-  position: relative;
-  display: inline-flex;
-  align-items: center;
-  justify-content: center;
-  height: 100%;
-  translate: 0px;
-}
-.sg-shuffle-glyph {
-  display: block;
-  line-height: 1;
-}
-.sg-shuffle-echo {
-  position: absolute;
-  left: 50%;
-  display: flex;
-  align-items: center;
-  justify-content: center;
-  height: 100%;
-  width: max-content;
-  translate: -50% 0px;
-  pointer-events: none;
-}
 
 /* Opaque performance mode (data-glass="opaque") */
 #sg-stage[data-glass="opaque"] .sg-glass-backdrop,
@@ -1004,6 +839,25 @@ html.dark [data-glass="opaque"] { --sg-table-head: oklch(0.225 0.007 286); --sg-
 html:not(.dark) [data-glass="opaque"] .sg-panel { background-color: oklch(0.947 0.008 286); }
 html:not(.dark) [data-glass="opaque"] .sg-card { background-color: oklch(0.958 0.008 286); }
 html:not(.dark) [data-glass="opaque"] { --sg-table-head: oklch(0.958 0.008 286); --sg-table-body: oklch(0.947 0.008 286); }
+
+.sg-map-viewport {
+  aspect-ratio: 1024 / 473;
+  max-height: 400px;
+}
+
+.sg-map-viewport[data-standalone] { height: 340px; }
+@media (min-width: 40rem) {
+  .sg-map-viewport[data-standalone] { height: 400px; }
+}
+
+.sg-map-bubble {
+  width: 224px;
+  max-width: calc(100% - 16px);
+  max-height: calc(100% - 16px);
+}
+
+.sg-event-tabs[data-slot="tabs"] { flex-direction: column; }
+.sg-overview-network { background-color: var(--sg-chart-surface); }
 
 .mono-num {
   font-family: ui-monospace, SFMono-Regular, Menlo, Monaco, Consolas, monospace;

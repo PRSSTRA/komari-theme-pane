@@ -1,0 +1,78 @@
+.sg-pane-shuffle {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  max-width: 100%;
+  overflow: clip;
+  flex-wrap: wrap;
+}
+
+.sg-hero-wordmark { height: auto; min-height: 1.08em; }
+
+.sg-hero-wordmark-alert .sg-pane-shuffle {
+  --sg-wordmark-top: var(--sg-wordmark-alert-top);
+  --sg-wordmark-bot: var(--sg-wordmark-alert-bot);
+}
+
+.sg-pane-shuffle-cell {
+  position: relative;
+  display: inline-grid;
+  place-items: center;
+  padding-inline: 0.052em;
+  overflow: clip;
+}
+
+.sg-pane-shuffle-target, .sg-pane-shuffle-echo {
+  color: transparent;
+  background: linear-gradient(var(--sg-wordmark-top), var(--sg-wordmark-bot));
+  background-clip: text;
+}
+
+.sg-pane-shuffle-cell:has(.sg-pane-shuffle-echo) .sg-pane-shuffle-target {
+  animation: pane-wordmark-in 900ms var(--shuffle-delay) cubic-bezier(0.16, 1, 0.3, 1) backwards;
+}
+
+.sg-pane-shuffle-echo {
+  position: absolute;
+  inset: 0;
+  text-align: center;
+  opacity: 0;
+  animation: pane-wordmark-roll 125ms var(--shuffle-delay) ease-out both;
+}
+
+.sg-pane-shuffle-echo + .sg-pane-shuffle-echo {
+  animation-delay: calc(var(--shuffle-delay) + 118ms);
+}
+
+@keyframes pane-wordmark-in {
+  0%, 25% { opacity: 0; transform: translateY(75%); filter: blur(2px); }
+  100% { opacity: 1; transform: none; filter: none; }
+}
+
+@keyframes pane-wordmark-roll {
+  0% { opacity: 0; transform: translateY(85%); filter: blur(2px); }
+  30% { opacity: 0.8; }
+  100% { opacity: 0; transform: translateY(-75%); filter: blur(1px); }
+}
+
+.sg-settings-drawer {
+  transition: opacity 180ms ease, transform 230ms cubic-bezier(0.16, 1, 0.3, 1);
+}
+
+.sg-settings-drawer:is([data-starting-style], [data-ending-style]) {
+  opacity: 0;
+  transform: translateX(1.5rem);
+}
+
+html:has([data-glass="opaque"]) :is(.sg-popover, [data-slot="dialog-overlay"], [data-slot="tooltip-content"]) {
+  backdrop-filter: none;
+}
+
+html.dark:has([data-glass="opaque"]) .sg-popover { background-color: oklch(0.22 0.007 286); }
+html:not(.dark):has([data-glass="opaque"]) .sg-popover { background-color: oklch(0.98 0.008 286); }
+
+@media (prefers-reduced-motion: reduce) {
+  .sg-pane-shuffle-cell:has(.sg-pane-shuffle-echo) .sg-pane-shuffle-target { animation: none !important; }
+  .sg-pane-shuffle-echo { display: none; }
+  .sg-settings-drawer { transition: none; }
+}

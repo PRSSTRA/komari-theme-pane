@@ -22,6 +22,9 @@
   #group-tabs[data-slot="tabs-list"] {
     height: 36px;
   }
+  #group-tabs [data-slot="tabs-trigger"] {
+    flex: 0 0 auto;
+  }
 }
 
 #view-tabs.sg-node-view-tabs {
