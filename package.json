@@ -9,6 +9,7 @@
   "scripts": {
     "dev": "vite",
     "typecheck": "tsc --noEmit",
+    "test": "node --test test/*.test.ts",
     "build": "vite build",
     "preview": "vite preview",
     "package": "pnpm build && node scripts/package-theme.mjs"
