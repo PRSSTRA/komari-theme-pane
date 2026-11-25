@@ -8,8 +8,20 @@ const { short } = JSON.parse(readFileSync(new URL('./komari-theme.json', import.
 
 export default defineConfig(({ command, isPreview }) => {
   const target = process.env.VITE_API_TARGET || process.env.KOMARI_URL;
+  const origin = target && new URL(target).origin;
   const proxy = target && {
-    '/api': { target, changeOrigin: true, ws: true, rewriteWsOrigin: true },
+    '/api': {
+      target, changeOrigin: true, ws: true, rewriteWsOrigin: true,
+      configure(proxy) {
+        proxy.on('proxyReq', (upstream, incoming) => {
+          const browserOrigin = incoming.headers.origin;
+          if (!browserOrigin || !incoming.headers.host) return;
+          if (browserOrigin === `http://${incoming.headers.host}` || browserOrigin === `https://${incoming.headers.host}`) {
+            upstream.setHeader('Origin', origin);
+          }
+        });
+      },
+    },
     '/admin': { target, changeOrigin: true },
   };
 

@@ -94,6 +94,8 @@ export interface NodeStatus {
   totalDown?: number;
   uptime?: number;
   load?: number;
+  load5?: number;
+  load15?: number;
   temp?: number;
   tcp?: number;
   udp?: number;
@@ -105,6 +107,7 @@ export interface KomariNode extends KomariClient, NodeStatus {
   geo: GeoLocation | null;
   tagList: string[];
   featured: boolean;
+  networkSampleTime?: number;
 }
 
 export interface KomariEventItem {

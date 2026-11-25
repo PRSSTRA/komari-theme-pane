@@ -1,4 +1,4 @@
-import manifest from '../../komari-theme.json';
+import manifest from '../../komari-theme.json' with { type: 'json' };
 import type { KomariThemeSettings, LocalPreferences, PreferenceKey } from '../types/komari';
 
 const localKeys = [
