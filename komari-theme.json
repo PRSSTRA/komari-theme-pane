@@ -1,0 +1,6 @@
+{
+  "name": "Pane",
+  "short": "pane",
+  "description": { "zh-CN": "Komari 监控主题", "en": "A Komari monitoring theme" },
+  "version": "1.0.1"
+}
