@@ -1,16 +1,37 @@
 {
-  "name": { "zh-CN": "Komari Pane 主题", "en": "Komari Pane" },
+  "name": { "zh-CN": "Komari Pane", "en": "Komari Pane" },
   "short": "Pane",
   "description": { "zh-CN": "Komari 监控面板主题", "en": "A dashboard theme for Komari Monitor" },
-  "version": "0.1.0",
-  "author": "PRSSTRA",
+  "version": "1.0.0",
+  "author": "Prstra",
   "url": "https://github.com/PRSSTRA/komari-theme-pane",
   "configuration": {
     "type": "managed",
     "data": [
-      { "key": "hero_title", "name": { "zh-CN": "顶部自定义标语", "en": "Hero Wordmark" }, "type": "string", "default": "Komari Pane" },
-      { "key": "featured_nodes", "name": { "zh-CN": "置顶服务器", "en": "Pinned Servers" }, "type": "nodes", "default": "[]" },
-      { "key": "site_notice", "name": { "zh-CN": "站点公告", "en": "Site Notice" }, "type": "string", "default": "" }
+      { "type": "title", "name": { "zh-CN": "头部与品牌", "en": "Header and branding" } },
+      { "key": "hero_title", "name": { "zh-CN": "顶部标语", "en": "Hero wordmark" }, "type": "string", "default": "" },
+      { "key": "site_notice", "name": { "zh-CN": "站点公告", "en": "Site notice" }, "type": "string", "default": "" },
+      { "type": "title", "name": { "zh-CN": "顶部总览面板", "en": "Overview panels" } },
+      { "key": "show_world_map", "name": { "zh-CN": "全球节点分布", "en": "Global topology" }, "type": "switch", "default": true },
+      { "key": "map_overlap_mode", "name": { "zh-CN": "地图节点重合模式", "en": "Map marker overlap" }, "type": "select", "options": "cluster,spread", "default": "cluster" },
+      { "key": "show_map_clock", "name": { "zh-CN": "UTC+8 地图时钟", "en": "UTC+8 map clock" }, "type": "switch", "default": true },
+      { "key": "show_solar_terminator", "name": { "zh-CN": "晨昏线", "en": "Day/night boundary" }, "type": "switch", "default": true },
+      { "key": "show_summary_bar", "name": { "zh-CN": "网络与流量", "en": "Network and traffic" }, "type": "switch", "default": true },
+      { "key": "show_event_feed", "name": { "zh-CN": "实时事件", "en": "Live events" }, "type": "switch", "default": true },
+      { "type": "title", "name": { "zh-CN": "节点列表与排序", "en": "Node list and sorting" } },
+      { "key": "default_view", "name": { "zh-CN": "默认视图", "en": "Default view" }, "type": "select", "options": "card,table", "default": "card" },
+      { "key": "card_density", "name": { "zh-CN": "卡片密度", "en": "Card density" }, "type": "select", "options": "comfortable,compact", "default": "comfortable" },
+      { "key": "show_offline_first", "name": { "zh-CN": "优先显示离线节点", "en": "Offline nodes first" }, "type": "switch", "default": true },
+      { "key": "show_total_traffic", "name": { "zh-CN": "累计流量", "en": "Total traffic" }, "type": "switch", "default": true },
+      { "key": "show_tags", "name": { "zh-CN": "节点标签", "en": "Node tags" }, "type": "switch", "default": true },
+      { "key": "show_load_temp", "name": { "zh-CN": "Load 负载与温度", "en": "Load and temperature" }, "type": "switch", "default": false },
+      { "key": "show_traffic_bar", "name": { "zh-CN": "配额用量进度条", "en": "Traffic quota bar" }, "type": "switch", "default": false },
+      { "key": "show_pricing", "name": { "zh-CN": "已登录会话显示费用与到期时间", "en": "Show billing to signed-in users" }, "type": "switch", "default": false },
+      { "key": "featured_nodes", "name": { "zh-CN": "置顶节点", "en": "Pinned nodes" }, "type": "nodes", "default": "[]" },
+      { "key": "featured_ping_tasks", "name": { "zh-CN": "首选 Ping 任务", "en": "Preferred Ping tasks" }, "type": "pingtasks", "default": "[]" },
+      { "type": "title", "name": { "zh-CN": "外观与性能", "en": "Appearance and performance" } },
+      { "key": "reduce_transparency", "name": { "zh-CN": "低透明高性能模式", "en": "Reduce transparency" }, "type": "switch", "default": false },
+      { "key": "footer_extra", "name": { "zh-CN": "页脚补充文字", "en": "Additional footer text" }, "type": "string", "default": "" }
     ]
   }
 }
