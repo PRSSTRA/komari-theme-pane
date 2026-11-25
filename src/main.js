@@ -1,3 +1,5 @@
-import manifest from '../komari-theme.json';
+import './pane.css';
+import markup from './dashboard.html?raw';
 
-document.title = manifest.name;
+document.getElementById('app').innerHTML = markup;
+await import('./dashboard.js');

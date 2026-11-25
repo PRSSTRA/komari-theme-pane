@@ -9,9 +9,16 @@
     "package": "npm run build && mkdir -p temp && zip -q -r -FS temp/komari-theme-pane.zip komari-theme.json dist"
   },
   "devDependencies": {
+    "@tailwindcss/vite": "^4.3.5",
+    "tailwindcss": "^4.3.5",
     "vite": "^8.0.0"
   },
   "engines": {
     "node": "^20.19.0 || >=22.12.0"
+  },
+  "dependencies": {
+    "@floating-ui/dom": "^1.8.0",
+    "escape-html": "^1.0.3",
+    "morphdom": "^2.7.8"
   }
 }
