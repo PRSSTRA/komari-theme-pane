@@ -1,0 +1,1100 @@
+@import "tailwindcss";
+
+/* Scoped Solid Glass tokens on #sg-stage — preset=03011202022 (Thin / Zinc / Ink / Neutral / System / Roomy / Soft Rim / Heavy Blur) */
+#sg-stage {
+  font-family: ui-sans-serif, system-ui, -apple-system, "Segoe UI", "PingFang SC", "Hiragino Sans GB", "Microsoft YaHei", sans-serif;
+  --sg-radius: 0.875rem;
+  --sg-radius-control: 0.7rem;
+  --sg-radius-sm: 0.525rem;
+  color: var(--sg-fg);
+  background-color: var(--sg-bg);
+  background-repeat: no-repeat;
+  min-height: 100vh;
+  transition: background-color 180ms ease, color 180ms ease;
+}
+
+#sg-stage[data-theme="dark"] {
+  color-scheme: dark;
+  background-image: none;
+  --sg-bg: oklch(0.16 0.007 286);
+  --sg-fg: oklch(0.985 0 0);
+  --sg-muted: oklch(1 0 0 / 7%);
+  --sg-muted-fg: oklch(0.72 0 0);
+  --sg-subtle-fg: oklch(0.56 0 0);
+  --sg-secondary: oklch(1 0 0 / 10%);
+
+  /* Thin thickness + Zinc base (hue 286) */
+  --sg-panel: oklch(1 0 0 / 3%);
+  --sg-card: oklch(0.31 0.007 286 / 30%);
+  --sg-popover: oklch(0.22 0.007 286 / 86%);
+  --sg-border: oklch(1 0 0 / 11%);
+
+  --sg-primary: oklch(0.94 0 0);
+  --sg-primary-fg: oklch(0.18 0 0);
+  --sg-primary-solid: 86%;
+  --sg-primary-rim: oklch(1 0 0);
+  --sg-primary-under: oklch(0 0 0 / 22%);
+  --sg-primary-inner: oklch(0 0 0 / 7%);
+  --sg-primary-edge: oklch(1 0 0 / 26%);
+
+  /* Soft Rim */
+  --sg-rim: oklch(1 0 0 / 8%);
+  --sg-inner: oklch(1 0 0 / 4%);
+  --sg-edge: oklch(1 0 0 / 6%);
+  --sg-popover-edge: oklch(1 0 0 / 9%);
+  --sg-popover-under: oklch(0 0 0 / 0%);
+  --sg-shade: oklch(0 0 0 / 60%);
+  --sg-contact: oklch(0 0 0 / 10%);
+  --sg-lift: oklch(0 0 0 / 22%);
+
+  --sg-control: oklch(1 0 0 / 7%);
+  --sg-control-rim: oklch(1 0 0 / 5%);
+  --sg-state: var(--sg-control);
+  --sg-state-rim: var(--sg-control-rim);
+  --sg-state-edge: var(--sg-edge);
+  --sg-hover: oklch(1 0 0 / 8%);
+  --sg-hover-faint: oklch(1 0 0 / 4%);
+
+  --sg-field: oklch(1 0 0 / 6%);
+  --sg-field-rim: oklch(1 0 0 / 11%);
+  --sg-field-edge: oklch(1 0 0 / 8%);
+  --sg-focus-line: oklch(1 0 0 / 40%);
+
+  --sg-well-bg: oklch(1 0 0 / 7%);
+  --sg-well-shade: oklch(0 0 0 / 38%);
+  --sg-well-rim: oklch(1 0 0 / 7%);
+
+  --sg-knob: oklch(0.97 0 0);
+  --sg-knob-shade: oklch(0 0 0 / 55%);
+
+  /* Heavy Blur */
+  --sg-blur: blur(48px);
+  --sg-blur-control: blur(24px);
+
+  --sg-light-1: transparent;
+  --sg-light-2: transparent;
+  --sg-light-3: transparent;
+
+  /* Accent: Ink */
+  --sg-accent-ink: oklch(0.94 0 0);
+  --sg-accent-ink-muted: oklch(1 0 0 / 10%);
+  /* Unified semantic green/yellow/red palette preserved unchanged */
+  --sg-success: #63ba89;
+  --sg-warn: #dba559;
+  --sg-danger: #da7269;
+  --sg-done: oklch(0.68 0.15 250);
+  --sg-ink-fill: oklch(0.92 0 0 / 84%);
+  /* Chart Color: Neutral + Restrained Low-Saturation Multi-Series */
+  --sg-chart-1: oklch(0.94 0 0);
+  --sg-chart-2: oklch(0.76 0 0);
+  --sg-chart-3: oklch(0.56 0 0);
+  --sg-series-cpu: #96c4ec;
+  --sg-series-ram: var(--sg-success);
+  --sg-series-ct: #96c4ec;
+  --sg-series-cu: var(--sg-warn);
+  --sg-series-cm: var(--sg-success);
+
+  /* Exact homepage panel & modal card ground tones for modal charts, System Info, and Table View */
+  --sg-chart-surface: oklch(0.205 0.008 286);
+  --sg-spec-head: var(--sg-panel);
+  --sg-spec-body: oklch(0.208 0.007 286);
+  --sg-spec-body-shadow: inset 0 1px 2px var(--sg-well-shade);
+  --sg-table-head: var(--sg-card);
+  --sg-table-body: oklch(0.193 0.007 286);
+
+  /* Optical Matrix map dot colors (Dark Solid Glass Zinc) */
+  --sg-map-land: rgba(235, 238, 244, 0.34);
+  --sg-map-land-hi: rgba(244, 246, 250, 0.44);
+  --sg-map-ocean: rgba(255, 255, 255, 0.055);
+  --sg-tick-fg: #c8ccd2;
+  --sg-tick-shadow: 0 1px 2px rgba(0, 0, 0, 0.68);
+
+  /* Centered backdrop wordmark behind top panels (clean smooth ink, no dot texture) */
+  --sg-wordmark-top: rgba(255, 255, 255, 0.28);
+  --sg-wordmark-bot: rgba(255, 255, 255, 0.07);
+  --sg-wordmark-alert-top: rgba(218, 114, 105, 0.44);
+  --sg-wordmark-alert-bot: rgba(218, 114, 105, 0.10);
+}
+
+#sg-stage[data-theme="light"] {
+  color-scheme: light;
+  background-image:
+    radial-gradient(62rem 42rem at 12% -6rem, var(--sg-light-1), transparent 62%),
+    radial-gradient(52rem 38rem at 92% 4rem, var(--sg-light-2), transparent 60%),
+    radial-gradient(64rem 46rem at 55% 110%, var(--sg-light-3), transparent 62%);
+  background-attachment: fixed;
+  /* Zinc base (hue 286) + Thin thickness */
+  --sg-bg: oklch(0.925 0.008 286);
+  --sg-fg: oklch(0.16 0 0);
+  --sg-muted: oklch(0.3 0.02 286 / 7%);
+  --sg-muted-fg: oklch(0.47 0 0);
+  --sg-subtle-fg: oklch(0.56 0 0);
+  --sg-secondary: oklch(0.3 0.02 286 / 9%);
+
+  --sg-panel: oklch(0.975 0.008 286 / 28%);
+  --sg-card: oklch(0.98 0.008 286 / 40%);
+  --sg-popover: oklch(0.985 0.008 286 / 86%);
+  --sg-border: oklch(0.3 0.02 286 / 13%);
+
+  --sg-primary: oklch(0.2 0 0);
+  --sg-primary-fg: oklch(0.985 0 0);
+  --sg-primary-solid: 88%;
+  --sg-primary-rim: oklch(1 0 0 / 30%);
+  --sg-primary-under: oklch(0 0 0 / 45%);
+  --sg-primary-inner: oklch(1 0 0 / 7%);
+  --sg-primary-edge: oklch(0.2 0 0 / 30%);
+
+  /* Soft Rim */
+  --sg-rim: oklch(1 0 0 / 55%);
+  --sg-inner: oklch(1 0 0 / 28%);
+  --sg-edge: oklch(0.38 0.03 286 / 10%);
+  --sg-popover-edge: oklch(0.38 0.03 286 / 22%);
+  --sg-popover-under: oklch(0.38 0.03 286 / 16%);
+  --sg-shade: oklch(0.3 0.06 286 / 28%);
+  --sg-contact: oklch(0.25 0.03 286 / 6%);
+  --sg-lift: oklch(0.25 0.03 286 / 14%);
+
+  --sg-control: oklch(1 0 0 / 52%);
+  --sg-control-rim: oklch(1 0 0 / 50%);
+  --sg-state: oklch(0.3 0.02 286 / 9%);
+  --sg-state-rim: oklch(1 0 0 / 62%);
+  --sg-state-edge: oklch(0.3 0.02 286 / 13%);
+  --sg-hover: oklch(0.3 0.02 286 / 10%);
+  --sg-hover-faint: oklch(0.3 0.02 286 / 5.5%);
+
+  --sg-field: oklch(1 0 0 / 56%);
+  --sg-field-rim: oklch(1 0 0 / 72%);
+  --sg-field-edge: oklch(0.3 0.02 286 / 14%);
+  --sg-focus-line: oklch(0.2 0 0 / 50%);
+
+  --sg-well-bg: oklch(0.3 0.02 286 / 7%);
+  --sg-well-shade: oklch(0.3 0.06 286 / 14%);
+  --sg-well-rim: oklch(1 0 0 / 68%);
+
+  --sg-knob: oklch(1 0 0);
+  --sg-knob-shade: oklch(0.3 0.06 286 / 30%);
+
+  /* Heavy Blur */
+  --sg-blur: blur(48px) saturate(180%);
+  --sg-blur-control: blur(24px);
+
+  --sg-light-1: oklch(0.68 0.13 165 / 7%);
+  --sg-light-2: oklch(0.75 0.08 240 / 11%);
+  --sg-light-3: oklch(0.68 0.13 165 / 4%);
+
+  /* Accent: Ink */
+  --sg-accent-ink: oklch(0.2 0 0);
+  --sg-accent-ink-muted: oklch(0.2 0 0 / 9%);
+  /* Unified semantic green/yellow/red palette preserved unchanged */
+  --sg-success: #56a879;
+  --sg-warn: #d49a52;
+  --sg-danger: #d96b63;
+  --sg-done: oklch(0.54 0.16 248);
+  --sg-ink-fill: oklch(0.24 0 0 / 84%);
+  /* Chart Color: Neutral + Restrained Low-Saturation Multi-Series */
+  --sg-chart-1: oklch(0.28 0 0);
+  --sg-chart-2: oklch(0.50 0 0);
+  --sg-chart-3: oklch(0.66 0 0);
+  --sg-series-cpu: #4476a4;
+  --sg-series-ram: var(--sg-success);
+  --sg-series-ct: #4476a4;
+  --sg-series-cu: var(--sg-warn);
+  --sg-series-cm: var(--sg-success);
+
+  --sg-chart-surface: var(--sg-panel);
+  --sg-spec-head: var(--sg-panel);
+  --sg-spec-body: oklch(0.933 0.008 286);
+  --sg-spec-body-shadow: inset 0 1px 2px var(--sg-well-shade);
+  --sg-table-head: var(--sg-card);
+  --sg-table-body: oklch(0.938 0.008 286);
+
+  --sg-map-land: rgba(34, 38, 48, 0.42);
+  --sg-map-land-hi: rgba(24, 28, 38, 0.56);
+  --sg-map-ocean: rgba(45, 52, 68, 0.085);
+  --sg-tick-fg: #3e4450;
+  --sg-tick-shadow: 0 1px 2px rgba(255, 255, 255, 0.78);
+
+  --sg-wordmark-top: rgba(22, 24, 34, 0.28);
+  --sg-wordmark-bot: rgba(22, 24, 34, 0.07);
+  --sg-wordmark-alert-top: rgba(217, 107, 99, 0.44);
+  --sg-wordmark-alert-bot: rgba(217, 107, 99, 0.10);
+}
+
+/* ---- Solid Glass: Three Thickness Layers (panel < card < popover) ---- */
+/* Static in-flow panels/cards sit on uniform page ground: keeping backdrop-filter off them prevents
+   Chromium/Skia blur(48px) cross-section edge-bleed halos while keeping the exact Solid Glass finish.
+   Layered panes (.sg-glass-backdrop) and floating .sg-popover keep full blur(48px). */
+.sg-panel {
+  background-color: var(--sg-panel);
+  border-width: 0;
+  box-shadow:
+    inset 0 1px 0 var(--sg-rim),
+    inset 0 0 0 1px var(--sg-inner),
+    0 0 0 1px var(--sg-edge),
+    0 1px 2px var(--sg-contact),
+    0 12px 32px -14px var(--sg-shade);
+}
+
+.sg-glass-backdrop {
+  -webkit-backdrop-filter: var(--sg-blur);
+  backdrop-filter: var(--sg-blur);
+}
+
+.sg-card {
+  background-color: var(--sg-card);
+  border-width: 0;
+  contain: layout style;
+  box-shadow:
+    inset 0 1px 0 var(--sg-rim),
+    inset 0 0 0 1px var(--sg-inner),
+    0 0 0 1px var(--sg-edge),
+    0 1px 2px var(--sg-contact),
+    0 12px 32px -14px var(--sg-shade);
+  transition: box-shadow 150ms ease, background-color 150ms ease;
+}
+
+@media (hover: hover) {
+  .sg-card-interactive:hover {
+    box-shadow:
+      inset 0 1px 0 var(--sg-rim),
+      inset 0 0 0 1px var(--sg-state-rim),
+      0 0 0 1px var(--sg-state-edge),
+      0 2px 6px var(--sg-contact),
+      0 16px 36px -14px var(--sg-shade);
+  }
+}
+
+.sg-popover {
+  background-color: var(--sg-popover);
+  -webkit-backdrop-filter: var(--sg-blur);
+  backdrop-filter: var(--sg-blur);
+  border-width: 0;
+  box-shadow:
+    inset 0 1px 0 var(--sg-rim),
+    inset 0 -1px 0 var(--sg-popover-under),
+    0 0 0 1px var(--sg-popover-edge),
+    0 24px 60px -18px var(--sg-shade),
+    0 6px 16px -6px var(--sg-lift);
+}
+
+/* Bare framed sub-box inside a card (solid-glass.css lines 567-576) */
+.sg-inset-pane {
+  border: 1px solid var(--sg-edge);
+  background-color: var(--sg-panel);
+  background-clip: padding-box;
+  box-shadow: inset 0 1px 0 var(--sg-inner);
+}
+
+/* Modal chart pane: uses Solid Glass native .glass-panel edge treatment (1:1 identical to homepage Network & Traffic) */
+.sg-chart-inset {
+  background-color: var(--sg-chart-surface);
+  border-width: 0;
+  box-shadow:
+    inset 0 1px 0 var(--sg-rim),
+    inset 0 0 0 1px var(--sg-inner),
+    0 0 0 1px var(--sg-edge),
+    0 1px 2px var(--sg-contact);
+}
+
+/* Elevated bright top slab + recessed card-colored rounded-rect body (Solid Glass native edges, zero extra rim highlight) */
+.sg-spec-shell {
+  background-color: var(--sg-spec-head);
+  border-width: 0;
+  box-shadow:
+    inset 0 1px 0 var(--sg-rim),
+    inset 0 0 0 1px var(--sg-inner),
+    0 0 0 1px var(--sg-edge),
+    0 1px 2px var(--sg-contact);
+}
+.sg-spec-body {
+  background-color: var(--sg-spec-body);
+  border-width: 0;
+  box-shadow:
+    inset 0 0 0 1px var(--sg-edge),
+    var(--sg-spec-body-shadow);
+}
+.sg-spec-row {
+  border-radius: 7px;
+  transition: background-color 110ms ease;
+}
+@media (hover: hover) {
+  .sg-spec-row:hover {
+    background-color: var(--sg-hover-faint);
+  }
+}
+
+/* ---- Solid Glass: Component Library Tooltip (solid-glass.css lines 817-827; top-layer popover, no arrow) ---- */
+[data-slot="tooltip-content"] {
+  inset: auto;
+  background-color: var(--sg-popover);
+  color: var(--sg-fg);
+  -webkit-backdrop-filter: var(--sg-blur);
+  backdrop-filter: var(--sg-blur);
+  border-radius: 7px;
+  box-shadow:
+    inset 0 1px 0 var(--sg-rim),
+    0 0 0 1px var(--sg-edge),
+    0 10px 24px -10px var(--sg-shade),
+    0 3px 8px -3px var(--sg-lift);
+  opacity: 0;
+  transform: translateY(3px) scale(0.96);
+  will-change: opacity, transform;
+  transition:
+    opacity 95ms cubic-bezier(0.4, 0, 1, 1),
+    transform 95ms cubic-bezier(0.4, 0, 1, 1);
+}
+[data-slot="tooltip-content"][data-side="bottom"] {
+  transform: translateY(-3px) scale(0.96);
+}
+[data-slot="tooltip-content"][data-open="true"] {
+  opacity: 1;
+  transform: translateY(0) scale(1);
+  transition:
+    opacity 130ms cubic-bezier(0.16, 1, 0.3, 1),
+    transform 130ms cubic-bezier(0.16, 1, 0.3, 1);
+}
+
+/* ---- Solid Glass: Button (outline / secondary / ghost / primary) ---- */
+[data-slot="button"] {
+  border-radius: var(--sg-radius-control);
+  transition: background-color 120ms ease, border-color 120ms ease, color 120ms ease;
+  cursor: pointer;
+  outline: none;
+  user-select: none;
+}
+[data-slot="button"]:focus-visible {
+  box-shadow: 0 0 0 1px var(--sg-bg), 0 0 0 3px var(--sg-focus-line);
+}
+[data-slot="button"][data-variant="outline"] {
+  border: 1px solid var(--sg-border);
+  background-color: var(--sg-control);
+  background-clip: padding-box;
+  color: var(--sg-fg);
+  box-shadow:
+    inset 0 1px 0 var(--sg-control-rim),
+    0 1px 2px var(--sg-contact);
+}
+@media (hover: hover) {
+  [data-slot="button"][data-variant="outline"]:hover:not(:disabled) {
+    background-color: color-mix(in oklch, var(--sg-fg) 12%, transparent);
+  }
+}
+[data-slot="button"][data-variant="outline"]:is([aria-expanded="true"], :active:not(:disabled)) {
+  background-color: color-mix(in oklch, var(--sg-fg) 15%, transparent);
+}
+[data-slot="button"][data-variant="secondary"] {
+  border: 1px solid var(--sg-edge);
+  background-color: var(--sg-control);
+  background-clip: padding-box;
+  color: var(--sg-fg);
+  box-shadow:
+    inset 0 1px 0 var(--sg-control-rim),
+    0 1px 2px var(--sg-contact);
+}
+@media (hover: hover) {
+  [data-slot="button"][data-variant="secondary"]:hover:not(:disabled) {
+    background-color: color-mix(in oklch, var(--sg-fg) 12%, transparent);
+  }
+}
+[data-slot="button"][data-variant="ghost"] {
+  border: 1px solid transparent;
+  background-color: transparent;
+  color: var(--sg-muted-fg);
+}
+@media (hover: hover) {
+  [data-slot="button"][data-variant="ghost"]:hover:not(:disabled) {
+    background-color: var(--sg-hover);
+    color: var(--sg-fg);
+  }
+}
+
+/* ---- Solid Glass: Toggle (solid-glass.css lines 783-795, 1107-1135) ---- */
+[data-slot="toggle"][data-variant="outline"] {
+  border-radius: var(--sg-radius-control);
+  border: 1px solid var(--sg-border);
+  background-color: var(--sg-control);
+  background-clip: padding-box;
+  color: var(--sg-muted-fg);
+  box-shadow: inset 0 1px 0 var(--sg-control-rim);
+  transition: background-color 120ms ease, border-color 120ms ease, color 120ms ease;
+  cursor: pointer;
+}
+@media (hover: hover) {
+  [data-slot="toggle"][data-variant="outline"]:hover:not(:disabled) {
+    background-color: var(--sg-hover);
+    color: var(--sg-fg);
+  }
+}
+[data-slot="toggle"][data-variant="outline"][aria-pressed="true"] {
+  border-color: var(--sg-state-edge);
+  background-color: var(--sg-state);
+  color: var(--sg-fg);
+  box-shadow: inset 0 1px 0 var(--sg-state-rim);
+}
+
+/* ---- Solid Glass: Tabs (Recessed Groove Tray + Raised Clear-Glass Active Tab) ---- */
+/* Mirrors solid-glass.css lines 797-813 & src/components/ui/tabs.tsx */
+[data-slot="tabs-list"][data-variant="default"] {
+  display: inline-flex;
+  align-items: center;
+  gap: 2px;
+  padding: 3px;
+  border-radius: var(--sg-radius-control);
+  background-color: var(--sg-muted);
+  box-shadow:
+    inset 0 1px 2px var(--sg-well-shade),
+    inset 0 -1px 0 var(--sg-well-rim);
+}
+[data-slot="tabs-trigger"] {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  gap: 5px;
+  height: calc(100% - 1px);
+  border-radius: calc(var(--sg-radius-control) - 3px);
+  border: 1px solid transparent;
+  color: var(--sg-muted-fg);
+  font-weight: 500;
+  white-space: nowrap;
+  transition: background-color 120ms ease, color 120ms ease, border-color 120ms ease, box-shadow 120ms ease;
+  cursor: pointer;
+  outline: none;
+}
+[data-slot="tabs-trigger"]:hover {
+  color: var(--sg-fg);
+}
+[data-slot="tabs-trigger"][data-active="true"] {
+  border-color: var(--sg-edge);
+  background-color: var(--sg-control);
+  background-clip: padding-box;
+  color: var(--sg-fg);
+  box-shadow:
+    inset 0 1px 0 var(--sg-control-rim),
+    0 1px 2px var(--sg-contact);
+}
+
+/* ---- Solid Glass: InputGroup & SelectTrigger (solid-glass.css lines 919-951) ---- */
+[data-slot="input-group"],
+[data-slot="select-trigger"] {
+  border-radius: var(--sg-radius-control);
+  border: 1px solid var(--sg-field-edge);
+  background-color: var(--sg-field);
+  background-clip: padding-box;
+  box-shadow: inset 0 1px 0 var(--sg-field-rim);
+  transition: border-color 120ms ease, background-color 120ms ease;
+}
+[data-slot="input-group"]:focus-within,
+[data-slot="select-trigger"]:focus-visible {
+  border-color: var(--sg-focus-line);
+  outline: none;
+}
+[data-slot="select-trigger"][aria-expanded="true"] {
+  background-color: var(--sg-control);
+  outline: none;
+}
+
+/* Select Menu Option highlight (The One State: clear glass pane) */
+[data-slot="select-item"] {
+  border-radius: calc(var(--sg-radius-control) - 4px);
+  transition: background-color 100ms ease, box-shadow 100ms ease;
+  cursor: pointer;
+}
+[data-slot="select-item"]:hover,
+[data-slot="select-item"][data-selected="true"] {
+  background-color: var(--sg-state);
+  box-shadow:
+    inset 0 1px 0 var(--sg-state-rim),
+    0 0 0 1px var(--sg-state-edge);
+}
+
+/* ---- Solid Glass: Badge & Tag (rounded-rect unified with Pattern Waves squares) ---- */
+[data-slot="badge"] {
+  display: inline-flex;
+  align-items: center;
+  gap: 5px;
+  border-width: 0;
+  border-radius: 6px;
+  font-weight: 500;
+  white-space: nowrap;
+}
+[data-slot="badge"][data-variant="secondary"] {
+  background-color: var(--sg-secondary);
+  color: var(--sg-fg);
+  box-shadow:
+    inset 0 1px 0 var(--sg-control-rim),
+    inset 0 0 0 1px var(--sg-edge);
+}
+[data-slot="badge"][data-variant="outline"] {
+  background-color: transparent;
+  color: var(--sg-fg);
+  box-shadow:
+    inset 0 1px 0 var(--sg-control-rim),
+    inset 0 0 0 1px var(--sg-border);
+}
+[data-slot="badge"][data-variant="brand"] {
+  background-color: var(--sg-accent-ink-muted);
+  color: var(--sg-accent-ink);
+  box-shadow:
+    inset 0 1px 0 var(--sg-control-rim),
+    inset 0 0 0 1px var(--sg-border);
+}
+
+/* Interactive Pin / Unpin Button (Detail Modal) & Unpin Badge (Server List) */
+.sg-pin-btn {
+  border-radius: 6px !important;
+  transition: background-color 160ms ease, border-color 160ms ease, color 160ms ease, box-shadow 160ms ease !important;
+}
+.sg-pin-btn .sg-pin-icon {
+  transform: rotate(45deg);
+  transform-origin: center;
+  transition: transform 200ms cubic-bezier(0.22, 1, 0.36, 1);
+}
+.sg-pin-btn[data-pinned="true"] {
+  border-color: color-mix(in oklch, var(--sg-danger) 42%, transparent) !important;
+  background-color: color-mix(in oklch, var(--sg-danger) 14%, transparent) !important;
+  color: var(--sg-danger) !important;
+  box-shadow:
+    inset 0 1px 0 color-mix(in oklch, var(--sg-danger) 22%, transparent),
+    0 1px 2px var(--sg-contact) !important;
+}
+@media (hover: hover) {
+  .sg-pin-btn[data-pinned="true"]:hover {
+    background-color: color-mix(in oklch, var(--sg-danger) 22%, transparent) !important;
+    border-color: color-mix(in oklch, var(--sg-danger) 56%, transparent) !important;
+  }
+}
+.sg-pin-btn[data-pinned="true"] .sg-pin-icon {
+  transform: rotate(0deg);
+}
+
+.sg-pin-badge-btn {
+  cursor: pointer;
+  outline: none;
+  transition: background-color 140ms ease, color 140ms ease, box-shadow 140ms ease;
+}
+.sg-pin-badge-btn:focus-visible {
+  box-shadow: 0 0 0 1px var(--sg-bg), 0 0 0 3px var(--sg-focus-line);
+}
+@media (hover: hover) {
+  .sg-pin-badge-btn:hover {
+    background-color: color-mix(in oklch, var(--sg-danger) 15%, transparent);
+    color: var(--sg-danger);
+    box-shadow:
+      inset 0 1px 0 color-mix(in oklch, var(--sg-danger) 24%, transparent),
+      inset 0 0 0 1px color-mix(in oklch, var(--sg-danger) 42%, transparent);
+  }
+}
+
+/* Solid Glass Tag (src/components/ui/tag.tsx: glass-chosen small chip) */
+[data-slot="tag"] {
+  display: inline-flex;
+  align-items: center;
+  height: 22px;
+  border-radius: 6px;
+  padding: 0 7px;
+  font-size: 10.5px;
+  color: var(--sg-muted-fg);
+  background-color: var(--sg-state);
+  box-shadow:
+    inset 0 1px 0 var(--sg-state-rim),
+    0 0 0 1px var(--sg-state-edge);
+}
+
+/* ---- Solid Glass: Progress Track (Groove) & Indicator (top highlight removed, depth preserved) ---- */
+[data-slot="progress-track"] {
+  background-color: var(--sg-well-bg);
+  box-shadow:
+    inset 0 1px 1.5px var(--sg-well-shade),
+    inset 0 -1px 0 var(--sg-well-rim);
+}
+[data-slot="progress-indicator"] {
+  border-width: 0;
+  box-shadow: inset 0 -1px 0 color-mix(in oklch, var(--sg-primary-under) 45%, transparent);
+  transition: width 320ms cubic-bezier(0.22, 1, 0.36, 1), background-color 220ms ease;
+}
+
+/* ---- Solid Glass: Field Choice Card & Switch (top specular highlights removed, groove & knob shadow preserved) ---- */
+[data-slot="field-label"] {
+  border: 1px solid var(--sg-edge);
+  background-color: var(--sg-panel);
+  background-clip: padding-box;
+  border-radius: var(--sg-radius-control);
+  box-shadow: inset 0 1px 0 var(--sg-inner);
+  transition: background-color 140ms ease, border-color 140ms ease, box-shadow 140ms ease;
+}
+[data-slot="field-label"][data-checked="true"] {
+  border-color: var(--sg-state-edge);
+  background-color: var(--sg-state);
+  box-shadow: inset 0 1px 0 var(--sg-state-rim);
+}
+
+[data-slot="switch"] {
+  width: 34px;
+  height: 19px;
+  border-radius: 9999px;
+  position: relative;
+  border: 1px solid transparent;
+  transition: background-color 150ms ease, border-color 150ms ease, box-shadow 150ms ease;
+  cursor: pointer;
+}
+[data-slot="switch"]:focus-visible {
+  outline: 2px solid var(--sg-focus-line);
+  outline-offset: 2px;
+}
+[data-slot="switch"]:not([data-checked="true"]) {
+  background-color: var(--sg-well-bg);
+  box-shadow:
+    inset 0 1px 1.5px var(--sg-well-shade),
+    inset 0 -1px 0 var(--sg-well-rim);
+}
+[data-slot="switch"][data-checked="true"] {
+  border-color: transparent;
+  border-bottom-color: color-mix(in oklch, var(--sg-primary-under) 45%, transparent);
+  background-color: color-mix(in oklch, var(--sg-primary) var(--sg-primary-solid), transparent);
+  background-clip: border-box;
+}
+[data-slot="switch-thumb"] {
+  width: 13px;
+  height: 13px;
+  border-radius: 9999px;
+  position: absolute;
+  top: 2px;
+  left: 2px;
+  background-color: var(--sg-knob);
+  box-shadow:
+    inset 0 -1px 0 oklch(0 0 0 / 14%),
+    0 1px 2px var(--sg-knob-shade);
+  transition:
+    transform 160ms cubic-bezier(0.22, 1, 0.36, 1),
+    background-color 160ms ease;
+}
+[data-slot="switch"][data-checked="true"] [data-slot="switch-thumb"] {
+  transform: translateX(15px);
+  background-color: var(--sg-primary-fg);
+}
+
+/* ---- Native Top-Layer <dialog> Modals & Right-Side Drawer (modern-web-guidance: dialog & navigation-drawer) ---- */
+dialog.sg-native-dialog {
+  margin: 0;
+  padding: 0;
+  border: 0;
+  background: transparent;
+  color: inherit;
+  max-width: none;
+  max-height: none;
+  overflow: visible;
+}
+dialog.sg-native-dialog:modal {
+  overscroll-behavior: contain;
+}
+dialog.sg-native-dialog::backdrop {
+  background: oklch(0 0 0 / 48%);
+  -webkit-backdrop-filter: blur(2px);
+  backdrop-filter: blur(2px);
+  overflow: hidden;
+  overscroll-behavior: contain;
+}
+
+#managed-drawer[open] {
+  inset: 0;
+  width: 100%;
+  height: 100%;
+  display: flex;
+  justify-content: flex-end;
+}
+#managed-drawer-panel {
+  border-top-left-radius: var(--sg-radius);
+  border-bottom-left-radius: var(--sg-radius);
+  height: 100svh;
+  transform: translateX(100%);
+  transition: transform 240ms cubic-bezier(0.22, 1, 0.36, 1);
+}
+#managed-drawer[data-open="true"] #managed-drawer-panel {
+  transform: translateX(0);
+}
+
+#detail-modal[open],
+#auth-modal[open] {
+  inset: 0;
+  width: 100%;
+  height: 100%;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  padding: 1rem;
+}
+#managed-drawer::backdrop,
+#detail-modal::backdrop,
+#auth-modal::backdrop {
+  opacity: 0;
+  transition: opacity 150ms cubic-bezier(0.4, 0, 1, 1);
+}
+#managed-drawer[data-open="true"]::backdrop,
+#detail-modal[data-open="true"]::backdrop,
+#auth-modal[data-open="true"]::backdrop {
+  opacity: 1;
+  transition: opacity 200ms cubic-bezier(0.16, 1, 0.3, 1);
+}
+.sg-popover-anim {
+  opacity: 0;
+  transform: translateY(-4px) scale(0.96);
+  transform-origin: top right;
+  visibility: hidden;
+  pointer-events: none;
+  will-change: opacity, transform;
+  transition:
+    opacity 120ms cubic-bezier(0.4, 0, 1, 1),
+    transform 120ms cubic-bezier(0.4, 0, 1, 1),
+    visibility 0ms linear 120ms;
+}
+.sg-popover-anim[data-open="true"] {
+  opacity: 1;
+  transform: translateY(0) scale(1);
+  visibility: visible;
+  pointer-events: auto;
+  transition:
+    opacity 160ms cubic-bezier(0.16, 1, 0.3, 1),
+    transform 170ms cubic-bezier(0.16, 1, 0.3, 1),
+    visibility 0ms linear 0ms;
+}
+#detail-dialog,
+#auth-dialog {
+  opacity: 0;
+  transform: scale(0.95) translateY(4px);
+  will-change: opacity, transform;
+  transition:
+    opacity 145ms cubic-bezier(0.4, 0, 1, 1),
+    transform 145ms cubic-bezier(0.4, 0, 1, 1);
+}
+#detail-modal[data-open="true"] #detail-dialog,
+#auth-modal[data-open="true"] #auth-dialog {
+  opacity: 1;
+  transform: scale(1) translateY(0);
+  transition:
+    opacity 190ms cubic-bezier(0.16, 1, 0.3, 1),
+    transform 210ms cubic-bezier(0.16, 1, 0.3, 1);
+}
+@media (prefers-reduced-motion: reduce) {
+  #detail-modal::backdrop,
+  #detail-modal[data-open="true"]::backdrop,
+  #detail-dialog,
+  #detail-modal[data-open="true"] #detail-dialog,
+  #auth-modal::backdrop,
+  #auth-modal[data-open="true"]::backdrop,
+  #auth-dialog,
+  #auth-modal[data-open="true"] #auth-dialog {
+    transition-duration: 1ms;
+    transform: none;
+  }
+}
+.sg-legend-chip {
+  display: inline-flex;
+  align-items: center;
+  gap: 0.375rem;
+  border-radius: 6px;
+  padding: 2px 7px;
+  margin: -2px 0;
+  background: transparent;
+  border: 1px solid transparent;
+  color: var(--sg-muted-fg);
+  cursor: pointer;
+  transition: background-color 140ms ease, border-color 140ms ease, opacity 140ms ease, color 140ms ease;
+}
+.sg-legend-chip:hover {
+  background: var(--sg-hover-bg);
+  color: var(--sg-fg);
+}
+.sg-legend-chip[data-focused="true"] {
+  background: var(--sg-chosen-bg);
+  border-color: var(--sg-border);
+  color: var(--sg-fg);
+}
+.sg-legend-chip[data-muted="true"] {
+  opacity: 0.68;
+}
+.sg-legend-chip[data-muted="true"]:hover {
+  opacity: 1;
+}
+.sg-kv-row + .sg-kv-row {
+  border-top: 1px solid color-mix(in oklch, var(--sg-border) 58%, transparent);
+}
+/* Crisp Rounded-Rectangle Vector Flags (curvature = 25% of height, matching Solid Glass micro-slats & status squares) */
+.sg-flag {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  flex-shrink: 0;
+  overflow: hidden;
+  vertical-align: middle;
+  position: relative;
+  box-shadow:
+    inset 0 0 0 0.5px rgba(255, 255, 255, 0.16),
+    0 0 0 0.5px rgba(0, 0, 0, 0.24);
+}
+[data-theme="light"] .sg-flag {
+  box-shadow: inset 0 0 0 0.5px rgba(18, 22, 32, 0.14);
+}
+.sg-flag svg {
+  display: block;
+  width: 100%;
+  height: 100%;
+}
+.sg-flag-sm {
+  width: 16px;
+  height: 12px;
+  border-radius: 3px;
+}
+.sg-flag-md {
+  width: 19px;
+  height: 14px;
+  border-radius: 3.5px;
+}
+.sg-flag-lg {
+  width: 22px;
+  height: 16px;
+  border-radius: 4px;
+}
+.sg-scroll-none {
+  scrollbar-width: none;
+  -ms-overflow-style: none;
+}
+.sg-scroll-none::-webkit-scrollbar {
+  display: none;
+}
+@media (max-width: 639px) {
+  #group-tabs[data-slot="tabs-list"] {
+    display: grid;
+    grid-template-columns: repeat(2, minmax(0, 1fr));
+    width: 100%;
+    height: auto;
+    gap: 4px;
+    padding: 4px;
+    overflow: visible;
+  }
+  #group-tabs [data-slot="tabs-trigger"] {
+    height: 30px;
+    width: 100%;
+  }
+  #group-tabs [data-slot="tabs-trigger"][data-span-all="true"] {
+    grid-column: span 2 / span 2;
+  }
+}
+
+/* ---- Centered Backdrop Wordmark behind top overview panels (clean ink + wide tracking + Shuffle entrance/morph) ---- */
+.sg-hero-wordmark {
+  position: relative;
+  font-size: clamp(1.3rem, 5.8vw, 4.15rem);
+  line-height: 1.08;
+  height: 1.08em;
+  width: 100%;
+  font-weight: 700;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  white-space: pre;
+}
+.sg-hero-wordmark-ink {
+  color: transparent;
+  -webkit-background-clip: text;
+  background-clip: text;
+  background-image: linear-gradient(180deg, var(--sg-wordmark-top) 0%, var(--sg-wordmark-bot) 100%);
+}
+.sg-hero-wordmark-alert {
+  color: transparent;
+  -webkit-background-clip: text;
+  background-clip: text;
+  background-image: linear-gradient(180deg, var(--sg-wordmark-alert-top) 0%, var(--sg-wordmark-alert-bot) 100%);
+}
+.sg-shuffle-cell {
+  position: relative;
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  height: 1.08em;
+  line-height: 1.08;
+  margin-inline: 0.055em;
+  flex-shrink: 0;
+  translate: 0px;
+  clip-path: inset(0.05em -1.6em -0.06em -1.6em);
+}
+.sg-shuffle-exit-cell {
+  position: absolute;
+  top: 0;
+  left: 50%;
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  height: 1.08em;
+  line-height: 1.08;
+  clip-path: inset(0.05em -1.6em -0.06em -1.6em);
+  pointer-events: none;
+  translate: 0px;
+}
+.sg-shuffle-space {
+  display: inline-block;
+  width: 0.42em;
+  margin-inline: 0.055em;
+  flex-shrink: 0;
+}
+.sg-shuffle-track {
+  position: relative;
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  height: 100%;
+  translate: 0px;
+}
+.sg-shuffle-glyph {
+  display: block;
+  line-height: 1;
+}
+.sg-shuffle-echo {
+  position: absolute;
+  left: 50%;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  height: 100%;
+  width: max-content;
+  translate: -50% 0px;
+  pointer-events: none;
+}
+
+/* Opaque performance mode (data-glass="opaque") */
+#sg-stage[data-glass="opaque"] .sg-glass-backdrop,
+#sg-stage[data-glass="opaque"] .sg-popover {
+  -webkit-backdrop-filter: none;
+  backdrop-filter: none;
+}
+#sg-stage[data-theme="dark"][data-glass="opaque"] .sg-panel { background-color: oklch(0.19 0.007 286); }
+#sg-stage[data-theme="dark"][data-glass="opaque"] .sg-card { background-color: oklch(0.225 0.007 286); }
+#sg-stage[data-theme="dark"][data-glass="opaque"] { --sg-table-head: oklch(0.225 0.007 286); --sg-table-body: oklch(0.19 0.007 286); }
+#sg-stage[data-theme="light"][data-glass="opaque"] .sg-panel { background-color: oklch(0.947 0.008 286); }
+#sg-stage[data-theme="light"][data-glass="opaque"] .sg-card { background-color: oklch(0.958 0.008 286); }
+#sg-stage[data-theme="light"][data-glass="opaque"] { --sg-table-head: oklch(0.958 0.008 286); --sg-table-body: oklch(0.947 0.008 286); }
+
+.mono-num {
+  font-family: ui-monospace, SFMono-Regular, Menlo, Monaco, Consolas, monospace;
+  font-variant-numeric: tabular-nums;
+}
+
+/* Server List Table View: synced with System Info visual (bright outer header slab + recessed rounded-rect shadow body, zero row separators) */
+.sg-table-shell {
+  background-color: var(--sg-table-head);
+  border-width: 0;
+  box-shadow:
+    inset 0 1px 0 var(--sg-rim),
+    inset 0 0 0 1px var(--sg-inner),
+    0 0 0 1px var(--sg-edge),
+    0 1px 2px var(--sg-contact);
+}
+.sg-table-body {
+  background-color: var(--sg-table-body);
+  border-width: 0;
+  box-shadow:
+    inset 0 0 0 1px var(--sg-edge),
+    var(--sg-spec-body-shadow);
+}
+.sg-table-grid {
+  display: grid;
+  grid-template-columns: var(--sg-table-cols);
+}
+.sg-table-row {
+  border-radius: 7px;
+  transition: background-color 110ms ease;
+}
+.sg-table-row:hover {
+  background-color: var(--sg-hover-faint);
+}
+/* Compact flush-left value + unit rows in Table View (↑/↓ direction unified in column headers; Grid locks columns against width drift) */
+.sg-rate-line,
+.sg-traffic-line {
+  display: flex;
+  align-items: baseline;
+  gap: 4px;
+}
+
+.sg-event-row {
+  transition: background-color 110ms ease;
+}
+.sg-event-row:hover {
+  background-color: var(--sg-hover-faint);
+}
+
+.sg-scroll-thin {
+  scrollbar-width: thin;
+  scrollbar-color: var(--sg-border) transparent;
+}
+.sg-scroll-thin::-webkit-scrollbar {
+  width: 5px;
+  height: 5px;
+}
+.sg-scroll-thin::-webkit-scrollbar-track {
+  background: transparent;
+}
+.sg-scroll-thin::-webkit-scrollbar-thumb {
+  background: var(--sg-border);
+  border-radius: 9999px;
+}
+
+/* Inline display-options trigger inside #view-tabs tray (matches Solid Glass ghost button / tabs-trigger in solid-glass.css lines 797-813 & 1146-1153) */
+.sg-view-options-trigger {
+  position: relative;
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  box-sizing: border-box;
+  height: calc(100% - 1px);
+  width: 28px;
+  flex-shrink: 0;
+  margin-left: 2px;
+  padding: 0;
+  line-height: 0;
+  border-radius: calc(var(--sg-radius-control) - 3px);
+  border: 1px solid transparent;
+  color: var(--sg-muted-fg);
+  background-color: transparent;
+  box-shadow: none;
+  transition: background-color 120ms ease, color 120ms ease, box-shadow 120ms ease, border-color 120ms ease;
+  cursor: pointer;
+  outline: none;
+}
+.sg-view-options-trigger:focus-visible {
+  box-shadow: 0 0 0 1px var(--sg-bg), 0 0 0 3px var(--sg-focus-line);
+}
+@media (hover: hover) {
+  .sg-view-options-trigger:hover {
+    color: var(--sg-fg);
+    background-color: var(--sg-hover-faint);
+  }
+}
+.sg-view-options-trigger[aria-expanded="true"] {
+  color: var(--sg-fg);
+  border-color: var(--sg-edge);
+  background-color: var(--sg-control);
+  background-clip: padding-box;
+  box-shadow:
+    inset 0 1px 0 var(--sg-control-rim),
+    0 1px 2px var(--sg-contact);
+}
+.sg-view-options-trigger svg {
+  display: block;
+  transition: transform 160ms cubic-bezier(0.22, 1, 0.36, 1);
+}
+.sg-view-options-trigger[aria-expanded="true"] svg {
+  transform: rotate(180deg);
+}
+#sort-select-trigger .sg-sort-chevron {
+  display: block;
+  transition: transform 160ms cubic-bezier(0.22, 1, 0.36, 1);
+}
+#sort-select-trigger[aria-expanded="true"] .sg-sort-chevron {
+  transform: rotate(180deg);
+}
+
+@media (prefers-reduced-motion: reduce) {
+  #sg-stage *, #sg-stage *::before, #sg-stage *::after {
+    animation-duration: 0.01ms !important;
+    transition-duration: 0.01ms !important;
+  }
+}

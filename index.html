@@ -5,9 +5,297 @@
     <meta name="viewport" content="width=device-width, initial-scale=1.0" />
     <title>Komari Monitor</title>
     <meta name="description" content="A simple server monitor tool." />
+    <link rel="icon" href="data:image/svg+xml,%3Csvg%20xmlns='http://www.w3.org/2000/svg'%20viewBox='0%200%2024%2024'%3E%3Crect%20width='24'%20height='24'%20rx='6'%20fill='%2326262b'/%3E%3Cpath%20d='M5%206h14v12H5zM5%2010h14M12%2010v8'%20fill='none'%20stroke='%23e4e4e7'%20stroke-width='1.4'/%3E%3C/svg%3E" />
   </head>
-  <body>
-    <main id="app" class="km-main"></main>
-    <footer class="km-footer">Powered by Komari Monitor.</footer>
+<body class="m-0 p-0 antialiased">
+  <div id="sg-stage" data-theme="dark" data-glass="translucent" class="km-layout flex flex-col">
+    <!-- Top Floating Utility Controls (no navbar container block; Roomy density spacing) -->
+    <header class="km-navbar relative z-30 flex w-full items-center justify-end px-4 pt-4 sm:px-7">
+      <div class="flex flex-wrap items-center justify-end gap-2 sm:gap-2.5">
+        <!-- Leftmost: Theme Mode Tabs (Dark / Light / System) with rounded-rectangle outer edges -->
+        <div id="theme-tabs" data-slot="tabs-list" data-variant="default" role="tablist" aria-label="外观主题" class="h-9 shrink-0">
+          <button type="button" role="tab" data-slot="tabs-trigger" data-appearance="dark" class="px-2.5 text-xs" title="暗黑模式" aria-label="暗黑模式">
+            <svg class="h-3.5 w-3.5" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8"><path d="M12 3a6 6 0 0 0 9 9 9 9 0 1 1-9-9Z"/></svg>
+          </button>
+          <button type="button" role="tab" data-slot="tabs-trigger" data-appearance="light" class="px-2.5 text-xs" title="明亮模式" aria-label="明亮模式">
+            <svg class="h-3.5 w-3.5" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8"><circle cx="12" cy="12" r="4"/><path d="M12 2v2m0 16v2M4.93 4.93l1.41 1.41m11.32 11.32 1.41 1.41M2 12h2m16 0h2M6.34 17.66l-1.41 1.41M19.07 4.93l-1.41 1.41"/></svg>
+          </button>
+          <button type="button" role="tab" data-slot="tabs-trigger" data-appearance="system" class="px-2.5 text-xs" title="跟随系统" aria-label="跟随系统">
+            <svg class="h-3.5 w-3.5" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8"><rect x="2" y="3" width="20" height="14" rx="2"/><path d="M8 21h8m-4-4v4"/></svg>
+          </button>
+        </div>
+
+        <!-- Middle: Language Button (Solid Glass outline Button) -->
+        <button id="btn-lang" type="button" data-slot="button" data-variant="outline" class="inline-flex h-9 min-w-[38px] shrink-0 items-center justify-center whitespace-nowrap px-3 text-xs font-medium mono-num" title="切换语言 / Switch Language">中</button>
+
+        <!-- Managed Theme Settings Drawer Trigger (Sliders icon + "主题配置", icon-only on <sm) -->
+        <button id="btn-managed" type="button" data-slot="button" data-variant="outline" class="inline-flex h-9 shrink-0 items-center justify-center gap-1.5 whitespace-nowrap px-2.5 text-xs font-medium sm:px-3" aria-label="主题配置" title="主题配置">
+          <svg class="h-3.5 w-3.5 shrink-0" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round">
+            <line x1="21" x2="14" y1="4" y2="4"/><line x1="10" x2="3" y1="4" y2="4"/>
+            <line x1="21" x2="12" y1="12" y2="12"/><line x1="8" x2="3" y1="12" y2="12"/>
+            <line x1="21" x2="16" y1="20" y2="20"/><line x1="12" x2="3" y1="20" y2="20"/>
+            <line x1="14" x2="14" y1="2" y2="6"/><line x1="8" x2="8" y1="10" y2="14"/><line x1="16" x2="16" y1="18" y2="22"/>
+          </svg>
+          <span id="btn-managed-label" class="hidden sm:inline">主题配置</span>
+        </button>
+
+        <!-- Auth / Komari Admin Trigger (Logged out: Login; Logged in: Gear Admin button + account menu; icon-only on <sm) -->
+        <div id="auth-control-root" class="relative shrink-0">
+          <button id="btn-auth" type="button" data-slot="button" data-variant="outline" class="inline-flex h-9 shrink-0 items-center justify-center gap-1.5 whitespace-nowrap px-2.5 text-xs font-medium sm:px-3" aria-haspopup="menu" aria-expanded="false">
+            <span id="btn-auth-icon" class="inline-flex shrink-0 items-center"></span>
+            <span id="btn-auth-label" class="hidden sm:inline">登录</span>
+          </button>
+          <div id="admin-menu" data-slot="popover-content" data-open="false" role="menu" class="sg-popover sg-popover-anim absolute right-0 top-[calc(100%+6px)] z-50 w-48 space-y-1 p-1.5">
+            <button id="btn-goto-admin" type="button" role="menuitem" data-slot="select-item" class="flex w-full items-center gap-2 text-xs">
+              <svg class="h-3.5 w-3.5 shrink-0" style="color: var(--sg-muted-fg);" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><circle cx="12" cy="12" r="3"/><path d="M19.4 15a1.65 1.65 0 0 0 .33 1.82l.06.06a2 2 0 1 1-2.83 2.83l-.06-.06a1.65 1.65 0 0 0-1.82-.33 1.65 1.65 0 0 0-1 1.51V21a2 2 0 1 1-4 0v-.09A1.65 1.65 0 0 0 9 19.4a1.65 1.65 0 0 0-1.82.33l-.06.06a2 2 0 1 1-2.83-2.83l.06-.06a1.65 1.65 0 0 0 .33-1.82 1.65 1.65 0 0 0-1.51-1H3a2 2 0 1 1 0-4h.09A1.65 1.65 0 0 0 4.6 9a1.65 1.65 0 0 0-.33-1.82l-.06-.06a2 2 0 1 1 2.83-2.83l.06.06a1.65 1.65 0 0 0 1.82.33H9a1.65 1.65 0 0 0 1-1.51V3a2 2 0 1 1 4 0v.09a1.65 1.65 0 0 0 1 1.51 1.65 1.65 0 0 0 1.82-.33l.06-.06a2 2 0 1 1 2.83 2.83l-.06.06a1.65 1.65 0 0 0-.33 1.82V9c.26.6.85 1 1.51 1H21a2 2 0 1 1 0 4h-.09a1.65 1.65 0 0 0-1.51 1Z"/></svg>
+              <span id="admin-goto-label" class="truncate">进入 Komari 后台</span>
+            </button>
+            <button id="btn-logout" type="button" role="menuitem" data-slot="select-item" class="flex w-full items-center gap-2 text-xs">
+              <svg class="h-3.5 w-3.5 shrink-0" style="color: var(--sg-muted-fg);" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><path d="M9 21H5a2 2 0 0 1-2-2V5a2 2 0 0 1 2-2h4"/><polyline points="16 17 21 12 16 7"/><line x1="21" x2="9" y1="12" y2="12"/></svg>
+              <span id="admin-logout-label" class="truncate">退出登录</span>
+            </button>
+          </div>
+        </div>
+      </div>
+    </header>
+
+    <!-- Main Container (Roomy density spacing; full-width fluid overview & server blocks) -->
+    <main class="km-main flex w-full flex-1 flex-col gap-4 px-5 pb-5 pt-1 sm:px-7">
+      <p id="site-error" role="alert" class="hidden" style="color: var(--sg-danger);"></p>
+      <!-- Dedicated isolated Backdrop Root so Hero panels blur ONLY the wordmark behind them (zero cross-section edge bleed) -->
+      <div id="hero-stage" class="relative isolate w-full">
+        <!-- Centered Backdrop Wordmark positioned behind the middle top edge of the overview panels -->
+        <div id="hero-wordmark-wrap" class="pointer-events-none relative z-0 -mb-3 overflow-hidden select-none text-center sm:-mb-5">
+          <svg id="sg-shuffle-defs-svg" class="pointer-events-none absolute h-0 w-0 overflow-hidden" aria-hidden="true">
+            <defs id="sg-shuffle-defs"></defs>
+          </svg>
+          <h1 id="hero-wordmark" class="sg-hero-wordmark mx-auto" aria-label="Komari Pane">Komari Pane</h1>
+        </div>
+
+        <!-- Optional Announcement Strip (retained in managed config, hidden by default when empty) -->
+        <div id="notice-bar" data-slot="panel" class="sg-panel relative z-10 mb-4 hidden items-center justify-between gap-3 rounded-xl px-4 py-2.5 text-xs">
+          <div class="flex min-w-0 items-center gap-2">
+            <span class="h-1.5 w-1.5 shrink-0 rounded-full" style="background: var(--sg-accent-ink);"></span>
+            <span id="notice-text" class="truncate" style="color: var(--sg-muted-fg);"></span>
+          </div>
+        </div>
+
+        <!-- Top Overview Section (z-10 sits cleanly in front of the lower edge of the centered wordmark) -->
+        <section id="overview-hero" class="relative z-10 grid items-stretch gap-4 lg:grid-cols-[1.5fr_1fr] xl:grid-cols-[1.45fr_0.95fr_0.82fr]">
+          <!-- Panel 1: React Bits Pattern Waves World Map (square halftone + in-component server squares) -->
+          <div id="world-map-panel" data-slot="panel" class="sg-panel sg-glass-backdrop relative flex flex-col overflow-hidden rounded-xl px-4 pt-3.5 pb-4">
+            <div class="mb-2.5 flex min-h-7 flex-wrap items-center justify-between gap-x-3 gap-y-1.5">
+              <div class="flex flex-wrap items-center gap-x-2.5 gap-y-1">
+                <span class="inline-flex items-center gap-1.5 whitespace-nowrap text-xs font-semibold tracking-tight" style="color: var(--sg-fg);">
+                  <svg class="h-3.5 w-3.5 shrink-0" style="color: var(--sg-muted-fg);" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><circle cx="12" cy="12" r="10"/><path d="M2 12h20"/><path d="M12 2a15.3 15.3 0 0 1 4 10 15.3 15.3 0 0 1-4 10 15.3 15.3 0 0 1-4-10 15.3 15.3 0 0 1 4-10z"/></svg>
+                  <span data-i18n="mapTitle">全球节点分布</span>
+                </span>
+                <span id="map-utc8-clock" class="mono-num inline-flex items-center gap-1 whitespace-nowrap text-[11px]" style="color: var(--sg-muted-fg);">
+                  <span style="color: var(--sg-subtle-fg);">UTC+8</span>
+                  <span id="map-utc8-time">--:--:--</span>
+                </span>
+              </div>
+              <div class="flex items-center gap-3 whitespace-nowrap text-[11px]" style="color: var(--sg-muted-fg);">
+                <span class="inline-flex items-center gap-1.5 whitespace-nowrap"><span class="h-[6px] w-[6px] shrink-0 rounded-[1.5px]" style="background: var(--sg-success);"></span><span data-i18n="online">在线</span></span>
+                <span class="inline-flex items-center gap-1.5 whitespace-nowrap"><span class="h-[6px] w-[6px] shrink-0 rounded-[1.5px]" style="background: var(--sg-warn);"></span><span data-i18n="highLoad">高载</span></span>
+                <span class="inline-flex items-center gap-1.5 whitespace-nowrap"><span class="h-[6px] w-[6px] shrink-0 rounded-[1.5px]" style="background: var(--sg-danger);"></span><span data-i18n="offline">离线</span></span>
+              </div>
+            </div>
+
+            <div id="map-viewport" class="relative w-full overflow-hidden rounded-lg" style="aspect-ratio: 1024 / 473; max-height: 400px;">
+              <canvas id="world-map-canvas" tabindex="0" role="img" aria-label="全球节点分布" class="absolute inset-0 block h-full w-full outline-none"></canvas>
+              <!-- Hover / Click Popover inside map viewport (bounded & scrollable on narrow viewports) -->
+              <div id="map-tooltip" class="sg-popover sg-scroll-thin absolute z-20 hidden w-56 max-w-[calc(100%-16px)] max-h-[calc(100%-16px)] overflow-y-auto rounded-lg px-2.5 py-2 text-[11px]"></div>
+            </div>
+          </div>
+
+          <!-- Panel 2: Full-Height Network & Traffic Panel (Top = Upload, Bottom = Download) -->
+          <div id="summary-bar" data-slot="panel" class="sg-panel sg-glass-backdrop relative flex min-h-0 flex-col overflow-hidden rounded-xl">
+            <!-- Rendered by JS -->
+          </div>
+
+          <!-- Panel 3: Live Telemetry Event Feed Panel -->
+          <div id="event-feed-panel" data-slot="panel" class="sg-panel sg-glass-backdrop relative flex min-h-0 flex-col overflow-hidden rounded-xl">
+            <div id="event-feed-inner" class="flex min-h-0 flex-1 flex-col">
+              <!-- Rendered by JS -->
+            </div>
+          </div>
+        </section>
+      </div>
+
+      <!-- Unified Server List Block (Fluid full-width Solid Glass Panel: Options Toolbar + Node Cards/Table seamlessly merged without separator) -->
+      <section id="nodes-panel" data-slot="panel" class="sg-panel relative isolate z-20 flex w-full flex-col rounded-xl">
+        <!-- Integrated Filter & View Toolbar Header (no bottom separator; monotonic narrow-down: icon-only first at <md, then wrap) -->
+        <div id="toolbar-section" class="relative z-20 flex flex-col gap-2.5 px-4 pt-3.5 pb-3 xl:flex-row xl:items-center xl:justify-between">
+          <!-- Group Tabs inside Solid Glass recessed tray (single-row on sm+, symmetrical 2-col grid on <sm) -->
+          <div class="w-full min-w-0 sm:w-auto sm:max-w-full sm:self-start">
+            <div id="group-tabs" data-slot="tabs-list" data-variant="default" role="tablist" class="sg-scroll-none h-9 max-w-full flex-nowrap overflow-x-auto"></div>
+          </div>
+
+          <div class="flex w-full min-w-0 flex-wrap items-center gap-2 sm:gap-2.5 xl:w-auto xl:flex-nowrap xl:justify-end">
+            <!-- Solid Glass InputGroup (fills available width on medium/narrow screens) -->
+            <div data-slot="input-group" class="flex h-9 min-w-[180px] flex-1 items-center gap-2 px-3 xl:w-56 xl:flex-initial">
+              <svg class="h-3.5 w-3.5 shrink-0" style="color: var(--sg-subtle-fg);" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8"><circle cx="11" cy="11" r="7"/><path d="m20 20-3.5-3.5"/></svg>
+              <input id="search-input" aria-label="搜索节点、地区、CPU、标签…" type="text" placeholder="搜索节点、地区、CPU、标签…" class="w-full min-w-0 bg-transparent text-xs outline-none placeholder:opacity-60" />
+            </div>
+
+            <!-- Action Controls Group (min-w-0 flex-wrap allows Sort to wrap cleanly on ultra-narrow viewports) -->
+            <div class="flex max-w-full min-w-0 flex-wrap items-center gap-2 sm:gap-2.5">
+              <!-- Solid Glass Outline Toggle -->
+              <button id="btn-online-only" type="button" data-slot="toggle" data-variant="outline" aria-pressed="false" class="inline-flex h-9 shrink-0 items-center gap-1.5 whitespace-nowrap px-3 text-xs font-medium">
+                <span class="h-[6px] w-[6px] shrink-0 rounded-[1.5px]" style="background: var(--sg-success);"></span>
+                <span data-i18n="onlyOnline">仅看在线</span>
+              </button>
+
+              <!-- Card / Table View Switcher (switches to icon-only at <md BEFORE controls wrap) + Integrated Display Options Popover -->
+              <div id="view-tabs-root" class="relative shrink-0">
+                <div id="view-tabs" data-slot="tabs-list" data-variant="default" role="tablist" aria-label="视图切换" class="h-9">
+                  <button id="btn-view-card" aria-label="卡片" type="button" role="tab" data-slot="tabs-trigger" class="whitespace-nowrap px-2.5 text-xs md:px-3">
+                    <svg class="h-3.5 w-3.5 shrink-0" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8"><rect x="3" y="3" width="7" height="7" rx="1.5"/><rect x="14" y="3" width="7" height="7" rx="1.5"/><rect x="3" y="14" width="7" height="7" rx="1.5"/><rect x="14" y="14" width="7" height="7" rx="1.5"/></svg>
+                    <span class="hidden md:inline" data-i18n="cardView">卡片</span>
+                  </button>
+                  <button id="btn-view-table" aria-label="列表" type="button" role="tab" data-slot="tabs-trigger" class="whitespace-nowrap px-2.5 text-xs md:px-3">
+                    <svg class="h-3.5 w-3.5 shrink-0" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8"><path d="M4 6h16M4 12h16M4 18h16"/></svg>
+                    <span class="hidden md:inline" data-i18n="tableView">列表</span>
+                  </button>
+                  <button id="btn-view-options" type="button" class="sg-view-options-trigger" aria-haspopup="dialog" aria-expanded="false" aria-label="显示项设置" title="显示项设置">
+                    <svg class="h-3.5 w-3.5" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.9" stroke-linecap="round" stroke-linejoin="round"><path d="m6 9 6 6 6-6"/></svg>
+                  </button>
+                </div>
+                <div id="view-options-menu" data-slot="popover-content" data-open="false" role="dialog" aria-label="显示项设置" class="sg-popover sg-popover-anim absolute right-0 top-10 z-40 w-64 max-w-[calc(100vw-24px)] rounded-xl p-3 text-xs">
+                  <!-- Context-aware Card vs Table display controls rendered by JS -->
+                </div>
+              </div>
+
+              <!-- Solid Glass Custom Select (Sort placed to the right of Card/Table switcher, wraps cleanly when needed) -->
+              <div id="sort-select-root" class="relative shrink-0">
+                <button id="sort-select-trigger" type="button" data-slot="select-trigger" aria-haspopup="listbox" aria-expanded="false" class="inline-flex h-9 min-w-[104px] shrink-0 items-center justify-between gap-2 whitespace-nowrap px-3 text-xs font-medium md:min-w-[116px]" style="color: var(--sg-fg);">
+                  <span class="inline-flex items-center gap-1.5">
+                    <span id="sort-select-icon" class="inline-flex shrink-0 items-center" style="color: var(--sg-muted-fg);"></span>
+                    <span id="sort-select-label">默认</span>
+                  </span>
+                  <svg class="sg-sort-chevron h-3.5 w-3.5 shrink-0" style="color: var(--sg-muted-fg);" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><path d="m6 9 6 6 6-6"/></svg>
+                </button>
+                <div id="sort-select-menu" data-slot="select-content" data-open="false" role="listbox" class="sg-popover sg-popover-anim absolute right-0 top-10 z-40 min-w-[152px] max-w-[calc(100vw-24px)] space-y-1 rounded-xl p-1.5 text-xs">
+                  <!-- Populated by JS -->
+                </div>
+              </div>
+            </div>
+          </div>
+        </div>
+
+        <!-- Integrated Node Display Area (Card Grid or Edge-to-Edge Table inside the same block) -->
+        <div id="nodes-container" class="km-node-display relative z-10"></div>
+      </section>
+    </main>
+
+    <!-- Footer -->
+    <footer class="km-footer mt-auto px-5 py-5 sm:px-7">
+      <div class="flex w-full flex-wrap items-center justify-between gap-2 border-t pt-4 text-xs" style="border-color: var(--sg-border); color: var(--sg-subtle-fg);">
+        <div>Powered by Komari Monitor.</div>
+      </div>
+    </footer>
+
+    <!-- Native Top-Layer Right-Side Drawer for Theme Settings -->
+    <dialog id="managed-drawer" data-open="false" aria-labelledby="drawer-title" class="sg-native-dialog">
+      <aside id="managed-drawer-panel" data-slot="drawer-content" class="sg-popover flex w-full max-w-sm flex-col overflow-hidden">
+        <!-- Drawer Header -->
+        <div class="flex items-center justify-between gap-3 border-b px-5 py-4" style="border-color: var(--sg-border);">
+          <h1 id="drawer-title" class="text-sm font-semibold tracking-tight" data-i18n="managedTitle">主题配置</h1>
+          <button id="btn-drawer-close" type="button" data-slot="button" data-variant="ghost" class="inline-flex h-7 w-7 items-center justify-center" aria-label="关闭" autofocus>
+            <svg class="h-4 w-4" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8"><path d="M18 6 6 18M6 6l12 12"/></svg>
+          </button>
+        </div>
+
+        <!-- Drawer Scrollable Body (grouped cleanly by panel cards) -->
+        <div class="sg-scroll-thin flex-1 space-y-3 overflow-y-auto px-4 py-4 text-xs">
+          <p id="settings-error" class="hidden px-1" role="alert" style="color: var(--sg-danger);"></p>
+          <!-- Group 1: Hero Wordmark (only visible when logged in) -->
+          <div id="hero-title-field" class="sg-inset-pane hidden space-y-2.5 rounded-xl p-3.5">
+            <div class="flex items-center gap-1.5 text-xs font-semibold tracking-tight" style="color: var(--sg-fg);">
+              <svg class="h-3.5 w-3.5 shrink-0" style="color: var(--sg-muted-fg);" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><polyline points="4 7 4 4 20 4 20 7"/><line x1="9" x2="15" y1="20" y2="20"/><line x1="12" x2="12" y1="4" y2="20"/></svg>
+              <span id="drawer-hero-label">顶部自定义标语</span>
+            </div>
+            <div class="flex items-center gap-2">
+              <div id="hero-title-input-wrap" data-slot="input-group" class="flex h-8 flex-1 items-center px-2.5">
+                <input id="input-hero-title" aria-labelledby="drawer-hero-label" type="text" maxlength="32" placeholder="Komari Pane" class="w-full bg-transparent text-xs outline-none placeholder:opacity-50" />
+              </div>
+              <button id="btn-replay-hero" type="button" data-slot="button" data-variant="outline" class="inline-flex h-8 shrink-0 items-center whitespace-nowrap px-2.5 text-[11px] font-medium" title="重播顶部标语动画">重播入场</button>
+            </div>
+          </div>
+
+          <!-- Group 2: Pinned Servers (only visible when logged in, mirrors komari-theme.json featured_nodes) -->
+          <div id="pinned-nodes-field" class="sg-inset-pane hidden space-y-2.5 rounded-xl p-3.5">
+            <div class="flex items-center justify-between gap-2">
+              <div class="flex min-w-0 items-center gap-1.5 text-xs font-semibold tracking-tight" style="color: var(--sg-fg);">
+                <svg class="h-3.5 w-3.5 shrink-0" style="color: var(--sg-muted-fg);" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><path d="M12 17v5"/><path d="M9 10.76a2 2 0 0 1-1.11 1.79l-1.78.9A2 2 0 0 0 5 15.24V16a1 1 0 0 0 1 1h12a1 1 0 0 0 1-1v-.76a2 2 0 0 0-1.11-1.79l-1.78-.9A2 2 0 0 1 15 10.76V7a1 1 0 0 1 1-1 2 2 0 0 0 0-4H8a2 2 0 0 0 0 4 1 1 0 0 1 1 1z"/></svg>
+                <span id="drawer-pinned-label" class="truncate">置顶服务器</span>
+                <span id="drawer-pinned-count" class="mono-num shrink-0 text-[10.5px] font-normal" style="color: var(--sg-subtle-fg);"></span>
+              </div>
+              <button id="btn-clear-pinned" type="button" data-slot="button" data-variant="ghost" class="inline-flex h-6 shrink-0 items-center px-1.5 text-[11px]">清空</button>
+            </div>
+            <div data-slot="input-group" class="flex h-8 items-center gap-2 px-2.5">
+              <svg class="h-3.5 w-3.5 shrink-0" style="color: var(--sg-subtle-fg);" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8"><circle cx="11" cy="11" r="7"/><path d="m20 20-3.5-3.5"/></svg>
+              <input id="input-pinned-search" aria-labelledby="drawer-pinned-label" type="search" placeholder="筛选服务器..." class="w-full bg-transparent text-xs outline-none placeholder:opacity-50" />
+            </div>
+            <div id="pinned-nodes-list" class="sg-scroll-thin max-h-44 space-y-1 overflow-y-auto pr-0.5"></div>
+            <div id="pinned-nodes-empty" class="hidden py-3 text-center text-[11px]" style="color: var(--sg-subtle-fg);">无匹配服务器</div>
+          </div>
+
+          <!-- Panel-grouped Settings Cards (rendered dynamically by JS) -->
+          <div id="managed-switches" class="space-y-3"></div>
+        </div>
+      </aside>
+    </dialog>
+
+    <!-- Native Top-Layer Node Detail Modal (Solid Glass Dialog: bg-popover thickest floating glass) -->
+    <dialog id="detail-modal" closedby="any" aria-labelledby="detail-title" class="sg-native-dialog">
+      <div id="detail-dialog" data-slot="dialog-content" class="sg-popover sg-scroll-thin max-h-[88vh] w-full max-w-3xl overflow-y-auto rounded-xl p-5"></div>
+    </dialog>
+
+    <!-- Native Top-Layer Login Alert Dialog -->
+    <dialog id="auth-modal" data-open="false" closedby="any" aria-labelledby="auth-title" class="sg-native-dialog">
+      <form id="auth-dialog" data-slot="dialog-content" class="sg-popover w-full max-w-sm rounded-xl p-5">
+        <div class="flex items-start justify-between gap-3">
+          <div>
+            <h2 id="auth-title" class="text-sm font-semibold tracking-tight">登录 Komari</h2>
+            <p id="auth-desc" class="mt-1 text-xs leading-relaxed" style="color: var(--sg-muted-fg);">登录后可进入 Komari 后台管理，并查看节点费用与续费信息。</p>
+          </div>
+          <button id="btn-auth-close" type="button" data-slot="button" data-variant="ghost" aria-label="关闭" class="inline-flex h-7 w-7 shrink-0 items-center justify-center">
+            <svg class="h-4 w-4" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8"><path d="M18 6 6 18M6 6l12 12"/></svg>
+          </button>
+        </div>
+
+        <div class="mt-4 space-y-3">
+          <div class="space-y-1.5">
+            <label for="auth-user" id="auth-user-label" class="block text-[11px] font-medium" style="color: var(--sg-muted-fg);">用户名</label>
+            <input id="auth-user" type="text" required data-slot="input" placeholder="admin" autocomplete="username" class="h-9 w-full px-3 text-xs outline-none placeholder:opacity-50" />
+          </div>
+          <div class="space-y-1.5">
+            <label for="auth-pass" id="auth-pass-label" class="block text-[11px] font-medium" style="color: var(--sg-muted-fg);">密码</label>
+            <input id="auth-pass" type="password" required data-slot="input" placeholder="••••••••" autocomplete="current-password" class="h-9 w-full px-3 text-xs outline-none placeholder:opacity-50" />
+          </div>
+        </div>
+
+        <div id="auth-otp-field" class="mt-3 hidden space-y-1.5">
+          <label for="auth-otp" id="auth-otp-label" class="block text-[11px] font-medium" style="color: var(--sg-muted-fg);">两步验证码</label>
+          <input id="auth-otp" type="text" inputmode="numeric" autocomplete="one-time-code" data-slot="input" class="h-9 w-full px-3 text-xs" />
+        </div>
+        <p id="auth-error" role="alert" class="mt-3 hidden text-xs" style="color: var(--sg-danger);"></p>
+        <div class="mt-5 flex flex-wrap items-center justify-end gap-2">
+          <a id="auth-sso" href="/api/oauth" data-slot="button" data-variant="outline" class="hidden h-8 items-center px-3 text-xs font-medium">单点登录</a>
+          <button id="btn-auth-cancel" type="button" data-slot="button" data-variant="outline" class="inline-flex h-8 items-center justify-center px-3 text-xs font-medium">取消</button>
+          <button id="btn-auth-submit" type="submit" data-slot="button" data-variant="default" class="inline-flex h-8 items-center justify-center gap-1.5 px-3.5 text-xs font-medium">
+            <svg class="h-3.5 w-3.5" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><path d="M15 3h4a2 2 0 0 1 2 2v14a2 2 0 0 1-2 2h-4"/><polyline points="10 17 15 12 10 7"/><line x1="15" x2="3" y1="12" y2="12"/></svg>
+            <span id="auth-submit-label">登录</span>
+          </button>
+        </div>
+      </form>
+    </dialog>
+
+    <!-- Global Top-Layer Solid Glass Tooltip (replaces native browser title tooltips everywhere including inside dialogs) -->
+    <div id="sg-tooltip" popover="manual" role="tooltip" data-slot="tooltip-content" data-side="top" data-open="false" class="pointer-events-none fixed m-0 max-w-xs border-0 px-2.5 py-1.5 text-[11px] font-medium leading-snug"></div>
+  </div>
+  <script type="module" src="/src/main.js"></script>
   </body>
 </html>

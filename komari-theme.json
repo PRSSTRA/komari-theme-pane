@@ -2,5 +2,15 @@
   "name": { "zh-CN": "Komari Pane 主题", "en": "Komari Pane" },
   "short": "Pane",
   "description": { "zh-CN": "Komari 监控面板主题", "en": "A dashboard theme for Komari Monitor" },
-  "version": "0.1.0"
+  "version": "0.1.0",
+  "author": "PRSSTRA",
+  "url": "https://github.com/PRSSTRA/komari-theme-pane",
+  "configuration": {
+    "type": "managed",
+    "data": [
+      { "key": "hero_title", "name": { "zh-CN": "顶部自定义标语", "en": "Hero Wordmark" }, "type": "string", "default": "Komari Pane" },
+      { "key": "featured_nodes", "name": { "zh-CN": "置顶服务器", "en": "Pinned Servers" }, "type": "nodes", "default": "[]" },
+      { "key": "site_notice", "name": { "zh-CN": "站点公告", "en": "Site Notice" }, "type": "string", "default": "" }
+    ]
+  }
 }
