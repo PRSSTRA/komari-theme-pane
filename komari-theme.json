@@ -1,0 +1,6 @@
+{
+  "name": { "zh-CN": "Komari Pane 主题", "en": "Komari Pane" },
+  "short": "Pane",
+  "description": { "zh-CN": "Komari 监控面板主题", "en": "A dashboard theme for Komari Monitor" },
+  "version": "0.1.0"
+}
