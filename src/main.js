@@ -396,7 +396,7 @@ function renderHeader() {
   state.theme = resolveAppearance(state.appearance);
   document.documentElement.lang = state.lang;
   const stage = document.getElementById("sg-stage");
-  stage.setAttribute("data-theme", state.theme);
+  document.documentElement.classList.toggle('dark', state.theme === 'dark');
   stage.setAttribute("data-glass", state.settings.reduce_transparency ? "opaque" : "translucent");
 
   document.querySelectorAll("[data-i18n]").forEach((el) => {

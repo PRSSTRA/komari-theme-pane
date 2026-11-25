@@ -5,7 +5,7 @@
 ## 安装
 
 1. 使用 Node.js 22.13+、pnpm 11 和 `zip`，运行 `pnpm install --frozen-lockfile`、`pnpm package`。
-2. 在 Komari 管理后台的主题管理上传 `temp/komari-theme-pane.zip`，然后启用 **Komari Pane**。不要上传源码压缩包。
+2. 在 Komari 管理后台的主题管理上传 `release/komari-theme-pane-<version>.zip`，然后启用 **Komari Pane**。不要上传源码压缩包。
 3. 访问站点首页。管理员可通过主题配置抽屉设置顶部标语和置顶服务器，通过后台主题配置管理站点公告。外观、语言和显示项保存在当前浏览器。
 
 ## 本地开发
