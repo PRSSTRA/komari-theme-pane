@@ -5,8 +5,10 @@
   "type": "module",
   "scripts": {
     "dev": "vite",
+    "check": "node scripts/check-design.mjs",
     "build": "vite build",
-    "package": "npm run build && mkdir -p temp && zip -q -r -FS \"temp/komari-theme-pane-${npm_package_version}.zip\" komari-theme.json preview.png LICENSE dist"
+    "verify": "npm run check && npm run build && node scripts/check-design.mjs --dist",
+    "package": "npm run verify && mkdir -p temp && zip -q -r -FS \"temp/komari-theme-pane-${npm_package_version}.zip\" komari-theme.json preview.png LICENSE dist"
   },
   "devDependencies": {
     "@tailwindcss/vite": "^4.3.5",

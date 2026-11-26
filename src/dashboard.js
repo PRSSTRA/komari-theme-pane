@@ -399,13 +399,69 @@ function isNodeFeatured(node) {
   return Array.isArray(state.settings.featured_nodes) && state.settings.featured_nodes.includes(node.uuid);
 }
 
-const NODE_BADGE_CLASS = "km-node-badge glass-chosen inline-flex h-[22px] shrink-0 items-center gap-1 rounded-sm [--radius:var(--radius-control)] px-1.5 text-[10.5px] whitespace-nowrap";
+const NODE_TAG_BASE_CLASS = "glass-chosen inline-flex h-[22px] items-center rounded-sm [--radius:var(--radius-control)] px-1.5 text-[10.5px] whitespace-nowrap";
+const NODE_BADGE_CLASS = `km-node-badge ${NODE_TAG_BASE_CLASS} shrink-0 gap-1`;
+const TABS_TRIGGER_BASE_CLASS = "inline-flex h-full cursor-pointer items-center justify-center gap-1.5 rounded-sm border border-transparent whitespace-nowrap text-muted-foreground transition-colors hover:text-foreground data-[active=true]:text-foreground focus-visible:z-10 focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-(--focus-line)";
+
+function renderTag(text) {
+  return `<span data-slot="tag" class="${NODE_TAG_BASE_CLASS} text-muted-foreground">${escapeHtml(text)}</span>`;
+}
 
 function renderNodeBadge(content, { classes = "", tone = "text-muted-foreground", buttonAttrs } = {}) {
   const attrs = `data-slot="tag" class="${NODE_BADGE_CLASS}${tone ? ` ${tone}` : ""}${classes ? ` ${classes}` : ""}"`;
   return buttonAttrs
     ? `<button type="button" ${attrs} ${buttonAttrs}>${content}</button>`
     : `<span ${attrs}>${content}</span>`;
+}
+
+function renderSegmentedTabs({
+  id = "",
+  role = "group",
+  ariaLabel = "",
+  ariaLabelledBy = "",
+  listClass = "inline-flex h-8",
+  attr,
+  options,
+  selected,
+  titleTabs = false,
+  fullWidth = false,
+  triggerClass = "",
+} = {}) {
+  const textClass = titleTabs ? "text-[13px] font-semibold tracking-[-0.01em]" : "text-xs font-medium";
+  const itemClass = `${TABS_TRIGGER_BASE_CLASS} ${textClass}${fullWidth ? " flex-1 px-2" : " px-2.5"}${triggerClass ? ` ${triggerClass}` : ""}`;
+  const listAttrs = [
+    id ? `id="${id}"` : "",
+    `data-slot="tabs-list"`,
+    `data-variant="default"`,
+    role ? `role="${role}"` : "",
+    ariaLabel ? `aria-label="${ariaLabel}"` : "",
+    ariaLabelledBy ? `aria-labelledby="${ariaLabelledBy}"` : "",
+    `class="${listClass} items-center gap-0.5 rounded-lg bg-muted p-[3px]"`,
+  ].filter(Boolean).join(" ");
+
+  return `
+    <div ${listAttrs}>
+      ${options.map(([value, text, iconSvg = ""]) => {
+        const hasSelected = selected !== undefined;
+        const active = hasSelected && value === selected;
+        const stateAttrs = hasSelected ? ` data-active="${active}" aria-pressed="${active}"` : "";
+        return `<button type="button" data-slot="tabs-trigger" ${attr}="${value}"${stateAttrs} class="${itemClass}">${iconSvg}<span>${text}</span></button>`;
+      }).join("")}
+    </div>`;
+}
+
+function renderDetailWellCard({ title, iconSvg, metaHtml = "", shellClass = "", bodyClass = "", bodyHtml }) {
+  return `
+      <div class="sg-spec-shell bg-card flex flex-col overflow-hidden rounded-lg${shellClass ? ` ${shellClass}` : ""}">
+        <div class="sg-detail-header px-3.5 py-3">
+          <h2 class="sg-detail-title">${iconSvg}<span>${title}</span></h2>
+          ${metaHtml}
+        </div>
+        <div class="flex flex-1 flex-col px-1.5 pb-1.5">
+          <div class="sg-spec-body ${bodyClass}">${bodyHtml}</div>
+        </div>
+      </div>
+    `;
 }
 
 function renderPinnedBadge(nodeUuid, interactive = false) {
@@ -1492,16 +1548,16 @@ function renderEventFeed() {
           </h2>
           <span id="event-feed-alert-badge" class="mono-num hidden shrink-0 items-center gap-1 text-[11px]" style="color: var(--muted-foreground);"><span class="h-[6px] w-[6px] rounded-[1.5px]" style="background: var(--sg-danger);"></span><span id="event-feed-alert-num"></span></span>
         </div>
-        <div id="event-filters" data-slot="tabs-list" data-variant="default" role="group" aria-labelledby="event-feed-title" class="inline-flex h-8 shrink-0 items-center gap-0.5 rounded-lg bg-muted">
-          <button type="button" data-slot="tabs-trigger" data-evfilter="all" class="inline-flex h-full cursor-pointer items-center justify-center gap-1.5 rounded-sm border border-transparent px-2.5 text-xs font-medium whitespace-nowrap text-muted-foreground transition-colors hover:text-foreground data-[active=true]:text-foreground focus-visible:z-10 focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-(--focus-line)">
-            <svg aria-hidden="true" class="h-3.5 w-3.5 shrink-0" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round"><path d="M4 6h16M4 12h16M4 18h16"/></svg>
-            <span></span>
-          </button>
-          <button type="button" data-slot="tabs-trigger" data-evfilter="alert" class="inline-flex h-full cursor-pointer items-center justify-center gap-1.5 rounded-sm border border-transparent px-2.5 text-xs font-medium whitespace-nowrap text-muted-foreground transition-colors hover:text-foreground data-[active=true]:text-foreground focus-visible:z-10 focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-(--focus-line)">
-            <svg aria-hidden="true" class="h-3.5 w-3.5 shrink-0" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><path d="M10.27 4.99 2.84 18a2 2 0 0 0 1.74 3h14.84a2 2 0 0 0 1.74-3L13.73 4.99a2 2 0 0 0-3.46 0ZM12 9v4m0 4h.01"/></svg>
-            <span></span>
-          </button>
-        </div>
+        ${renderSegmentedTabs({
+          id: "event-filters",
+          ariaLabelledBy: "event-feed-title",
+          listClass: "inline-flex h-8 shrink-0",
+          attr: "data-evfilter",
+          options: [
+            ["all", "", `<svg aria-hidden="true" class="h-3.5 w-3.5 shrink-0" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round"><path d="M4 6h16M4 12h16M4 18h16"/></svg>`],
+            ["alert", "", `<svg aria-hidden="true" class="h-3.5 w-3.5 shrink-0" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><path d="M10.27 4.99 2.84 18a2 2 0 0 0 1.74 3h14.84a2 2 0 0 0 1.74-3L13.73 4.99a2 2 0 0 0-3.46 0ZM12 9v4m0 4h.01"/></svg>`],
+          ],
+        })}
       </div>
       <p id="event-connection-status" role="status" class="empty:hidden px-4 pb-2 text-[11px]" style="color: var(--sg-warn);"></p>
       <div id="event-feed-list" class="sg-scroll-thin min-h-0 flex-1 overflow-y-auto px-2 pb-2.5"></div>
@@ -2211,10 +2267,16 @@ function renderViewOptionsMenu() {
       ? `
         <div class="mb-3 space-y-1.5">
           <div class="text-[11px] font-medium" style="color: var(--muted-foreground);">${en ? "Card Density" : "卡片密度"}</div>
-          <div data-slot="tabs-list" data-variant="default" class="items-center gap-0.5 rounded-lg bg-muted p-[3px] flex h-8 w-full">
-            <button type="button" data-slot="tabs-trigger" data-vo-density="comfortable" class="inline-flex h-full cursor-pointer items-center justify-center gap-1.5 rounded-sm border border-transparent font-medium whitespace-nowrap text-muted-foreground transition-colors hover:text-foreground data-[active=true]:text-foreground focus-visible:z-10 focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-(--focus-line) flex-1 px-2 text-xs">${en ? "Standard" : "标准"}</button>
-            <button type="button" data-slot="tabs-trigger" data-vo-density="compact" class="inline-flex h-full cursor-pointer items-center justify-center gap-1.5 rounded-sm border border-transparent font-medium whitespace-nowrap text-muted-foreground transition-colors hover:text-foreground data-[active=true]:text-foreground focus-visible:z-10 focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-(--focus-line) flex-1 px-2 text-xs">${en ? "Compact" : "紧凑"}</button>
-          </div>
+          ${renderSegmentedTabs({
+            role: "",
+            listClass: "flex h-8 w-full",
+            attr: "data-vo-density",
+            fullWidth: true,
+            options: [
+              ["comfortable", en ? "Standard" : "标准"],
+              ["compact", en ? "Compact" : "紧凑"],
+            ],
+          })}
         </div>
       `
       : "";
@@ -2530,10 +2592,16 @@ function renderHeader() {
         <div id="drawer-map-subopts" class="mt-3 space-y-2.5 transition-opacity duration-200">
           <div class="space-y-1.5">
             <div id="drawer-map-overlap-label" class="text-[11px]" style="color: var(--muted-foreground);">${isZh ? "同区策略" : "Overlap Strategy"}</div>
-            <div data-slot="tabs-list" data-variant="default" role="group" aria-labelledby="drawer-map-overlap-label" class="flex h-8 w-full items-center gap-0.5 rounded-lg bg-muted">
-              <button type="button" data-slot="tabs-trigger" data-overlap="cluster" class="inline-flex h-full flex-1 cursor-pointer items-center justify-center gap-1.5 border border-transparent font-medium whitespace-nowrap text-muted-foreground transition-colors hover:text-foreground data-[active=true]:text-foreground focus-visible:z-10 focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-(--focus-line) px-2 text-xs">${isZh ? "聚合" : "Cluster"}</button>
-              <button type="button" data-slot="tabs-trigger" data-overlap="spread" class="inline-flex h-full flex-1 cursor-pointer items-center justify-center gap-1.5 border border-transparent font-medium whitespace-nowrap text-muted-foreground transition-colors hover:text-foreground data-[active=true]:text-foreground focus-visible:z-10 focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-(--focus-line) px-2 text-xs">${isZh ? "微散开" : "Spread"}</button>
-            </div>
+            ${renderSegmentedTabs({
+              ariaLabelledBy: "drawer-map-overlap-label",
+              listClass: "flex h-8 w-full",
+              attr: "data-overlap",
+              fullWidth: true,
+              options: [
+                ["cluster", isZh ? "聚合" : "Cluster"],
+                ["spread", isZh ? "微散开" : "Spread"],
+              ],
+            })}
           </div>
 
           <div class="flex items-center justify-between gap-3 pt-0.5">
@@ -2666,7 +2734,7 @@ function renderGroups() {
       const label = formatGroupLabel(g);
       const spanAll = idx === 0 && groups.length % 2 === 1;
       return `
-        <button type="button" role="tab" data-slot="tabs-trigger" data-group="${escapeHtml(g)}" data-span-all="${spanAll}" class="inline-flex h-full cursor-pointer items-center justify-center gap-1.5 rounded-sm border border-transparent font-medium whitespace-nowrap text-muted-foreground transition-colors hover:text-foreground data-[active=true]:text-foreground focus-visible:z-10 focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-(--focus-line) shrink-0 whitespace-nowrap px-2.5 text-xs">
+        <button type="button" role="tab" data-slot="tabs-trigger" data-group="${escapeHtml(g)}" data-span-all="${spanAll}" class="${TABS_TRIGGER_BASE_CLASS} shrink-0 px-2.5 text-xs font-medium">
           <span>${escapeHtml(label)}</span>
           <span class="mono-num text-[11px] opacity-65">${counts[g]}</span>
         </button>
@@ -2765,7 +2833,7 @@ function renderCardGrid(list) {
             ${(state.settings.show_tags || state.settings.show_load_temp || (state.loggedIn && state.settings.show_pricing)) ? `
               <div class="mt-auto flex min-h-[24px] flex-wrap items-center justify-between gap-2 pt-0.5 text-[11px]" style="color: var(--sg-subtle-fg);">
                 <div class="flex flex-wrap items-center gap-1.5">
-                  ${state.settings.show_tags ? n.tags.slice(0, compact ? 2 : 3).map((tag) => `<span data-slot="tag" class="glass-chosen inline-flex h-[22px] items-center rounded-sm [--radius:var(--radius-control)] px-1.5 text-[10.5px] text-muted-foreground">${escapeHtml(tag)}</span>`).join("") : ""}
+                  ${state.settings.show_tags ? n.tags.slice(0, compact ? 2 : 3).map(renderTag).join("") : ""}
                 </div>
                 <div class="flex items-center gap-2 mono-num">
                   ${state.settings.show_load_temp && n.online ? `<span data-m-load>L ${n.load.toFixed(2)}</span>${n.temp > 0 ? `<span>${n.temp.toFixed(0)}°C</span>` : ""}` : ""}
@@ -3761,14 +3829,13 @@ function drawDetailNetSlatsCanvas() {
 }
 
 function renderDetailSegments(attribute, options, selected, label, { titleTabs = false } = {}) {
-  const triggerTextClass = titleTabs ? "text-[13px] font-semibold tracking-[-0.01em]" : "text-xs font-medium";
-  return `
-    <div data-slot="tabs-list" data-variant="default" role="group" aria-label="${label}" class="inline-flex h-8 items-center gap-0.5 rounded-lg bg-muted p-[3px]">
-      ${options.map(([value, text, iconSvg = ""]) => {
-        const active = value === selected;
-        return `<button type="button" data-slot="tabs-trigger" ${attribute}="${value}" data-active="${active}" aria-pressed="${active}" class="inline-flex h-full cursor-pointer items-center justify-center gap-1.5 rounded-sm border border-transparent px-2.5 ${triggerTextClass} whitespace-nowrap text-muted-foreground transition-colors hover:text-foreground data-[active=true]:text-foreground focus-visible:z-10 focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-(--focus-line)">${iconSvg}<span>${text}</span></button>`;
-      }).join("")}
-    </div>`;
+  return renderSegmentedTabs({
+    ariaLabel: label,
+    attr: attribute,
+    options,
+    selected,
+    titleTabs,
+  });
 }
 
 function renderDetailModal() {
@@ -3908,7 +3975,7 @@ function renderDetailModal() {
   }
   sysRows.push([
     node.tags.length > 0 ? (isZh ? "分组 / 标签" : "Group / Tags") : (isZh ? "分组" : "Group"),
-    `<span class="inline-flex flex-wrap items-center justify-end gap-1"><span style="color: var(--foreground);">${escapeHtml(formatGroupLabel(normalizeGroupName(node.group)))}</span>${node.tags.map((tg) => `<span data-slot="tag" class="glass-chosen inline-flex h-[22px] items-center rounded-sm [--radius:var(--radius-control)] px-1.5 text-[10.5px] text-muted-foreground">${escapeHtml(tg)}</span>`).join("")}</span>`,
+    `<span class="inline-flex flex-wrap items-center justify-end gap-1"><span style="color: var(--foreground);">${escapeHtml(formatGroupLabel(normalizeGroupName(node.group)))}</span>${node.tags.map(renderTag).join("")}</span>`,
   ]);
 
   const DETAIL_LOAD_ICON_SVG = `<svg aria-hidden="true" class="h-3.5 w-3.5 shrink-0" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.85" stroke-linecap="round" stroke-linejoin="round"><path d="M3 3v16a2 2 0 0 0 2 2h16"/><path d="M18 17V9"/><path d="M13 17V5"/><path d="M8 17v-3"/></svg>`;
@@ -3918,14 +3985,13 @@ function renderDetailModal() {
 
   // Full-width 4-column Billing & Renewal card (ONLY rendered when logged in AND node has billing data; matches System Info shell + recessed well)
   const billingCardHtml = state.loggedIn && hasBilling
-    ? `
-      <div class="sg-spec-shell bg-card mt-3.5 flex flex-col overflow-hidden rounded-lg">
-        <div class="sg-detail-header px-3.5 py-3">
-          <h2 class="sg-detail-title">${DETAIL_BILLING_ICON_SVG}<span>${isZh ? "续费信息" : "Billing & Renewal"}</span></h2>
-          ${node.region ? `<span class="mono-num text-[10px]" style="color: var(--sg-subtle-fg);">${escapeHtml(node.region)}</span>` : ""}
-        </div>
-        <div class="px-1.5 pb-1.5">
-          <div class="sg-spec-body grid grid-cols-2 gap-x-4 gap-y-3 px-3 py-2.5 sm:grid-cols-4">
+    ? renderDetailWellCard({
+        title: isZh ? "续费信息" : "Billing & Renewal",
+        iconSvg: DETAIL_BILLING_ICON_SVG,
+        metaHtml: node.region ? `<span class="mono-num text-[10px]" style="color: var(--sg-subtle-fg);">${escapeHtml(node.region)}</span>` : "",
+        shellClass: "mt-3.5",
+        bodyClass: "grid grid-cols-2 gap-x-4 gap-y-3 px-3 py-2.5 sm:grid-cols-4",
+        bodyHtml: `
             <div class="min-w-0">
               <div class="text-[11px]" style="color: var(--muted-foreground);">${isZh ? "续费周期" : "Cycle"}</div>
               <div class="mt-1 text-xs font-medium mono-num" style="color: var(--foreground);">${cycleLabel}</div>
@@ -3948,10 +4014,8 @@ function renderDetailModal() {
                 <span>${node.autoRenewal ? (isZh ? "已标记" : "Enabled") : (isZh ? "未标记" : "Manual")}</span>
               </div>
             </div>
-          </div>
-        </div>
-      </div>
-    `
+          `,
+      })
     : "";
 
   const isPinned = isNodeFeatured(node);
@@ -4078,26 +4142,22 @@ function renderDetailModal() {
         <div id="dnet-tip" class="bg-popover pointer-events-none absolute z-20 hidden rounded-sm px-1.5 py-0.5 mono-num text-[9.5px] whitespace-nowrap"></div>
       </div>
 
-      <div class="sg-spec-shell bg-card flex flex-col overflow-hidden rounded-lg">
-        <div class="sg-detail-header px-3.5 py-3">
-          <h2 class="sg-detail-title">${DETAIL_CPU_ICON_SVG}<span>${isZh ? "系统信息" : "System Info"}</span></h2>
-          ${node.arch ? `<span class="mono-num text-[10px]" style="color: var(--sg-subtle-fg);">${escapeHtml(node.arch)}</span>` : ""}
-        </div>
-        <div class="flex flex-1 flex-col px-1.5 pb-1.5">
-          <div class="sg-spec-body flex-1 space-y-0.5 p-1.5">
-            ${sysRows
-              .map(
-                ([k, v]) => `
+      ${renderDetailWellCard({
+        title: isZh ? "系统信息" : "System Info",
+        iconSvg: DETAIL_CPU_ICON_SVG,
+        metaHtml: node.arch ? `<span class="mono-num text-[10px]" style="color: var(--sg-subtle-fg);">${escapeHtml(node.arch)}</span>` : "",
+        bodyClass: "flex-1 space-y-0.5 p-1.5",
+        bodyHtml: sysRows
+          .map(
+            ([k, v]) => `
                   <div class="sg-spec-row flex items-center justify-between gap-3 px-2 py-1.5 text-xs">
                     <span class="shrink-0" style="color: var(--muted-foreground);">${k}</span>
                     <span class="min-w-0 text-right font-medium" style="color: var(--foreground);">${v}</span>
                   </div>
                 `
-              )
-              .join("")}
-          </div>
-        </div>
-      </div>
+          )
+          .join(""),
+      })}
     </div>
 
     ${billingCardHtml}
