@@ -77,14 +77,6 @@ export async function login({ username, password, twoFactorCode }) {
   throw responseError(response, path, body);
 }
 
-export async function logout() {
-  const response = await fetchKomari('/api/logout', { redirect: 'manual' });
-  // The session cookie is cleared by Komari's redirect; don't fetch the dashboard document.
-  if (response.type !== 'opaqueredirect' && response.status !== 302 && !response.ok) {
-    throw responseError(response, '/api/logout', await readJson(response, '/api/logout'));
-  }
-}
-
 export async function saveThemeSettings(settings) {
   const query = new URLSearchParams({ theme: manifest.short });
   await requestData(`/api/admin/theme/settings?${query}`, postJson({

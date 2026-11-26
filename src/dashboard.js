@@ -1,7 +1,7 @@
 import escapeHtml from 'escape-html';
 import morphdom from 'morphdom';
 import { bindTooltips, positionMenu } from './floating.js';
-import { loadDashboard, normalizeNodes, watchTelemetry, login, logout, saveThemeSettings } from './komari.js';
+import { loadDashboard, normalizeNodes, watchTelemetry, login, saveThemeSettings } from './komari.js';
 import { loadNodeHistory } from './history.js';
 
 const preferencesKey = 'komari-pane-preferences';
@@ -112,7 +112,6 @@ const state = {
   detailHours: 6,
   detailPingFocus: -1,
   loggedIn: false,
-  adminMenuOpen: false,
   pinnedSearch: "",
   settings: { ...defaultSettings, ...preferences.settings },
   nodes: [],
@@ -396,12 +395,25 @@ function isNodeFeatured(node) {
   return Array.isArray(state.settings.featured_nodes) && state.settings.featured_nodes.includes(node.uuid);
 }
 
+const NODE_BADGE_CLASS = "km-node-badge inline-flex shrink-0 items-center gap-1 rounded-sm [--radius:var(--radius-control)] bg-secondary px-2 py-0.5 text-[11px] font-medium whitespace-nowrap";
+
+function renderNodeBadge(content, { classes = "", buttonAttrs } = {}) {
+  const attrs = `data-slot="badge" data-variant="secondary" class="${NODE_BADGE_CLASS}${classes ? ` ${classes}` : ""}"`;
+  return buttonAttrs
+    ? `<button type="button" ${attrs} ${buttonAttrs}>${content}</button>`
+    : `<span ${attrs}>${content}</span>`;
+}
+
 function renderPinnedBadge(nodeUuid, interactive = false) {
+  const content = `${PIN_BADGE_ICON_SVG}<span>${t("pinned")}</span>`;
   if (interactive && state.loggedIn && nodeUuid) {
     const tip = state.lang === "zh-CN" ? "点击取消置顶" : "Click to unpin";
-    return `<button type="button" data-slot="badge" data-variant="outline" data-unpin-node="${nodeUuid}" title="${tip}" aria-label="${tip}" class="inline-flex items-center rounded-sm whitespace-nowrap font-medium text-foreground sg-pin-badge-btn gap-1 px-1.5 py-0.5 text-[10px]">${PIN_BADGE_ICON_SVG}<span>${t("pinned")}</span></button>`;
+    return renderNodeBadge(content, {
+      classes: "sg-pin-badge-btn",
+      buttonAttrs: `data-unpin-node="${escapeHtml(nodeUuid)}" title="${tip}" aria-label="${tip}"`,
+    });
   }
-  return `<span data-slot="badge" data-variant="outline" class="inline-flex items-center rounded-sm whitespace-nowrap font-medium text-foreground gap-1 px-1.5 py-0.5 text-[10px]">${PIN_BADGE_ICON_SVG}<span>${t("pinned")}</span></span>`;
+  return renderNodeBadge(content);
 }
 
 function getFilteredNodes() {
@@ -1655,6 +1667,11 @@ function computeSlatWave(cx, cy, rectW, rectH) {
   return { light, tint };
 }
 
+const SLAT_BACKGROUND = {
+  dark: { rgb: [132, 134, 138], alpha: 0.068, vignette: "24, 24, 24" },
+  light: { rgb: [98, 104, 114], alpha: 0.058, vignette: "239, 239, 239" },
+};
+
 function drawNetSlatsChartCanvas() {
   const canvas = document.getElementById("net-slats-canvas");
   const cell = document.getElementById("network-traffic-cell");
@@ -1757,11 +1774,10 @@ function drawNetSlatsChartCanvas() {
   };
 
   const isDark = state.theme === "dark";
-  const baseRgb = isDark ? [132, 134, 138] : [98, 104, 114];
+  const { rgb: baseRgb, alpha: dormantAlpha, vignette: vigRgb } = SLAT_BACKGROUND[state.theme];
   const glintRgb = isDark ? [164, 166, 172] : [68, 74, 84];
   const guideColor = isDark ? "rgba(255, 255, 255, 0.085)" : "rgba(30, 36, 48, 0.105)";
   const rimColor = isDark ? "rgba(255, 255, 255, 0.22)" : "rgba(255, 255, 255, 0.44)";
-  const vigRgb = isDark ? "24, 23, 29" : "236, 239, 245";
 
   for (let c = 0; c < cols; c++) {
     const upVal = upSamples[c];
@@ -1828,7 +1844,7 @@ function drawNetSlatsChartCanvas() {
           textDim = (0.28 + 0.72 * downFade) * rightTickFade * leftEdgeFade * xBottomFade;
         }
         const hoverBoost = ((isUpHalf && r <= upBaseRow) || (!isUpHalf && r > splitRow && r <= downBaseRow)) && isHovered ? 1.8 : 1;
-        const alpha = ((isDark ? 0.068 : 0.058) * textDim * hoverBoost).toFixed(4);
+        const alpha = (dormantAlpha * textDim * hoverBoost).toFixed(4);
         ctx.fillStyle = `rgba(${baseRgb[0]}, ${baseRgb[1]}, ${baseRgb[2]}, ${alpha})`;
         ctx.fill();
       }
@@ -2227,24 +2243,25 @@ function renderViewOptionsMenu() {
   }
 }
 
-function setDrawerOpen(open) {
+async function setDrawerOpen(open) {
+  if (state.drawerOpen === open) return;
   state.drawerOpen = open;
-  const drawer = document.getElementById("managed-drawer");
-  const btn = document.getElementById("btn-managed");
-  btn.setAttribute("aria-expanded", String(open));
+  const drawer = managedDrawerEl;
+  document.getElementById("btn-managed").setAttribute("aria-expanded", String(open));
 
-  if (open) {
-    if (!drawer.open) drawer.showModal();
-    requestAnimationFrame(() => {
-      drawer.setAttribute("data-open", "true");
-    });
-  } else {
-    drawer.setAttribute("data-open", "false");
-    setTimeout(() => {
-      if (!state.drawerOpen && drawer.open) {
-        drawer.close();
-      }
-    }, 230);
+  if (open && !drawer.open) {
+    drawer.showModal();
+    // Resolve the starting styles before changing state so the first frame can animate.
+    drawer.getAnimations({ subtree: true });
+  }
+  drawer.setAttribute("data-open", String(open));
+  if (!open) {
+    // Keep the dialog modal until its panel and backdrop have finished leaving.
+    const transitions = drawer.getAnimations({ subtree: true }).filter(({ effect }) =>
+      effect.target === managedDrawerPanelEl || effect.target === drawer
+    );
+    await Promise.allSettled(transitions.map((transition) => transition.finished));
+    if (!state.drawerOpen && drawer.open) drawer.close();
   }
 }
 
@@ -2375,37 +2392,22 @@ function renderHeader() {
   }
 
   const authBtn = document.getElementById("btn-auth");
-  const authIcon = document.getElementById("btn-auth-icon");
-  const authLabel = document.getElementById("btn-auth-label");
-  const adminMenu = document.getElementById("admin-menu");
-  if (authBtn && authIcon && authLabel) {
-    if (state.loggedIn) {
-      authIcon.innerHTML = `<svg class="h-3.5 w-3.5 shrink-0" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><circle cx="12" cy="12" r="3"/><path d="M19.4 15a1.65 1.65 0 0 0 .33 1.82l.06.06a2 2 0 1 1-2.83 2.83l-.06-.06a1.65 1.65 0 0 0-1.82-.33 1.65 1.65 0 0 0-1 1.51V21a2 2 0 1 1-4 0v-.09A1.65 1.65 0 0 0 9 19.4a1.65 1.65 0 0 0-1.82.33l-.06.06a2 2 0 1 1-2.83-2.83l.06-.06a1.65 1.65 0 0 0 .33-1.82 1.65 1.65 0 0 0-1.51-1H3a2 2 0 1 1 0-4h.09A1.65 1.65 0 0 0 4.6 9a1.65 1.65 0 0 0-.33-1.82l-.06-.06a2 2 0 1 1 2.83-2.83l.06.06a1.65 1.65 0 0 0 1.82.33H9a1.65 1.65 0 0 0 1-1.51V3a2 2 0 1 1 4 0v.09a1.65 1.65 0 0 0 1 1.51 1.65 1.65 0 0 0 1.82-.33l.06-.06a2 2 0 1 1 2.83 2.83l-.06.06a1.65 1.65 0 0 0-.33 1.82V9c.26.6.85 1 1.51 1H21a2 2 0 1 1 0 4h-.09a1.65 1.65 0 0 0-1.51 1Z"/></svg>`;
-      authLabel.textContent = isZh ? "管理后台" : "Admin";
-      authBtn.setAttribute("title", isZh ? "Komari 管理后台" : "Komari Admin");
-      authBtn.setAttribute("aria-expanded", String(state.adminMenuOpen));
-    } else {
-      authIcon.innerHTML = `<svg class="h-3.5 w-3.5 shrink-0" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><path d="M15 3h4a2 2 0 0 1 2 2v14a2 2 0 0 1-2 2h-4"/><polyline points="10 17 15 12 10 7"/><line x1="15" x2="3" y1="12" y2="12"/></svg>`;
-      authLabel.textContent = isZh ? "登录" : "Sign in";
-      authBtn.setAttribute("title", isZh ? "登录 Komari" : "Sign in to Komari");
-      authBtn.setAttribute("aria-expanded", "false");
-    }
-  }
-  if (adminMenu) {
-    const openAdmin = state.loggedIn && state.adminMenuOpen;
-    adminMenu.setAttribute("data-open", String(openAdmin));
-    if (openAdmin) {
-      clampMenuInViewport(document.getElementById("auth-control-root"), adminMenu);
-    }
-  }
+  const adminLink = document.getElementById("btn-admin");
+  const authTitle = isZh ? "登录 Komari" : "Sign in to Komari";
+  const adminTitle = isZh ? "Komari 管理后台" : "Komari Admin";
+  authBtn.hidden = state.loggedIn;
+  adminLink.hidden = !state.loggedIn;
+  authBtn.title = authTitle;
+  adminLink.title = adminTitle;
+  authBtn.setAttribute("aria-label", authTitle);
+  adminLink.setAttribute("aria-label", adminTitle);
   const setSimpleTxt = (id, txt) => {
     const el = document.getElementById(id);
     if (el) el.textContent = txt;
   };
-  setSimpleTxt("admin-goto-label", isZh ? "进入 Komari 后台" : "Open Komari Admin");
-  setSimpleTxt("admin-logout-label", isZh ? "退出登录" : "Sign Out");
-  setSimpleTxt("auth-title", isZh ? "登录 Komari" : "Sign in to Komari");
-  setSimpleTxt("auth-desc", isZh ? "登录后可进入 Komari 后台管理，并查看节点费用与续费信息。" : "Sign in to access Komari Admin and view node billing & renewal info.");
+  setSimpleTxt("btn-auth-label", isZh ? "登录" : "Sign in");
+  setSimpleTxt("btn-admin-label", isZh ? "管理后台" : "Admin");
+  setSimpleTxt("auth-title", authTitle);
   setSimpleTxt("auth-user-label", isZh ? "用户名" : "Username");
   setSimpleTxt("auth-pass-label", isZh ? "密码" : "Password");
   setSimpleTxt("auth-otp-label", isZh ? "两步验证码" : "Two-factor code");
@@ -2479,10 +2481,10 @@ function renderHeader() {
 
         <div id="drawer-map-subopts" class="mt-3 space-y-2.5 transition-opacity duration-200">
           <div class="space-y-1.5">
-            <div class="text-[11px]" style="color: var(--muted-foreground);">${isZh ? "同区策略" : "Overlap Strategy"}</div>
-            <div data-slot="tabs-list" data-variant="default" class="items-center gap-0.5 rounded-lg bg-muted p-[3px] flex h-8 w-full">
-              <button type="button" data-slot="tabs-trigger" data-overlap="cluster" class="inline-flex h-full cursor-pointer items-center justify-center gap-1.5 rounded-sm border border-transparent font-medium whitespace-nowrap text-muted-foreground transition-colors hover:text-foreground data-[active=true]:text-foreground focus-visible:z-10 focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-(--focus-line) overlap-btn flex-1 px-2 text-xs">${isZh ? "聚合" : "Cluster"}</button>
-              <button type="button" data-slot="tabs-trigger" data-overlap="spread" class="inline-flex h-full cursor-pointer items-center justify-center gap-1.5 rounded-sm border border-transparent font-medium whitespace-nowrap text-muted-foreground transition-colors hover:text-foreground data-[active=true]:text-foreground focus-visible:z-10 focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-(--focus-line) overlap-btn flex-1 px-2 text-xs">${isZh ? "微散开" : "Spread"}</button>
+            <div id="drawer-map-overlap-label" class="text-[11px]" style="color: var(--muted-foreground);">${isZh ? "同区策略" : "Overlap Strategy"}</div>
+            <div data-slot="tabs-list" data-variant="default" role="group" aria-labelledby="drawer-map-overlap-label" class="flex h-8 w-full items-center gap-0.5 rounded-lg bg-muted">
+              <button type="button" data-slot="tabs-trigger" data-overlap="cluster" class="inline-flex h-full flex-1 cursor-pointer items-center justify-center gap-1.5 border border-transparent font-medium whitespace-nowrap text-muted-foreground transition-colors hover:text-foreground data-[active=true]:text-foreground focus-visible:z-10 focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-(--focus-line) px-2 text-xs">${isZh ? "聚合" : "Cluster"}</button>
+              <button type="button" data-slot="tabs-trigger" data-overlap="spread" class="inline-flex h-full flex-1 cursor-pointer items-center justify-center gap-1.5 border border-transparent font-medium whitespace-nowrap text-muted-foreground transition-colors hover:text-foreground data-[active=true]:text-foreground focus-visible:z-10 focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-(--focus-line) px-2 text-xs">${isZh ? "微散开" : "Spread"}</button>
             </div>
           </div>
 
@@ -2542,7 +2544,7 @@ function renderHeader() {
       });
     });
 
-    swContainer.querySelectorAll(".overlap-btn").forEach((btn) => {
+    swContainer.querySelectorAll("[data-overlap]").forEach((btn) => {
       btn.addEventListener("click", () => {
         state.mapOverlapMode = btn.getAttribute("data-overlap");
         storePreferences();
@@ -2562,9 +2564,10 @@ function renderHeader() {
     btn.setAttribute("aria-checked", String(checked));
     btn.toggleAttribute("data-checked", checked);
   });
-  swContainer.querySelectorAll(".overlap-btn").forEach((btn) => {
+  swContainer.querySelectorAll("[data-overlap]").forEach((btn) => {
     const active = btn.getAttribute("data-overlap") === state.mapOverlapMode;
     btn.setAttribute("data-active", String(active));
+    btn.setAttribute("aria-pressed", String(active));
   });
   const mapSubOpts = document.getElementById("drawer-map-subopts");
   if (mapSubOpts) {
@@ -2675,10 +2678,10 @@ function renderCardGrid(list) {
                   ${isNodeFeatured(n) ? renderPinnedBadge(n.uuid, true) : ""}
                 </div>
               </div>
-              <span data-slot="badge" data-variant="secondary" class="inline-flex items-center rounded-sm whitespace-nowrap font-medium bg-secondary shrink-0 px-2 py-0.5 text-[11px] mono-num">
-                <span data-m-dot class="h-[6px] w-[6px] rounded-[1.5px]" style="background: ${dotColor};"></span>
+              ${renderNodeBadge(`
+                <span data-m-dot aria-hidden="true" class="h-[6px] w-[6px] shrink-0 rounded-[1.5px]" style="background: ${dotColor};"></span>
                 <span data-m-uptime>${n.online ? formatUptime(n.uptimeSec) : t("offline")}</span>
-              </span>
+              `, { classes: "mono-num" })}
             </div>
 
             <div class="grid ${compact ? "grid-cols-3 gap-2.5" : "grid-cols-1 gap-2"}">
@@ -2687,7 +2690,7 @@ function renderCardGrid(list) {
               ${renderMeter("Disk", n.hasTelemetry && n.diskTotal ? `${diskPct.toFixed(0)}%` : "—", diskPct, compact || !n.hasTelemetry || !n.diskTotal ? "" : `${formatCapacity(n.diskUsed)}/${formatCapacity(n.diskTotal)}G`, "disk")}
             </div>
 
-            <div class="border rounded-lg px-2.5 py-2 text-[11px]">
+            <div class="border rounded-md [--glass-inner:var(--glass-rim)] px-2.5 py-2 text-[11px]">
               <div class="flex items-center justify-between mono-num">
                 <span style="color: var(--muted-foreground);">↑ <strong data-m-up class="font-medium" style="color: var(--foreground);">${formatRate(n.online ? n.netOut : 0)}</strong></span>
                 <span style="color: var(--muted-foreground);">↓ <strong data-m-down class="font-medium" style="color: var(--foreground);">${formatRate(n.online ? n.netIn : 0)}</strong></span>
@@ -2714,7 +2717,7 @@ function renderCardGrid(list) {
             ${(state.settings.show_tags || state.settings.show_load_temp || (state.loggedIn && state.settings.show_pricing)) ? `
               <div class="mt-auto flex min-h-[24px] flex-wrap items-center justify-between gap-2 pt-0.5 text-[11px]" style="color: var(--sg-subtle-fg);">
                 <div class="flex flex-wrap items-center gap-1.5">
-                  ${state.settings.show_tags ? n.tags.slice(0, compact ? 2 : 3).map((tag) => `<span data-slot="tag" class="glass-chosen inline-flex h-[22px] items-center rounded-sm px-1.5 text-[10.5px] text-muted-foreground">${escapeHtml(tag)}</span>`).join("") : ""}
+                  ${state.settings.show_tags ? n.tags.slice(0, compact ? 2 : 3).map((tag) => `<span data-slot="tag" class="glass-chosen inline-flex h-[22px] items-center rounded-sm [--radius:var(--radius-control)] px-1.5 text-[10.5px] text-muted-foreground">${escapeHtml(tag)}</span>`).join("") : ""}
                 </div>
                 <div class="flex items-center gap-2 mono-num">
                   ${state.settings.show_load_temp && n.online ? `<span data-m-load>L ${n.load.toFixed(2)}</span>${n.temp > 0 ? `<span>${n.temp.toFixed(0)}°C</span>` : ""}` : ""}
@@ -3031,9 +3034,8 @@ function drawDetailSlatsChartCanvas() {
   const samples = isLoad ? history.sample(plotCols, node.ramTotal * 2 ** 30) : history.sample(plotCols);
 
   const isDark = state.theme === "dark";
-  const dormantBaseRgb = isDark ? [125, 125, 125] : [98, 104, 114];
+  const { rgb: dormantBaseRgb, alpha: dormantAlpha, vignette: vigRgb } = SLAT_BACKGROUND[state.theme];
   const guideColor = isDark ? "rgba(255, 255, 255, 0.085)" : "rgba(30, 36, 48, 0.105)";
-  const vigRgb = isDark ? "24, 23, 29" : "236, 239, 245";
 
   // Restrained low-saturation Solid Glass multi-series palettes (CPU=CT sky blue, RAM=CM=--sg-success online green)
   const seriesPalettes = isDark
@@ -3173,7 +3175,7 @@ function drawDetailSlatsChartCanvas() {
           }
           const edgeVis = vertVis * leftTickFade * rightEdgeFade;
           const hoverBoost = (inCpuTrack || inRamTrack) && isHovered ? 1.8 : 1;
-          const alpha = ((isDark ? 0.068 : 0.058) * edgeVis * hoverBoost).toFixed(4);
+          const alpha = (dormantAlpha * edgeVis * hoverBoost).toFixed(4);
           ctx.fillStyle = `rgba(${dormantBaseRgb[0]}, ${dormantBaseRgb[1]}, ${dormantBaseRgb[2]}, ${alpha})`;
           ctx.fill();
         }
@@ -3401,7 +3403,7 @@ function drawDetailSlatsChartCanvas() {
         const bottomVis = 0.28 + 0.72 * sgSmoothstep(H - 2, gridBottomY + 4, cy);
         const edgeVis = topVis * leftTickFade * bottomVis * rightEdgeFade;
         const hoverBoost = activeTr && isHovered ? 1.8 : 1;
-        const alpha = ((isDark ? 0.068 : 0.058) * edgeVis * hoverBoost).toFixed(4);
+        const alpha = (dormantAlpha * edgeVis * hoverBoost).toFixed(4);
         ctx.fillStyle = `rgba(${dormantBaseRgb[0]}, ${dormantBaseRgb[1]}, ${dormantBaseRgb[2]}, ${alpha})`;
         ctx.fill();
       }
@@ -3608,11 +3610,10 @@ function drawDetailNetSlatsCanvas() {
   };
 
   const isDark = state.theme === "dark";
-  const baseRgb = isDark ? [132, 134, 138] : [98, 104, 114];
+  const { rgb: baseRgb, alpha: dormantAlpha, vignette: vigRgb } = SLAT_BACKGROUND[state.theme];
   const glintRgb = isDark ? [164, 166, 172] : [68, 74, 84];
   const guideColor = isDark ? "rgba(255, 255, 255, 0.085)" : "rgba(30, 36, 48, 0.105)";
   const rimColor = isDark ? "rgba(255, 255, 255, 0.22)" : "rgba(255, 255, 255, 0.44)";
-  const vigRgb = isDark ? "24, 23, 29" : "236, 239, 245";
 
   for (let c = 0; c < cols; c++) {
     const bucket = bucketForColumn(samples?.buckets, c);
@@ -3677,7 +3678,7 @@ function drawDetailNetSlatsCanvas() {
           textDim = (0.28 + 0.72 * downFade) * rightTickFade * leftEdgeFade * xBottomFade;
         }
         const hoverBoost = ((isUpHalf && r <= upBaseRow) || (!isUpHalf && r > splitRow && r <= downBaseRow)) && isHovered ? 1.8 : 1;
-        const alpha = ((isDark ? 0.068 : 0.058) * textDim * hoverBoost).toFixed(4);
+        const alpha = (dormantAlpha * textDim * hoverBoost).toFixed(4);
         ctx.fillStyle = `rgba(${baseRgb[0]}, ${baseRgb[1]}, ${baseRgb[2]}, ${alpha})`;
         ctx.fill();
       }
@@ -3923,13 +3924,14 @@ function renderDetailModal() {
 
   const isPinned = isNodeFeatured(node);
   const detailPinActionHtml = state.loggedIn
-    ? `
-      <button id="btn-detail-pin" type="button" data-slot="button" data-variant="outline" data-pinned="${isPinned}" class="rounded-lg cursor-pointer transition-colors disabled:cursor-not-allowed disabled:opacity-50 focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-(--focus-line) border border-transparent sg-pin-btn inline-flex h-[22px] shrink-0 items-center gap-1 px-2 text-[11px] font-medium" title="${isPinned ? (isZh ? "取消置顶" : "Unpin server") : (isZh ? "置顶服务器" : "Pin server")}">
+    ? renderNodeBadge(`
         ${PIN_BTN_ICON_SVG}
         <span id="detail-pin-label">${isPinned ? (isZh ? "取消置顶" : "Unpin") : t("pinned")}</span>
-      </button>
-    `
-    : (isPinned ? renderPinnedBadge(node.uuid, false) : "");
+      `, {
+        classes: "sg-pin-btn cursor-pointer transition-colors hover:bg-accent focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-(--focus-line)",
+        buttonAttrs: `id="btn-detail-pin" data-pinned="${isPinned}" title="${isPinned ? (isZh ? "取消置顶" : "Unpin server") : (isZh ? "置顶服务器" : "Pin server")}"`,
+      })
+    : (isPinned ? renderPinnedBadge(node.uuid) : "");
 
   const subtitleParts = [
     formatCityName(node.city),
@@ -3952,10 +3954,10 @@ function renderDetailModal() {
         <div class="flex flex-wrap items-center gap-2">
           ${renderFlagBadge(node.region, "lg")}
           <h1 id="detail-title" class="min-w-0 truncate text-base font-semibold tracking-tight">${escapeHtml(node.name)}</h1>
-          <span data-slot="badge" data-variant="secondary" class="inline-flex items-center rounded-sm whitespace-nowrap font-medium bg-secondary shrink-0 px-2 py-0.5 text-[11px] mono-num" style="color: ${node.online ? "var(--sg-success)" : "var(--sg-danger)"};">
-            <span class="h-[6px] w-[6px] rounded-[1.5px]" style="background: ${node.online ? "var(--sg-success)" : "var(--sg-danger)"};"></span>
-            ${node.online ? t("online") : t("offline")}
-          </span>
+          ${renderNodeBadge(`
+            <span aria-hidden="true" class="h-[6px] w-[6px] shrink-0 rounded-[1.5px] bg-current"></span>
+            <span>${node.online ? t("online") : t("offline")}</span>
+          `, { classes: node.online ? "text-(--sg-success)" : "text-(--sg-danger)" })}
           ${detailPinActionHtml}
         </div>
         <div class="mt-1 truncate text-xs" style="color: var(--muted-foreground);">${escapeHtml(subtitleParts.join(" · "))}</div>
@@ -4345,13 +4347,12 @@ document.getElementById("search-input").addEventListener("input", (e) => {
   renderMapMarkers();
 });
 
-// Integrated View Display Options Popover & Custom Solid Glass Select (mutually exclusive with Admin menu)
+// Mutually exclusive view options and sort popovers
 document.getElementById("btn-view-options").addEventListener("click", (e) => {
   e.stopPropagation();
   state.viewOptionsOpen = !state.viewOptionsOpen;
   if (state.viewOptionsOpen) {
     if (state.sortMenuOpen) { state.sortMenuOpen = false; renderSortSelect(); }
-    if (state.adminMenuOpen) { state.adminMenuOpen = false; renderHeader(); }
   }
   renderViewOptionsMenu();
 });
@@ -4360,7 +4361,6 @@ document.getElementById("sort-select-trigger").addEventListener("click", (e) => 
   state.sortMenuOpen = !state.sortMenuOpen;
   if (state.sortMenuOpen) {
     if (state.viewOptionsOpen) { state.viewOptionsOpen = false; renderViewOptionsMenu(); }
-    if (state.adminMenuOpen) { state.adminMenuOpen = false; renderHeader(); }
   }
   renderSortSelect();
 });
@@ -4426,7 +4426,7 @@ detailModalEl.addEventListener("pointerup", (e) => {
   detailPressedOutside = false;
 });
 
-// Auth Modal (Login Alert Dialog) + Komari Admin Gear Menu handlers
+// Login dialog handlers
 const authModalEl = document.getElementById("auth-modal");
 const authDialogEl = document.getElementById("auth-dialog");
 let authCloseTimer = 0;
@@ -4456,19 +4456,7 @@ function closeAuthModal() {
   }, 170);
 }
 
-document.getElementById("btn-auth").addEventListener("click", (e) => {
-  e.stopPropagation();
-  if (!state.loggedIn) {
-    openAuthModal();
-  } else {
-    state.adminMenuOpen = !state.adminMenuOpen;
-    if (state.adminMenuOpen) {
-      if (state.sortMenuOpen) { state.sortMenuOpen = false; renderSortSelect(); }
-      if (state.viewOptionsOpen) { state.viewOptionsOpen = false; renderViewOptionsMenu(); }
-    }
-    renderHeader();
-  }
-});
+document.getElementById("btn-auth").addEventListener("click", openAuthModal);
 document.getElementById("btn-auth-close").addEventListener("click", () => closeAuthModal());
 document.getElementById("btn-auth-cancel").addEventListener("click", () => closeAuthModal());
 authDialogEl.addEventListener("submit", async (event) => {
@@ -4510,6 +4498,7 @@ authModalEl.addEventListener("close", () => {
   authDialogEl.reset();
   document.getElementById("auth-otp-field").hidden = true;
   document.getElementById("auth-error").textContent = "";
+  if (state.loggedIn) document.getElementById("btn-admin").focus();
 });
 let authPressedOutside = false;
 authModalEl.addEventListener("pointerdown", (e) => {
@@ -4521,15 +4510,6 @@ authModalEl.addEventListener("pointerup", (e) => {
   }
   authPressedOutside = false;
 });
-document.getElementById("btn-goto-admin").addEventListener("click", () => location.assign("/admin"));
-document.getElementById("btn-logout").addEventListener("click", async () => {
-  try {
-    await logout();
-    await refreshDashboard();
-  } catch {
-    window.alert(bilingual("退出登录失败，请重试。", "Sign-out failed. Try again."));
-  }
-});
 
 document.addEventListener("keydown", (e) => {
   if (e.key === "Escape") {
@@ -4540,10 +4520,6 @@ document.addEventListener("keydown", (e) => {
     if (state.viewOptionsOpen) {
       state.viewOptionsOpen = false;
       renderViewOptionsMenu();
-    }
-    if (state.adminMenuOpen) {
-      state.adminMenuOpen = false;
-      renderHeader();
     }
   }
 });
@@ -4558,11 +4534,6 @@ document.addEventListener("click", (e) => {
   if (state.viewOptionsOpen && viewRoot && !viewRoot.contains(e.target)) {
     state.viewOptionsOpen = false;
     renderViewOptionsMenu();
-  }
-  const authRoot = document.getElementById("auth-control-root");
-  if (state.adminMenuOpen && authRoot && !authRoot.contains(e.target)) {
-    state.adminMenuOpen = false;
-    renderHeader();
   }
   const mapTooltip = document.getElementById("map-tooltip");
   if (state.pinnedClusterKey && !mapTooltip.contains(e.target)) {
@@ -4586,7 +4557,6 @@ window.addEventListener("resize", () => {
     }
     if (state.viewOptionsOpen) clampMenuInViewport(document.getElementById("view-tabs-root"), document.getElementById("view-options-menu"));
     if (state.sortMenuOpen) clampMenuInViewport(document.getElementById("sort-select-root"), document.getElementById("sort-select-menu"));
-    if (state.loggedIn && state.adminMenuOpen) clampMenuInViewport(document.getElementById("auth-control-root"), document.getElementById("admin-menu"));
   });
 });
 

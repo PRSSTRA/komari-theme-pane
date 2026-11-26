@@ -1,6 +1,7 @@
 /temp/
 /node_modules/
 /dist/
+/.vite/
 /.env*
 !/.env.example
 /AGENTS.md

@@ -20,32 +20,25 @@
 
       <!-- Managed Theme Settings Drawer Trigger (Sliders icon + "主题配置", icon-only on <sm) -->
       <button id="btn-managed" type="button" data-slot="button" data-variant="outline" class="rounded-lg cursor-pointer transition-colors disabled:cursor-not-allowed disabled:opacity-50 focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-(--focus-line) border border-transparent inline-flex h-9 shrink-0 items-center justify-center gap-1.5 whitespace-nowrap px-2.5 text-xs font-medium sm:px-3" aria-label="主题配置" title="主题配置">
-        <svg class="h-3.5 w-3.5 shrink-0" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round">
-          <line x1="21" x2="14" y1="4" y2="4"/><line x1="10" x2="3" y1="4" y2="4"/>
-          <line x1="21" x2="12" y1="12" y2="12"/><line x1="8" x2="3" y1="12" y2="12"/>
-          <line x1="21" x2="16" y1="20" y2="20"/><line x1="12" x2="3" y1="20" y2="20"/>
-          <line x1="14" x2="14" y1="2" y2="6"/><line x1="8" x2="8" y1="10" y2="14"/><line x1="16" x2="16" y1="18" y2="22"/>
+        <svg aria-hidden="true" class="h-3.5 w-3.5 shrink-0" viewBox="0 0 24 24">
+          <g id="km-theme-settings-icon" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round">
+            <line x1="21" x2="14" y1="4" y2="4"/><line x1="10" x2="3" y1="4" y2="4"/>
+            <line x1="21" x2="12" y1="12" y2="12"/><line x1="8" x2="3" y1="12" y2="12"/>
+            <line x1="21" x2="16" y1="20" y2="20"/><line x1="12" x2="3" y1="20" y2="20"/>
+            <line x1="14" x2="14" y1="2" y2="6"/><line x1="8" x2="8" y1="10" y2="14"/><line x1="16" x2="16" y1="18" y2="22"/>
+          </g>
         </svg>
         <span id="btn-managed-label" class="hidden sm:inline">主题配置</span>
       </button>
 
-      <!-- Auth / Komari Admin Trigger (Logged out: Login; Logged in: Gear Admin button + demo menu; icon-only on <sm) -->
-      <div id="auth-control-root" class="relative shrink-0">
-        <button id="btn-auth" type="button" data-slot="button" data-variant="outline" class="rounded-lg cursor-pointer transition-colors disabled:cursor-not-allowed disabled:opacity-50 focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-(--focus-line) border border-transparent inline-flex h-9 shrink-0 items-center justify-center gap-1.5 whitespace-nowrap px-2.5 text-xs font-medium sm:px-3" aria-haspopup="menu" aria-expanded="false">
-          <span id="btn-auth-icon" class="inline-flex shrink-0 items-center"></span>
-          <span id="btn-auth-label" class="hidden sm:inline">登录</span>
-        </button>
-        <div id="admin-menu" data-slot="popover-content" data-open="false" role="menu" class="bg-popover rounded-lg sg-popover-anim absolute right-0 top-[calc(100%+6px)] z-50 w-48 space-y-1 p-1.5">
-          <button id="btn-goto-admin" type="button" role="menuitem" data-slot="select-item" class="focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-(--focus-line) rounded-sm hover:bg-accent focus-visible:bg-accent flex w-full items-center gap-2 text-xs">
-            <svg class="h-3.5 w-3.5 shrink-0" style="color: var(--muted-foreground);" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><circle cx="12" cy="12" r="3"/><path d="M19.4 15a1.65 1.65 0 0 0 .33 1.82l.06.06a2 2 0 1 1-2.83 2.83l-.06-.06a1.65 1.65 0 0 0-1.82-.33 1.65 1.65 0 0 0-1 1.51V21a2 2 0 1 1-4 0v-.09A1.65 1.65 0 0 0 9 19.4a1.65 1.65 0 0 0-1.82.33l-.06.06a2 2 0 1 1-2.83-2.83l.06-.06a1.65 1.65 0 0 0 .33-1.82 1.65 1.65 0 0 0-1.51-1H3a2 2 0 1 1 0-4h.09A1.65 1.65 0 0 0 4.6 9a1.65 1.65 0 0 0-.33-1.82l-.06-.06a2 2 0 1 1 2.83-2.83l.06.06a1.65 1.65 0 0 0 1.82.33H9a1.65 1.65 0 0 0 1-1.51V3a2 2 0 1 1 4 0v.09a1.65 1.65 0 0 0 1 1.51 1.65 1.65 0 0 0 1.82-.33l.06-.06a2 2 0 1 1 2.83 2.83l-.06.06a1.65 1.65 0 0 0-.33 1.82V9c.26.6.85 1 1.51 1H21a2 2 0 1 1 0 4h-.09a1.65 1.65 0 0 0-1.51 1Z"/></svg>
-            <span id="admin-goto-label" class="truncate">进入 Komari 后台</span>
-          </button>
-          <button id="btn-logout" type="button" role="menuitem" data-slot="select-item" class="focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-(--focus-line) rounded-sm hover:bg-accent focus-visible:bg-accent flex w-full items-center gap-2 text-xs">
-            <svg class="h-3.5 w-3.5 shrink-0" style="color: var(--muted-foreground);" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><path d="M9 21H5a2 2 0 0 1-2-2V5a2 2 0 0 1 2-2h4"/><polyline points="16 17 21 12 16 7"/><line x1="21" x2="9" y1="12" y2="12"/></svg>
-            <span id="admin-logout-label" class="truncate">退出登录</span>
-          </button>
-        </div>
-      </div>
+      <button id="btn-auth" type="button" data-slot="button" data-variant="outline" class="rounded-lg cursor-pointer transition-colors focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-(--focus-line) border border-transparent inline-flex h-9 shrink-0 items-center justify-center gap-1.5 whitespace-nowrap px-2.5 text-xs font-medium sm:px-3" aria-haspopup="dialog" aria-label="登录 Komari" title="登录 Komari">
+        <svg aria-hidden="true" class="h-3.5 w-3.5 shrink-0" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><path d="M15 3h4a2 2 0 0 1 2 2v14a2 2 0 0 1-2 2h-4"/><polyline points="10 17 15 12 10 7"/><line x1="15" x2="3" y1="12" y2="12"/></svg>
+        <span id="btn-auth-label" class="hidden sm:inline">登录</span>
+      </button>
+      <a id="btn-admin" href="/admin" hidden data-slot="button" data-variant="outline" class="rounded-lg cursor-pointer transition-colors focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-(--focus-line) border border-transparent inline-flex h-9 shrink-0 items-center justify-center gap-1.5 whitespace-nowrap px-2.5 text-xs font-medium sm:px-3" aria-label="Komari 管理后台" title="Komari 管理后台">
+        <svg aria-hidden="true" class="h-3.5 w-3.5 shrink-0" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><circle cx="12" cy="12" r="3"/><path d="M19.4 15a1.65 1.65 0 0 0 .33 1.82l.06.06a2 2 0 1 1-2.83 2.83l-.06-.06a1.65 1.65 0 0 0-1.82-.33 1.65 1.65 0 0 0-1 1.51V21a2 2 0 1 1-4 0v-.09A1.65 1.65 0 0 0 9 19.4a1.65 1.65 0 0 0-1.82.33l-.06.06a2 2 0 1 1-2.83-2.83l.06-.06a1.65 1.65 0 0 0 .33-1.82 1.65 1.65 0 0 0-1.51-1H3a2 2 0 1 1 0-4h.09A1.65 1.65 0 0 0 4.6 9a1.65 1.65 0 0 0-.33-1.82l-.06-.06a2 2 0 1 1 2.83-2.83l.06.06a1.65 1.65 0 0 0 1.82.33H9a1.65 1.65 0 0 0 1-1.51V3a2 2 0 1 1 4 0v.09a1.65 1.65 0 0 0 1.51 1.51 1.65 1.65 0 0 0 1.82-.33l.06-.06a2 2 0 1 1 2.83 2.83l-.06.06a1.65 1.65 0 0 0-.33 1.82V9c.26.6.85 1 1.51 1H21a2 2 0 1 1 0 4h-.09a1.65 1.65 0 0 0-1.51 1Z"/></svg>
+        <span id="btn-admin-label" class="hidden sm:inline">管理后台</span>
+      </a>
     </div>
   </header>
 
@@ -131,8 +124,11 @@
           <!-- Action Controls Group (min-w-0 flex-wrap allows Sort to wrap cleanly on ultra-narrow viewports) -->
           <div class="flex max-w-full min-w-0 flex-wrap items-center gap-2 sm:gap-2.5">
             <!-- Solid Glass Outline Toggle -->
-            <button id="btn-online-only" type="button" data-slot="toggle" data-variant="outline" aria-pressed="false" class="rounded-lg cursor-pointer transition-colors disabled:cursor-not-allowed disabled:opacity-50 focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-(--focus-line) border border-input text-muted-foreground hover:text-foreground aria-pressed:text-foreground inline-flex h-9 shrink-0 items-center gap-1.5 whitespace-nowrap px-3 text-xs font-medium">
-              <span class="h-[6px] w-[6px] shrink-0 rounded-[1.5px]" style="background: var(--sg-success);"></span>
+            <button id="btn-online-only" type="button" data-slot="toggle" data-variant="outline" aria-pressed="false" class="group/online-filter rounded-lg cursor-pointer transition-colors disabled:cursor-not-allowed disabled:opacity-50 focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-(--focus-line) border border-input text-muted-foreground hover:text-foreground aria-pressed:text-foreground inline-flex h-9 shrink-0 items-center gap-1.5 whitespace-nowrap px-3 text-xs font-medium">
+              <svg aria-hidden="true" class="size-3 shrink-0 text-(--sg-success)" viewBox="0 0 12 12" fill="none">
+                <rect x="3" y="3" width="6" height="6" rx="1.5" fill="currentColor" class="group-aria-pressed/online-filter:hidden"/>
+                <path d="m2 6 2.5 2.5L10 3" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round" class="hidden group-aria-pressed/online-filter:inline"/>
+              </svg>
               <span data-i18n="onlyOnline">仅看在线</span>
             </button>
 
@@ -151,7 +147,7 @@
                   <svg class="h-3.5 w-3.5" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.9" stroke-linecap="round" stroke-linejoin="round"><path d="m6 9 6 6 6-6"/></svg>
                 </button>
               </div>
-              <div id="view-options-menu" data-slot="popover-content" data-open="false" role="dialog" aria-label="显示项设置" class="bg-popover sg-popover-anim absolute right-0 top-10 z-40 w-64 max-w-[calc(100vw-24px)] rounded-lg p-3 text-xs">
+              <div id="view-options-menu" data-slot="menubar-content" data-open="false" role="dialog" aria-label="显示项设置" class="bg-popover sg-popover-anim absolute right-0 top-10 z-40 w-64 max-w-[calc(100vw-24px)] rounded-lg p-3 text-xs">
                 <!-- Context-aware Card vs Table display controls rendered by JS -->
               </div>
             </div>
@@ -165,7 +161,7 @@
                 </span>
                 <svg class="sg-sort-chevron h-3.5 w-3.5 shrink-0" style="color: var(--muted-foreground);" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><path d="m6 9 6 6 6-6"/></svg>
               </button>
-              <div id="sort-select-menu" data-slot="select-content" data-open="false" role="listbox" class="bg-popover sg-popover-anim absolute right-0 top-10 z-40 min-w-[152px] max-w-[calc(100vw-24px)] space-y-1 rounded-lg p-1.5 text-xs">
+              <div id="sort-select-menu" data-slot="menubar-content" data-open="false" role="listbox" class="bg-popover sg-popover-anim absolute right-0 top-10 z-40 min-w-[152px] max-w-[calc(100vw-24px)] space-y-1 rounded-lg p-1.5 text-xs">
                 <!-- Populated by JS -->
               </div>
             </div>
@@ -189,8 +185,11 @@
   <dialog id="managed-drawer" data-open="false" aria-labelledby="drawer-title" class="sg-native-dialog">
     <aside id="managed-drawer-panel" data-slot="drawer-content" class="bg-popover flex w-full max-w-sm flex-col overflow-hidden">
       <!-- Drawer Header -->
-      <div class="flex items-center justify-between gap-3 border-b px-5 py-4" style="border-color: var(--border);">
-        <h1 id="drawer-title" class="text-sm font-semibold tracking-tight" data-i18n="managedTitle">主题配置</h1>
+      <div class="flex items-center justify-between gap-3 px-5 py-4">
+        <h1 id="drawer-title" class="flex items-center gap-2 text-sm font-semibold tracking-tight">
+          <svg aria-hidden="true" class="h-3.5 w-3.5 shrink-0" viewBox="0 0 24 24"><use href="#km-theme-settings-icon"/></svg>
+          <span data-i18n="managedTitle">主题配置</span>
+        </h1>
         <button id="btn-drawer-close" type="button" data-slot="button" data-variant="ghost" class="rounded-lg cursor-pointer transition-colors disabled:cursor-not-allowed disabled:opacity-50 focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-(--focus-line) text-muted-foreground hover:bg-accent hover:text-foreground inline-flex h-7 w-7 items-center justify-center" aria-label="关闭" autofocus>
           <svg class="h-4 w-4" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8"><path d="M18 6 6 18M6 6l12 12"/></svg>
         </button>
@@ -245,11 +244,8 @@
   <!-- Native Top-Layer Login Alert Dialog -->
   <dialog id="auth-modal" data-open="false" closedby="any" aria-labelledby="auth-title" class="sg-native-dialog">
     <form id="auth-dialog" data-slot="dialog-content" class="bg-popover w-full max-w-sm rounded-lg p-5">
-      <div class="flex items-start justify-between gap-3">
-        <div>
-          <h2 id="auth-title" class="text-sm font-semibold tracking-tight">登录 Komari</h2>
-          <p id="auth-desc" class="mt-1 text-xs leading-relaxed" style="color: var(--muted-foreground);">登录后可进入 Komari 后台管理，并查看节点费用与续费信息。</p>
-        </div>
+      <div class="flex items-center justify-between gap-3">
+        <h2 id="auth-title" class="text-sm font-semibold tracking-tight">登录 Komari</h2>
         <button id="btn-auth-close" type="button" data-slot="button" data-variant="ghost" aria-label="关闭" class="rounded-lg cursor-pointer transition-colors disabled:cursor-not-allowed disabled:opacity-50 focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-(--focus-line) text-muted-foreground hover:bg-accent hover:text-foreground inline-flex h-7 w-7 shrink-0 items-center justify-center">
           <svg class="h-4 w-4" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8"><path d="M18 6 6 18M6 6l12 12"/></svg>
         </button>
@@ -262,7 +258,7 @@
         </div>
         <div class="space-y-1.5">
           <label for="auth-pass" id="auth-pass-label" class="block text-[11px] font-medium" style="color: var(--muted-foreground);">密码</label>
-          <input id="auth-pass" type="password" data-slot="input" placeholder="••••••••" autocomplete="current-password" required class="rounded-lg border transition-colors h-9 w-full px-3 text-xs outline-none placeholder:text-muted-foreground" />
+          <input id="auth-pass" type="password" data-slot="input" autocomplete="current-password" required class="rounded-lg border transition-colors h-9 w-full px-3 text-xs outline-none" />
         </div>
         <div id="auth-otp-field" hidden class="space-y-1.5">
           <label for="auth-otp" id="auth-otp-label" class="block text-[11px] font-medium" style="color: var(--muted-foreground);">两步验证码</label>
