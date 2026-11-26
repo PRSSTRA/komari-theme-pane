@@ -1,7 +1,7 @@
 import escapeHtml from 'escape-html';
 import morphdom from 'morphdom';
 import { bindTooltips, positionMenu } from './floating.js';
-import { loadDashboard, normalizeNodes, watchTelemetry, login, saveThemeSettings } from './komari.js';
+import { loadDashboard, normalizeNodes, watchTelemetry, login, saveThemeSettings, readFeaturedNodes } from './komari.js';
 import { loadNodeHistory } from './history.js';
 
 const preferencesKey = 'komari-pane-preferences';
@@ -11,9 +11,8 @@ function readPreferences() {
   try { return JSON.parse(localStorage.getItem(preferencesKey)) ?? {}; } catch { return {}; }
 }
 
-const defaultSettings = {
-  hero_title: 'Komari Pane',
-  featured_nodes: [],
+const defaultSiteSettings = { hero_title: 'Komari Pane', featured_nodes: [], site_notice: '' };
+const defaultPreferences = {
   card_density: "comfortable",
   show_summary_bar: true,
   show_event_feed: true,
@@ -27,8 +26,13 @@ const defaultSettings = {
   show_traffic_bar: false,
   show_load_temp: false,
   reduce_transparency: false,
-  site_notice: "",
 };
+
+function pickDisplayPreferences(settings) {
+  return Object.fromEntries(Object.entries(defaultPreferences)
+    .filter(([key, defaultValue]) => Object.hasOwn(settings ?? {}, key) && typeof settings[key] === typeof defaultValue)
+    .map(([key]) => [key, settings[key]]));
+}
 
 // ---- 208x96 High-Res World Map Silhouette sampled directly from user's 1024x473 PNG ----
 const MATRIX_COLS = 208;
@@ -113,7 +117,7 @@ const state = {
   detailPingFocus: -1,
   loggedIn: false,
   pinnedSearch: "",
-  settings: { ...defaultSettings, ...preferences.settings },
+  settings: { ...defaultSiteSettings, ...defaultPreferences, ...pickDisplayPreferences(preferences.settings) },
   nodes: [],
   connection: 'connecting',
   loading: true,
@@ -2249,6 +2253,7 @@ async function setDrawerOpen(open) {
   const drawer = managedDrawerEl;
   document.getElementById("btn-managed").setAttribute("aria-expanded", String(open));
 
+  if (open && state.loggedIn) renderPinnedNodesDrawer();
   if (open && !drawer.open) {
     drawer.showModal();
     // Resolve the starting styles before changing state so the first frame can animate.
@@ -2267,15 +2272,14 @@ async function setDrawerOpen(open) {
 
 function togglePinnedNode(uuid) {
   if (!state.loggedIn) return;
-  const list = Array.isArray(state.settings.featured_nodes) ? state.settings.featured_nodes : [];
+  const list = state.settings.featured_nodes;
   const idx = list.indexOf(uuid);
   if (idx >= 0) {
     list.splice(idx, 1);
   } else {
     list.push(uuid);
   }
-  state.settings.featured_nodes = list;
-  void saveSiteSettings();
+  void saveSiteSettings({ featured_nodes: [...list] });
   renderPinnedNodesDrawer();
   renderNodes();
 }
@@ -2423,7 +2427,7 @@ function renderHeader() {
   if (pinnedField) {
     pinnedField.classList.toggle("hidden", !state.loggedIn);
   }
-  renderPinnedNodesDrawer();
+  if (state.loggedIn && state.drawerOpen) renderPinnedNodesDrawer();
 
   // Solid Glass Theme Mode Tabs (Dark / Light / System)
   document.querySelectorAll("#theme-tabs [data-appearance]").forEach((tab) => {
@@ -4429,9 +4433,22 @@ detailModalEl.addEventListener("pointerup", (e) => {
 // Login dialog handlers
 const authModalEl = document.getElementById("auth-modal");
 const authDialogEl = document.getElementById("auth-dialog");
+const authSubmit = document.getElementById("btn-auth-submit");
+const authError = document.getElementById("auth-error");
+const authOtp = document.getElementById("auth-otp");
+const authOtpField = document.getElementById("auth-otp-field");
+const secureLogin = window.isSecureContext;
+if (!secureLogin) {
+  authSubmit.disabled = true;
+  for (const input of authDialogEl.querySelectorAll("input")) input.disabled = true;
+}
 let authCloseTimer = 0;
 
 function openAuthModal() {
+  if (authSubmit.disabled && secureLogin) return;
+  if (!secureLogin) {
+    authError.textContent = bilingual("请使用 HTTPS 打开站点后再登录。", "Open this site over HTTPS to sign in.");
+  }
   clearTimeout(authCloseTimer);
   if (!authModalEl.open) {
     authModalEl.setAttribute("data-open", "false");
@@ -4461,29 +4478,29 @@ document.getElementById("btn-auth-close").addEventListener("click", () => closeA
 document.getElementById("btn-auth-cancel").addEventListener("click", () => closeAuthModal());
 authDialogEl.addEventListener("submit", async (event) => {
   event.preventDefault();
-  const submit = document.getElementById("btn-auth-submit");
-  const error = document.getElementById("auth-error");
-  const otp = document.getElementById("auth-otp");
-  error.textContent = "";
-  submit.disabled = true;
+  if (!secureLogin || authSubmit.disabled) return;
+  const credentials = Object.fromEntries(new FormData(authDialogEl));
+  authError.textContent = "";
+  authSubmit.disabled = true;
   try {
-    const { status } = await login({
-      username: document.getElementById("auth-user").value,
-      password: document.getElementById("auth-pass").value,
-      twoFactorCode: otp.value,
-    });
+    const { status } = await login(credentials);
     if (status === 'success') {
-      await refreshDashboard();
+      authDialogEl.reset();
+      await refreshDashboard().catch(() => {});
       closeAuthModal();
     } else {
-      document.getElementById("auth-otp-field").hidden = false;
-      if (status === '2fa_invalid') error.textContent = bilingual("验证码无效", "Invalid two-factor code");
-      otp.focus();
+      if (!authModalEl.open || authModalEl.getAttribute("data-open") !== "true") return;
+      authOtpField.hidden = false;
+      authOtp.disabled = false;
+      if (status === '2fa_invalid') authError.textContent = bilingual("验证码无效", "Invalid two-factor code");
+      authOtp.focus();
     }
   } catch {
-    error.textContent = bilingual("登录失败，请确认账号和密码后重试。", "Sign-in failed. Check your credentials and try again.");
+    if (authModalEl.open && authModalEl.getAttribute("data-open") === "true") {
+      authError.textContent = bilingual("登录失败，请确认账号和密码后重试。", "Sign-in failed. Check your credentials and try again.");
+    }
   } finally {
-    submit.disabled = false;
+    authSubmit.disabled = false;
   }
 });
 authModalEl.addEventListener("cancel", (e) => {
@@ -4496,8 +4513,9 @@ authModalEl.addEventListener("close", () => {
   authModalEl.setAttribute("data-open", "false");
   authModalEl.returnValue = "";
   authDialogEl.reset();
-  document.getElementById("auth-otp-field").hidden = true;
-  document.getElementById("auth-error").textContent = "";
+  authOtp.disabled = true;
+  authOtpField.hidden = true;
+  authError.textContent = "";
   if (state.loggedIn) document.getElementById("btn-admin").focus();
 });
 let authPressedOutside = false;
@@ -5072,7 +5090,7 @@ if (clearPinnedBtn) {
   clearPinnedBtn.addEventListener("click", () => {
     if (!state.loggedIn) return;
     state.settings.featured_nodes = [];
-    void saveSiteSettings();
+    void saveSiteSettings({ featured_nodes: [] });
     renderPinnedNodesDrawer();
     renderNodes();
   });
@@ -5116,9 +5134,7 @@ function emptyNodesMessage() {
 
 function storePreferences() {
   const { appearance, lang, mapOverlapMode, settings } = state;
-  const local = Object.fromEntries(Object.keys(defaultSettings)
-    .filter(key => !['hero_title', 'featured_nodes', 'site_notice'].includes(key))
-    .map(key => [key, settings[key]]));
+  const local = pickDisplayPreferences(settings);
   preferences.settings = local;
   try { localStorage.setItem(preferencesKey, JSON.stringify({ appearance, lang, mapOverlapMode, settings: local })); } catch {}
 }
@@ -5126,15 +5142,12 @@ function storePreferences() {
 let saveTimer;
 let settingsWrite = Promise.resolve();
 
-function saveSiteSettings() {
-  clearTimeout(saveTimer);
-  const settings = { ...siteSettings, hero_title: state.settings.hero_title, featured_nodes: [...state.settings.featured_nodes] };
+function saveSiteSettings(changes) {
   settingsWrite = settingsWrite.then(async () => {
     if (!state.loggedIn) return;
     const status = document.getElementById('settings-status');
     try {
-      await saveThemeSettings(settings);
-      siteSettings = settings;
+      await saveThemeSettings(changes);
       status.textContent = '';
     } catch {
       status.textContent = bilingual('未能保存主题配置', 'Theme settings could not be saved');
@@ -5145,14 +5158,15 @@ function saveSiteSettings() {
 
 function scheduleSiteSettingsSave() {
   clearTimeout(saveTimer);
-  saveTimer = setTimeout(saveSiteSettings, 450);
+  saveTimer = setTimeout(() => void saveSiteSettings({ hero_title: state.settings.hero_title }), 450);
 }
 
 let stopTelemetry;
-let siteSettings = {};
+let dashboardVersion = 0;
 let receivedSnapshot = false;
 
 async function refreshDashboard() {
+  const version = ++dashboardVersion;
   stopTelemetry?.();
   state.loading = true;
   state.connection = 'connecting';
@@ -5167,16 +5181,23 @@ async function refreshDashboard() {
   try {
     dashboard = await loadDashboard();
   } catch (error) {
+    if (version !== dashboardVersion) return;
     state.loading = false;
     state.connection = 'disconnected';
     renderAll();
     throw error;
   }
+  if (version !== dashboardVersion) return;
   const { nodes, settings, publicSettings, loggedIn } = dashboard;
   state.loggedIn = loggedIn;
   state.privateSite = Boolean(publicSettings.private_site && !loggedIn);
-  siteSettings = settings;
-  state.settings = { ...defaultSettings, ...settings, ...preferences.settings };
+  state.settings = {
+    ...defaultPreferences,
+    ...pickDisplayPreferences(preferences.settings),
+    hero_title: typeof settings.hero_title === 'string' ? settings.hero_title : defaultSiteSettings.hero_title,
+    featured_nodes: readFeaturedNodes(settings.featured_nodes),
+    site_notice: typeof settings.site_notice === 'string' ? settings.site_notice : defaultSiteSettings.site_notice,
+  };
   heroTitleInput.value = state.settings.hero_title;
   renderStaticHeroWordmark(getConfiguredHeroTitle(), false);
   state.loading = !state.privateSite;
@@ -5208,6 +5229,7 @@ async function refreshDashboard() {
     renderMapMarkers();
     if (!receivedSnapshot) {
       receivedSnapshot = true;
+      if (loggedIn && state.drawerOpen) renderPinnedNodesDrawer();
       initHeroWordmarkShuffle();
     }
   }, status => {

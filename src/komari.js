@@ -48,6 +48,11 @@ async function requestData(path, init) {
   return body.data;
 }
 
+function readThemeSettings(publicSettings) {
+  if (!isObject(publicSettings)) throw new Error('/api/public: Expected a settings object');
+  return isObject(publicSettings.theme_settings) ? publicSettings.theme_settings : {};
+}
+
 export async function loadDashboard() {
   const [publicSettings, me] = await Promise.all([
     requestData('/api/public'),
@@ -57,19 +62,22 @@ export async function loadDashboard() {
       return body;
     }),
   ]);
-  if (!isObject(publicSettings)) throw new Error('/api/public: Expected a settings object');
+  const settings = readThemeSettings(publicSettings);
 
   const loggedIn = me.logged_in;
   // Komari reports private_site:false to guests holding a valid temporary share cookie.
   const nodes = !loggedIn && publicSettings.private_site === true ? [] : await requestData('/api/nodes');
   if (!Array.isArray(nodes)) throw new Error('/api/nodes: Expected a node array');
-  const settings = isObject(publicSettings.theme_settings) ? publicSettings.theme_settings : {};
   return { nodes, settings, loggedIn, publicSettings };
 }
 
 export async function login({ username, password, twoFactorCode }) {
   const path = '/api/login';
-  const response = await fetchKomari(path, postJson({ username, password, '2fa_code': twoFactorCode }));
+  const response = await fetchKomari(path, {
+    ...postJson({ username, password, '2fa_code': twoFactorCode }),
+    mode: 'same-origin',
+    redirect: 'error',
+  });
   const body = await readJson(response, path);
   if (response.ok && body?.status === 'success') return { status: 'success' };
   if (response.status === 401 && body?.message === '2FA code is required') return { status: '2fa_required' };
@@ -77,12 +85,24 @@ export async function login({ username, password, twoFactorCode }) {
   throw responseError(response, path, body);
 }
 
-export async function saveThemeSettings(settings) {
+export async function saveThemeSettings(changes) {
+  // Komari replaces the whole configuration; keep fields not edited here.
+  const publicSettings = await requestData('/api/public');
+  const settings = readThemeSettings(publicSettings);
+  if (publicSettings.theme !== manifest.short) throw new Error('Pane is no longer the active theme');
   const query = new URLSearchParams({ theme: manifest.short });
   await requestData(`/api/admin/theme/settings?${query}`, postJson({
     ...settings,
-    featured_nodes: JSON.stringify(settings.featured_nodes),
+    ...changes,
+    featured_nodes: JSON.stringify(changes.featured_nodes ?? readFeaturedNodes(settings.featured_nodes)),
   }));
+}
+
+export function readFeaturedNodes(value) {
+  if (typeof value === 'string') {
+    try { value = JSON.parse(value); } catch { return []; }
+  }
+  return Array.isArray(value) ? value.filter((uuid) => typeof uuid === 'string') : [];
 }
 
 function countryCode(value) {

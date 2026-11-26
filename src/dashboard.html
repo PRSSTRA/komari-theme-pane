@@ -243,7 +243,8 @@
 
   <!-- Native Top-Layer Login Alert Dialog -->
   <dialog id="auth-modal" data-open="false" closedby="any" aria-labelledby="auth-title" class="sg-native-dialog">
-    <form id="auth-dialog" data-slot="dialog-content" class="bg-popover w-full max-w-sm rounded-lg p-5">
+    <!-- Komari accepts JSON only; without the submit handler, close without sending credentials. -->
+    <form id="auth-dialog" method="dialog" data-slot="dialog-content" class="bg-popover w-full max-w-sm rounded-lg p-5">
       <div class="flex items-center justify-between gap-3">
         <h2 id="auth-title" class="text-sm font-semibold tracking-tight">登录 Komari</h2>
         <button id="btn-auth-close" type="button" data-slot="button" data-variant="ghost" aria-label="关闭" class="rounded-lg cursor-pointer transition-colors disabled:cursor-not-allowed disabled:opacity-50 focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-(--focus-line) text-muted-foreground hover:bg-accent hover:text-foreground inline-flex h-7 w-7 shrink-0 items-center justify-center">
@@ -254,15 +255,15 @@
       <div class="mt-4 space-y-3">
         <div class="space-y-1.5">
           <label for="auth-user" id="auth-user-label" class="block text-[11px] font-medium" style="color: var(--muted-foreground);">用户名</label>
-          <input id="auth-user" type="text" data-slot="input" placeholder="admin" autocomplete="username" required autofocus class="rounded-lg border transition-colors h-9 w-full px-3 text-xs outline-none placeholder:text-muted-foreground" />
+          <input id="auth-user" name="username" type="text" data-slot="input" placeholder="admin" autocomplete="username" autocorrect="off" autocapitalize="none" spellcheck="false" required autofocus class="rounded-lg border transition-colors h-9 w-full px-3 text-xs outline-none placeholder:text-muted-foreground" />
         </div>
         <div class="space-y-1.5">
           <label for="auth-pass" id="auth-pass-label" class="block text-[11px] font-medium" style="color: var(--muted-foreground);">密码</label>
-          <input id="auth-pass" type="password" data-slot="input" autocomplete="current-password" required class="rounded-lg border transition-colors h-9 w-full px-3 text-xs outline-none" />
+          <input id="auth-pass" name="password" type="password" data-slot="input" autocomplete="current-password" required class="rounded-lg border transition-colors h-9 w-full px-3 text-xs outline-none" />
         </div>
         <div id="auth-otp-field" hidden class="space-y-1.5">
           <label for="auth-otp" id="auth-otp-label" class="block text-[11px] font-medium" style="color: var(--muted-foreground);">两步验证码</label>
-          <input id="auth-otp" name="twoFactorCode" inputmode="numeric" autocomplete="one-time-code" maxlength="6" data-slot="input" class="rounded-lg border transition-colors h-9 w-full px-3 text-xs outline-none" />
+          <input id="auth-otp" name="twoFactorCode" inputmode="numeric" autocomplete="one-time-code" maxlength="6" required disabled data-slot="input" class="rounded-lg border transition-colors h-9 w-full px-3 text-xs outline-none" />
         </div>
         <p id="auth-error" role="alert" class="empty:hidden text-xs" style="color: var(--sg-danger);"></p>
       </div>

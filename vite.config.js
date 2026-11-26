@@ -8,7 +8,8 @@ export default defineConfig(({ command, mode }) => {
     plugins: [tailwindcss()],
     base: command === 'build' ? `/themes/${manifest.short}/dist/` : '/',
     server: VITE_API_TARGET ? {
-      proxy: { '/api': { target: VITE_API_TARGET, changeOrigin: true, ws: true } },
+      // Preserve Host so Komari can validate the browser's Origin.
+      proxy: { '/api': { target: VITE_API_TARGET, ws: true } },
     } : undefined,
   };
 });
