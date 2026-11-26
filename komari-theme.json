@@ -2,7 +2,7 @@
   "name": "Pane",
   "short": "pane",
   "description": { "zh-CN": "基于 Solid Glass 设计系统的厚重烟熏玻璃风格 Komari 监控主题", "en": "A Solid Glass theme for Komari Monitor" },
-  "version": "1.0.1",
+  "version": "1.0.2",
   "author": "Prstra",
   "url": "https://github.com/PRSSTRA/komari-theme-pane",
   "preview": "preview.png",

@@ -1,6 +1,6 @@
 # Komari Pane
 
-![Version](https://img.shields.io/badge/version-v1.0.1-18181b?style=flat-square)
+![Version](https://img.shields.io/badge/version-v1.0.2-18181b?style=flat-square)
 ![Design System](https://img.shields.io/badge/Solid%20Glass-3--Tier%20Materiality-3f3f46?style=flat-square)
 ![Theme](https://img.shields.io/badge/Komari%20Monitor-Theme-52525b?style=flat-square)
 ![License](https://img.shields.io/badge/license-MIT-63ba89?style=flat-square)
@@ -35,7 +35,7 @@
 
 ### 安装与使用
 
-1. 按下方步骤构建主题 ZIP，例如 `temp/komari-theme-pane-1.0.1.zip`，无需解压。
+1. 按下方步骤构建主题 ZIP，例如 `temp/komari-theme-pane-1.0.2.zip`，无需解压。
 2. 登录你的 Komari Monitor 管理后台，进入 **主题管理（Theme Management）**。
 3. 上传 ZIP 并启用 **Komari Pane**，打开站点首页查看节点。
 4. 可在后台主题设置中修改顶部自定义标语、置顶服务器和公告。
@@ -78,14 +78,14 @@ VITE_API_TARGET=http://127.0.0.1:25774 npm run dev
 
 | Table View (Light Theme) | Theme Settings Drawer |
 | :---: | :---: |
-| ![Table View](./docs/table-view.png) | ![Theme Settings Drawer](./docs/theme-settings.png) |
+| ![Table View](./docs/table-view-en.png) | ![Theme Settings Drawer](./docs/theme-settings-en.png) |
 | **Node Details · Load & Network History** | **Node Details · Multi-Track Ping Latency** |
-| ![Node Load History](./docs/detail-load.png) | ![Node Ping Latency](./docs/detail-ping.png) |
+| ![Node Load History](./docs/detail-load-en.png) | ![Node Ping Latency](./docs/detail-ping-en.png) |
 
 ---
 ### Quick Start
 
-1. Build the theme ZIP as shown below, for example `temp/komari-theme-pane-1.0.1.zip`. Do not extract it.
+1. Build the theme ZIP as shown below, for example `temp/komari-theme-pane-1.0.2.zip`. Do not extract it.
 2. Open your Komari Admin panel → **Theme Management**.
 3. Upload the ZIP, activate **Komari Pane**, and open your site's home page to view its nodes.
 4. Optionally set the hero wordmark, pinned servers, and announcement in the admin theme settings.
