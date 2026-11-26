@@ -2951,6 +2951,15 @@ function historyStatus(tab) {
   return '';
 }
 
+function bucketForColumn(buckets, column) {
+  if (!buckets) return -1;
+  return buckets.columns?.[column] ?? column;
+}
+
+function formatBucketTime(buckets, index) {
+  return index < 0 ? "" : `${fmtClock(buckets.starts[index])}–${fmtClock(buckets.ends[index])}`;
+}
+
 function drawDetailSlatsChartCanvas() {
   const card = document.getElementById("detail-chart-card");
   const canvas = document.getElementById("detail-slats-canvas");
@@ -2979,15 +2988,14 @@ function drawDetailSlatsChartCanvas() {
   const gapX = 2.5;
   const gapY = 1.8;
   const roundness = 0.25;
-  const pitchX = slatW + gapX;
+  const cols = Math.max(24, Math.round(W / (slatW + gapX)));
+  const pitchX = W / cols;
   const pitchY = slatH + gapY;
   const radius = Math.max(0.6, roundness * Math.min(slatW * 0.5, slatH * 0.5));
 
-  const cols = Math.max(24, Math.ceil((W + gapX) / pitchX) + 1);
   const rows = Math.max(22, Math.ceil((H + gapY) / pitchY) + 1);
-  const totalGridW = cols * pitchX - gapX;
   const totalGridH = rows * pitchY - gapY;
-  const originX = (W - totalGridW) * 0.5;
+  const originX = (pitchX - slatW) * 0.5;
   const originY = (H - totalGridH) * 0.5;
 
   // Full-bleed left-to-right plot area spanning the entire card width (like Network & Traffic)
@@ -3073,8 +3081,8 @@ function drawDetailSlatsChartCanvas() {
 
     const { cpu: cpuValues, ram: ramValues } = samples;
     const seriesDefs = [
-      { label: "CPU", swatch: "var(--sg-series-cpu)", values: cpuValues },
-      { label: "RAM", swatch: "var(--sg-series-ram)", values: ramValues },
+      { label: "CPU", swatch: "var(--sg-series-cpu)", values: cpuValues, buckets: samples.buckets },
+      { label: "RAM", swatch: "var(--sg-series-ram)", values: ramValues, buckets: samples.buckets },
     ];
 
     const cpuTops = cpuValues.map((v) => {
@@ -3107,11 +3115,12 @@ function drawDetailSlatsChartCanvas() {
       gridBottomY: ramBottomY,
       seriesDefs,
       unit: "%",
-      times: samples.times,
+      history,
     };
 
     for (let c = 0; c < cols; c++) {
       const pCol = c;
+      const bucket = bucketForColumn(samples.buckets, pCol);
       const isLatest = c === cols - 1;
       const isHovered = detailChartHoverCol === pCol;
 
@@ -3125,8 +3134,8 @@ function drawDetailSlatsChartCanvas() {
         const inCpuTrack = r >= cpuRowStart && r <= cpuRowEnd;
         const inRamTrack = r >= ramRowStart && r <= ramRowEnd;
 
-        const isCpuLit = inCpuTrack && r >= cpuTops[pCol];
-        const isRamLit = inRamTrack && r >= ramTops[pCol];
+        const isCpuLit = inCpuTrack && r >= cpuTops[bucket];
+        const isRamLit = inRamTrack && r >= ramTops[bucket];
 
         const { light, tint } = computeSlatWave(cx, cy, W, H);
         drawSlatRoundRect(ctx, x, y, slatW, slatH, radius);
@@ -3136,7 +3145,7 @@ function drawDetailSlatsChartCanvas() {
 
         if (isCpuLit || isRamLit) {
           const pal = isCpuLit ? seriesPalettes.cpu : seriesPalettes.ram;
-          const isCrest = isCpuLit ? r === cpuTops[pCol] : r === ramTops[pCol];
+          const isCrest = isCpuLit ? r === cpuTops[bucket] : r === ramTops[bucket];
           const cr = Math.round(pal.base[0] + (pal.glint[0] - pal.base[0]) * tint);
           const cg = Math.round(pal.base[1] + (pal.glint[1] - pal.base[1]) * tint);
           const cb = Math.round(pal.base[2] + (pal.glint[2] - pal.base[2]) * tint);
@@ -3301,7 +3310,7 @@ function drawDetailSlatsChartCanvas() {
       gridBottomY,
       seriesDefs: visibleSeries,
       unit: "ms",
-      times: samples.times,
+      history,
     };
 
     const lossPal = seriesPalettes.loss;
@@ -3335,8 +3344,9 @@ function drawDetailSlatsChartCanvas() {
         const rightEdgeFade = 0.78 + 0.22 * sgSmoothstep(W - 2, W - 22, cx);
 
         if (activeTr) {
-          const loss = activeTr.losses[pCol];
-          const topRow = activeTr.tops[pCol];
+          const bucket = bucketForColumn(activeTr.buckets, pCol);
+          const loss = activeTr.losses[bucket];
+          const topRow = activeTr.tops[bucket];
           const boost = isHovered ? 0.14 : isLatest ? 0.06 : 0;
           const litEdgeAtten = isHovered ? 1 : (0.82 + 0.18 * leftTickFade) * (0.90 + 0.10 * rightEdgeFade);
 
@@ -3514,15 +3524,14 @@ function drawDetailNetSlatsCanvas() {
   const gapX = 2.5;
   const gapY = 1.8;
   const roundness = 0.25;
-  const pitchX = slatW + gapX;
+  const cols = Math.max(16, Math.round(W / (slatW + gapX)));
+  const pitchX = W / cols;
   const pitchY = slatH + gapY;
 
-  const cols = Math.max(16, Math.ceil((W + gapX) / pitchX) + 1);
   const rows = Math.max(22, Math.ceil((H + gapY) / pitchY) + 1);
 
-  const totalGridW = cols * pitchX - gapX;
   const totalGridH = rows * pitchY - gapY;
-  const originX = (W - totalGridW) * 0.5;
+  const originX = (pitchX - slatW) * 0.5;
   const originY = (H - totalGridH) * 0.5;
   const radius = Math.max(0.6, roundness * Math.min(slatW * 0.5, slatH * 0.5));
 
@@ -3558,9 +3567,8 @@ function drawDetailNetSlatsCanvas() {
 
   const history = detailHistory?.load;
   const samples = history ? history.sample(cols, node.ramTotal * 2 ** 30) : null;
-  const upSamples = samples?.up ?? Array(cols).fill(null);
-  const downSamples = samples?.down ?? upSamples;
-  const times = samples?.times.map(fmtClock) ?? [];
+  const upSamples = samples?.up ?? [];
+  const downSamples = samples?.down ?? [];
 
   const calcNodeCeiling = (arr) => {
     const peak = Math.max(0, ...arr);
@@ -3589,7 +3597,7 @@ function drawDetailNetSlatsCanvas() {
     slatW,
     upSamples,
     downSamples,
-    times,
+    buckets: samples?.buckets,
     upBarTopY,
     downBarTopY,
     downHeaderY,
@@ -3605,8 +3613,9 @@ function drawDetailNetSlatsCanvas() {
   const vigRgb = isDark ? "24, 23, 29" : "236, 239, 245";
 
   for (let c = 0; c < cols; c++) {
-    const upVal = upSamples[c];
-    const downVal = downSamples[c];
+    const bucket = bucketForColumn(samples?.buckets, c);
+    const upVal = upSamples[bucket];
+    const downVal = downSamples[bucket];
     const upLitCount = upVal > 0 ? Math.max(1, Math.round(Math.max(0.08, Math.min(1, upVal / upMax)) * maxBarRows)) : 0;
     const downLitCount = downVal > 0 ? Math.max(1, Math.round(Math.max(0.08, Math.min(1, downVal / downMax)) * maxBarRows)) : 0;
     const upTopLitRow = upBaseRow - upLitCount + 1;
@@ -4095,7 +4104,7 @@ function renderDetailModal() {
       let anchorX = mx;
 
       if (inY && mx >= 0 && mx <= meta.W) {
-        const c = Math.floor((mx - meta.originX) / meta.pitchX);
+        const c = Math.min(meta.plotColEnd, Math.floor(mx / meta.pitchX));
         if (c >= meta.plotColStart && c <= meta.plotColEnd) {
           activeIdx = c - meta.plotColStart;
           anchorX = meta.originX + c * meta.pitchX + meta.slatW * 0.5;
@@ -4107,24 +4116,29 @@ function renderDetailModal() {
           detailChartHoverCol = activeIdx;
           drawDetailSlatsChartCanvas();
         }
-        const timeTxt = fmtClock(meta.times[activeIdx]);
-        const itemsHtml = meta.seriesDefs
-          .map((s) => {
-            const v = s.values[activeIdx];
-            const loss = Array.isArray(s.losses) ? s.losses[activeIdx] : 0;
-            if (meta.unit === "%") {
-              return `<span class="inline-flex items-center gap-1"><span class="inline-block h-[6px] w-[6px] rounded-[1.5px]" style="background:${s.swatch};"></span><span style="color:var(--sg-muted-fg);">${s.label}</span> <strong>${v === null ? "—" : v.toFixed(1) + "%"}</strong></span>`;
-            }
-            if (loss >= 100) {
-              const timeoutTxt = state.lang === "zh-CN" ? "超时 100%" : "Timeout 100%";
-              return `<span class="inline-flex items-center gap-1"><span class="inline-block h-[6px] w-[6px] rounded-[1.5px]" style="background:var(--sg-danger);"></span><span style="color:var(--sg-muted-fg);">${escapeHtml(s.label)}</span> <strong style="color:var(--sg-danger);">${timeoutTxt}</strong></span>`;
-            }
-            const lossSuffix = loss > 0
-              ? ` <span style="color:var(--sg-danger);">(${state.lang === "zh-CN" ? "丢包" : "loss"} ${loss}%)</span>`
-              : "";
-            return `<span class="inline-flex items-center gap-1"><span class="inline-block h-[6px] w-[6px] rounded-[1.5px]" style="background:${s.swatch};"></span><span style="color:var(--sg-muted-fg);">${escapeHtml(s.label)}</span> <strong>${v === null ? "—" : Math.round(v) + "ms"}</strong>${lossSuffix}</span>`;
-          })
-          .join('<span class="mx-1 opacity-40">·</span>');
+        const inspected = meta.seriesDefs.map(series => ({
+          series,
+          index: bucketForColumn(series.buckets, activeIdx),
+        }));
+        const ranges = inspected.map(({ series, index }) =>
+          series.values[index] != null || series.losses?.[index] != null ? formatBucketTime(series.buckets, index) : "");
+        const commonRange = ranges.every(range => range === ranges[0]) ? ranges[0] : "";
+        const { startTime, endTime } = meta.history;
+        const timeTxt = commonRange || fmtClock(startTime + (activeIdx + 0.5) * (endTime - startTime) / meta.plotCols);
+        const itemsHtml = inspected.map(({ series: s, index }, i) => {
+          const v = s.values[index];
+          const loss = s.losses?.[index];
+          const timedOut = loss >= 100;
+          const value = timedOut
+            ? bilingual("超时 100%", "Timeout 100%")
+            : v == null ? "—" : meta.unit === "%" ? `${v.toFixed(1)}%` : `${Math.round(v)}ms`;
+          const lossSuffix = !timedOut && loss > 0
+            ? ` <span style="color:var(--sg-danger);">(${bilingual("丢包", "loss")} ${loss.toFixed(1)}%)</span>`
+            : "";
+          const color = timedOut ? "var(--sg-danger)" : s.swatch;
+          const range = !commonRange && ranges[i] ? ` <span style="color:var(--sg-subtle-fg);">${ranges[i]}</span>` : "";
+          return `<span class="inline-flex items-center gap-1"><span class="inline-block h-[6px] w-[6px] rounded-[1.5px]" style="background:${color};"></span><span style="color:var(--sg-muted-fg);">${escapeHtml(s.label)}</span> <strong${timedOut ? ` style="color:${color};"` : ""}>${value}</strong>${lossSuffix}${range}</span>`;
+        }).join('<span class="mx-1 opacity-40">·</span>');
         detailTip.innerHTML = `<span style="color:var(--sg-subtle-fg);">${timeTxt}</span><span class="mx-1.5 opacity-40">|</span>${itemsHtml}`;
         detailTip.style.transform = "none";
         detailTip.classList.remove("hidden");
@@ -4161,7 +4175,7 @@ function renderDetailModal() {
       if (r.width < 1 || r.height < 1) return;
       const mx = ((evt.clientX - r.left) * meta.rectW) / r.width;
       const my = ((evt.clientY - r.top) * meta.rectH) / r.height;
-      const c = Math.floor((mx - meta.originX) / meta.pitchX);
+      const c = Math.min(meta.cols - 1, Math.floor(mx / meta.pitchX));
       const rowIdx = Math.floor((my - meta.originY) / meta.pitchY);
       const inUp = rowIdx >= 0 && rowIdx <= meta.upBaseRow;
       const inDown = rowIdx > meta.splitRow && rowIdx <= meta.downBaseRow;
@@ -4172,8 +4186,9 @@ function renderDetailModal() {
           detailNetHover = { kind, col: c };
           drawDetailNetSlatsCanvas();
         }
-        const val = isUp ? meta.upSamples[c] : meta.downSamples[c];
-        const ts = meta.times[c];
+        const bucket = bucketForColumn(meta.buckets, c);
+        const val = isUp ? meta.upSamples[bucket] : meta.downSamples[bucket];
+        const ts = val == null ? "" : formatBucketTime(meta.buckets, bucket);
         const arrow = isUp ? "↑" : "↓";
         dnetTip.textContent = `${ts || "—"} · ${arrow} ${val == null ? "—" : formatRate(val)}`;
         dnetTip.style.transform = "none";
