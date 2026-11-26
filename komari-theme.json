@@ -1,8 +1,11 @@
 {
   "name": "Pane",
   "short": "pane",
-  "description": { "zh-CN": "Komari 监控主题", "en": "A Komari monitoring theme" },
+  "description": { "zh-CN": "基于 Solid Glass 设计系统的厚重烟熏玻璃风格 Komari 监控主题", "en": "A Solid Glass theme for Komari Monitor" },
   "version": "1.0.1",
+  "author": "Prstra",
+  "url": "https://github.com/PRSSTRA/komari-theme-pane",
+  "preview": "preview.png",
   "configuration": {
     "type": "managed",
     "name": { "zh-CN": "主题配置", "en": "Theme Settings" },
