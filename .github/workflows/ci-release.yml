@@ -1,0 +1,130 @@
+name: CI and Komari release
+
+on:
+  push:
+    branches: ['**']
+  pull_request:
+
+permissions:
+  contents: read
+
+jobs:
+  check:
+    runs-on: ubuntu-24.04
+    outputs:
+      tag: ${{ steps.version.outputs.tag }}
+    steps:
+      - uses: actions/checkout@v6
+        with:
+          persist-credentials: false
+      - uses: actions/setup-node@v6
+        with:
+          node-version: '24'
+          cache: npm
+      - run: npm ci
+      - run: npm run build
+      - name: Verify package manifest and build
+        shell: bash
+        run: |
+          node -e '
+            const fs = require("node:fs");
+            const manifest = JSON.parse(fs.readFileSync("komari-theme.json", "utf8"));
+            const pkg = JSON.parse(fs.readFileSync("package.json", "utf8"));
+            if (!/^[a-z\d_-]+$/i.test(manifest.short) || !/^\d+\.\d+\.\d+$/.test(manifest.version)) {
+              throw new Error("Expected a valid short name and semver version in komari-theme.json");
+            }
+            if (manifest.version !== pkg.version) {
+              throw new Error(`Version mismatch: komari-theme.json (${manifest.version}) !== package.json (${pkg.version})`);
+            }
+            if (!fs.statSync("dist/index.html").isFile()) {
+              throw new Error("Missing dist/index.html");
+            }
+            if (manifest.preview !== undefined && (manifest.preview !== "preview.png" || !fs.statSync("preview.png").isFile())) {
+              throw new Error("Manifest preview must point to root preview.png");
+            }
+          '
+      - name: Identify release version
+        id: version
+        shell: bash
+        run: |
+          if [[ "$GITHUB_EVENT_NAME" != push || "$GITHUB_REF" != refs/heads/main ]]; then
+            exit 0
+          fi
+          version=$(node -p 'require("./komari-theme.json").version')
+          if [[ ! "$version" =~ ^[0-9]+\.[0-9]+\.[0-9]+$ ]]; then
+            echo 'Invalid version in komari-theme.json' >&2
+            exit 1
+          fi
+          echo "tag=v$version" >> "$GITHUB_OUTPUT"
+      - uses: actions/upload-artifact@v6
+        if: steps.version.outputs.tag != ''
+        with:
+          name: komari-dist
+          path: dist/
+          if-no-files-found: error
+
+  release:
+    needs: check
+    if: needs.check.outputs.tag != ''
+    runs-on: ubuntu-24.04
+    concurrency:
+      group: komari-release-${{ needs.check.outputs.tag }}
+    permissions:
+      contents: write
+    env:
+      TAG: ${{ needs.check.outputs.tag }}
+    steps:
+      - name: Check GitHub Release
+        id: version
+        env:
+          GH_TOKEN: ${{ github.token }}
+        shell: bash
+        run: |
+          draft=$(gh api --paginate "repos/$GITHUB_REPOSITORY/releases?per_page=100" --jq ".[] | select(.tag_name == \"$TAG\") | .draft")
+          case "$draft" in
+            false) echo "$TAG is already published; skipping." ;;
+            true) echo 'pending=draft' >> "$GITHUB_OUTPUT" ;;
+            '') echo 'pending=new' >> "$GITHUB_OUTPUT" ;;
+            *) echo "Unexpected release status for $TAG" >&2; exit 1 ;;
+          esac
+      - uses: actions/checkout@v6
+        if: steps.version.outputs.pending != ''
+        with:
+          ref: ${{ github.sha }}
+      - uses: actions/download-artifact@v7
+        if: steps.version.outputs.pending != ''
+        with:
+          name: komari-dist
+          path: dist/
+      - name: Tag and publish Komari package
+        if: steps.version.outputs.pending != ''
+        env:
+          GH_TOKEN: ${{ github.token }}
+          GH_REPO: ${{ github.repository }}
+          PENDING: ${{ steps.version.outputs.pending }}
+        shell: bash
+        run: |
+          version="${TAG#v}"
+          archive="temp/komari-theme-pane-${version}.zip"
+          mkdir -p temp
+          zip -q -r -FS "$archive" komari-theme.json preview.png LICENSE dist -x '*/.*' '__MACOSX/*' '*/__MACOSX/*'
+
+          ref="refs/tags/$TAG"
+          existing=$(git ls-remote --refs origin "$ref")
+          if [[ -z "$existing" ]]; then
+            git tag "$TAG" "$GITHUB_SHA"
+            git push origin "$ref"
+          else
+            git fetch --no-tags origin "$ref"
+            if [[ "$(git rev-parse 'FETCH_HEAD^{commit}')" != "$GITHUB_SHA" ]]; then
+              echo "Tag $TAG points to another commit; refusing to publish a mismatched package." >&2
+              exit 1
+            fi
+          fi
+
+          if [[ "$PENDING" == draft ]]; then
+            gh release upload "$TAG" "$archive" --clobber
+            gh release edit "$TAG" --draft=false
+          else
+            gh release create "$TAG" "$archive" --verify-tag --generate-notes
+          fi
