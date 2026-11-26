@@ -2,22 +2,13 @@
 <html lang="zh-CN">
   <head>
     <meta charset="UTF-8" />
-    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-    <title>Komari Monitor</title>
+    <meta name="viewport" content="width=device-width, initial-scale=1" />
+    <meta name="color-scheme" content="light dark" />
     <meta name="description" content="A simple server monitor tool." />
-    <link rel="icon" href="data:image/svg+xml,%3Csvg%20xmlns='http://www.w3.org/2000/svg'%20viewBox='0%200%2024%2024'%3E%3Crect%20width='24'%20height='24'%20rx='6'%20fill='%2326262b'/%3E%3Cpath%20d='M5%206h14v12H5zM5%2010h14M12%2010v8'%20fill='none'%20stroke='%23e4e4e7'%20stroke-width='1.4'/%3E%3C/svg%3E" />
-    <script>
-      {
-        let appearance;
-        try { appearance = localStorage.getItem('appearance'); } catch {}
-        document.documentElement.classList.toggle('dark', appearance === 'system'
-          ? matchMedia('(prefers-color-scheme: dark)').matches
-          : appearance !== 'light');
-      }
-    </script>
+    <title>Komari Monitor</title>
   </head>
-<body>
-    <div id="root"></div>
-    <script type="module" src="/src/main.tsx"></script>
+  <body>
+    <div id="app"></div>
+    <script type="module" src="/src/main.js"></script>
   </body>
 </html>

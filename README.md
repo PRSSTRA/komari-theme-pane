@@ -1,78 +1,114 @@
 # Komari Pane
 
-Komari Pane 是 [Komari Monitor](https://github.com/komari-monitor/komari) 的只读仪表盘主题。用 Solid Glass 的面板、卡片与浮层区分信息层级；不替换 Komari 的管理后台或终端。
+![Version](https://img.shields.io/badge/version-v1.0.1-18181b?style=flat-square)
+![Design System](https://img.shields.io/badge/Solid%20Glass-3--Tier%20Materiality-3f3f46?style=flat-square)
+![Theme](https://img.shields.io/badge/Komari%20Monitor-Theme-52525b?style=flat-square)
+![License](https://img.shields.io/badge/license-MIT-63ba89?style=flat-square)
 
-`v1.0.0` · `Solid Glass` · [MIT](./LICENSE) · [English overview](#english-overview)
+[中文文档](#中文文档) · [English Overview](#english-overview)
 
-![Komari Pane 深色仪表盘预览（开发演示数据）](./preview.png)
+![Komari Pane Preview](./preview.png)
 
-## 安装与快速开始
+---
 
-1. 按[本地打包和开发](#本地打包和开发)生成 `komari-theme-pane-1.0.0.zip`；发布后可从 [GitHub Releases](https://github.com/PRSSTRA/komari-theme-pane/releases) 下载。不要上传 GitHub 自动生成的源码包。
-2. 在 Komari 后台的**主题管理**上传并启用 **Komari Pane**，回到站点首页查看节点。导航栏右侧的**登录 / 管理后台**始终打开 Komari 自带的 `/admin`。
-3. 在后端主题页设置公告、顶部标语、置顶节点及其他站点默认值。访客可从首页**主题配置**调整本机的地图、总览与透明度；**恢复站点默认**清除本地覆盖。
+## 中文文档
 
-## 看什么
+**Komari Pane** 是面向 [Komari Monitor](https://github.com/komari-monitor/komari) 的监控主题，使用 **JavaScript、Vite、Tailwind CSS v4** 和 **Solid Glass** 设计系统，将节点状态、流量和历史指标集中呈现在一个面板中。
 
-- 点阵世界地图使用 208×96 轮廓，提供 UTC+8 时钟、晨昏线以及重叠节点的聚合和散开。坐标由上报地区和机房名线索估算，不用于精确定位。
-- 网络、负载与 Ping 使用细方格图表。网络速率按字节大小切换单位；总览分别汇总上行和下行累计流量，不估算「今日流量」。Ping 轨道可显示采样内的部分丢包与完整超时。
-- 标准卡片、紧凑卡片和列表共享分组、搜索和排序。节点详情保留系统信息、配额和公开记录；没有 Ping 任务的节点不显示 Ping 标签。
-- 页面提供明暗双模、跟随系统和低透明模式。费用、到期时间和临期事件仅在会话已登录且站点开启 `show_pricing` 时显示；公开 API 字段的访问控制仍由 Komari 服务端负责。
+### 核心特性
 
-## 后台托管配置
+- **外观与材质**：采用 Solid Glass 玻璃视觉风格，支持深色 / 浅色 / 跟随系统切换、中英双语切换，以及低透明高性能模式。
+- **世界地图**：点阵式全球节点分布图，支持实时太阳晨昏线、重合节点聚合或展开显示，点击可直达节点详情。
+- **遥测与历史图表**：实时展示全网与单节点网络速率及流量汇总，详情页支持 CPU / 内存负载历史，以及多轨 Ping 延迟与丢包可视化。
+- **多视图与筛选**：提供标准卡片、紧凑卡片与列表三种视图，支持分组、搜索、仅看在线筛选及多维度排序。
+- **访客偏好配置**：内置主题配置抽屉，访客可按个人习惯调整界面显示，并支持一键恢复站点默认。
 
-| 配置键 | 默认值 | 用途 |
-| --- | --- | --- |
-| `hero_title` | 空 | 顶部标语，留空使用站点名 |
-| `site_notice` | 空 | 首页公告，留空隐藏 |
-| `show_world_map` | `true` | 全球节点分布 |
-| `map_overlap_mode` | `cluster` | 聚合；也可选择 `spread` 散开 |
-| `show_map_clock` | `true` | UTC+8 地图时钟 |
-| `show_solar_terminator` | `true` | 地图晨昏线 |
-| `show_summary_bar` | `true` | 网络与流量总览 |
-| `show_event_feed` | `true` | 实时节点事件 |
-| `default_view` | `card` | `card` 卡片或 `table` 列表 |
-| `card_density` | `comfortable` | 标准卡片；`compact` 为紧凑卡片 |
-| `show_offline_first` | `true` | 默认排序下，离线节点优先跟在置顶节点之后 |
-| `show_total_traffic` | `true` | 节点累计流量 |
-| `show_tags` | `true` | 节点标签 |
-| `show_load_temp` | `false` | Load 和有上报的温度 |
-| `show_traffic_bar` | `false` | 有限配额时显示用量进度条 |
-| `show_pricing` | `false` | 向已登录会话显示费用及到期信息；不可本地覆盖 |
-| `featured_nodes` | `[]` | 后台配置的置顶节点 |
-| `featured_ping_tasks` | `[]` | 优先展示的关联 Ping 任务，每个节点最多三条 |
-| `reduce_transparency` | `false` | 不透明面板，减少背景模糊 |
-| `footer_extra` | 空 | 页脚追加纯文本 |
+### 界面预览
 
-## 本地打包和开发
+| 列表视图（浅色主题） | 主题配置抽屉 |
+| :---: | :---: |
+| ![列表视图](./docs/table-view.png) | ![主题配置抽屉](./docs/theme-settings.png) |
+| **节点详情 · 负载与网络历史** | **节点详情 · 多轨 Ping 延迟** |
+| ![节点详情负载历史](./docs/detail-load.png) | ![节点详情 Ping 延迟](./docs/detail-ping.png) |
 
-在仓库根目录执行。需要 Node.js 22.13+、pnpm 11 和 Info-ZIP 的 `zip`。
+---
 
-```sh
-pnpm install --frozen-lockfile
-pnpm package
+### 安装与使用
+
+1. 按下方步骤构建主题 ZIP，例如 `temp/komari-theme-pane-1.0.1.zip`，无需解压。
+2. 登录你的 Komari Monitor 管理后台，进入 **主题管理（Theme Management）**。
+3. 上传 ZIP 并启用 **Komari Pane**，打开站点首页查看节点。
+4. 可在后台主题设置中修改顶部自定义标语、置顶服务器和公告。
+
+---
+
+### 本地开发与自行构建
+
+```bash
+# 克隆仓库并安装依赖
+git clone https://github.com/PRSSTRA/komari-theme-pane.git
+cd komari-theme-pane
+npm install
+
+# 生产构建并打包
+npm run package
 ```
 
-打包结果在 `release/komari-theme-pane-1.0.0.zip`。修改源码后可用 `pnpm typecheck` 检查类型。
+ZIP 输出到 `temp/komari-theme-pane-<版本号>.zip`。如需本地预览，启动开发服务器并将 API 和 WebSocket 代理到可访问的 Komari 后端：
 
-连接 Komari 调试：
-
-```sh
-VITE_API_TARGET=http://127.0.0.1:25774 pnpm dev
+```bash
+VITE_API_TARGET=http://127.0.0.1:25774 npm run dev
 ```
 
-将地址换成测试实例；也支持原来的 `KOMARI_URL`。未连接可用后端时，开发模式可用演示数据；私有站点仍按权限展示，生产构建不包含演示数据。
+---
 
-## English overview
+## English Overview
 
-Komari Pane is a read-only Solid Glass theme for Komari Monitor. It includes a dot-matrix topology map, network and load histories, Ping latency and loss tracks, and synchronized card and table views. The theme leaves Komari’s `/admin` and terminal intact.
+**Komari Pane** is a theme for [Komari Monitor](https://github.com/komari-monitor/komari), built with **JavaScript, Vite, Tailwind CSS v4**, and the **Solid Glass** design system.
 
-**Quick start:** With Node.js 22.13+, pnpm 11, and Info-ZIP installed, run `pnpm install --frozen-lockfile` and `pnpm package`. Upload `release/komari-theme-pane-1.0.0.zip` in Komari’s theme manager, enable **Komari Pane**, and open the site homepage. Once published, the same ZIP will be available from [Releases](https://github.com/PRSSTRA/komari-theme-pane/releases). Do not upload GitHub’s automatic source archives.
+### Highlights
 
-Use the admin theme settings to pin nodes, select Ping tasks, and set site-wide defaults. Visitors can change display preferences in their own browser and restore site defaults at any time.
+- **Appearance & Materiality**: Solid Glass styling with Dark / Light / System modes, Chinese & English UI, and a reduced-transparency performance mode.
+- **World Map**: Dot-matrix global node map with a live solar terminator, overlap clustering or spreading, and quick access to node details.
+- **Telemetry & Charts**: Live aggregate and per-node network throughput, traffic totals, CPU/RAM load history, and multi-track Ping latency with packet-loss visualization.
+- **Multiple Views & Filtering**: Switch between standard cards, compact cards, and table view, with group tabs, search, online filtering, and sorting.
+- **Visitor Preferences**: Built-in settings drawer for customizing local display options with one-click reset to site defaults.
 
-For development, run `VITE_API_TARGET=http://127.0.0.1:25774 pnpm dev` and replace the example URL with the address of your test Komari instance.
+### Screenshots
 
-## 致谢和许可
+| Table View (Light Theme) | Theme Settings Drawer |
+| :---: | :---: |
+| ![Table View](./docs/table-view.png) | ![Theme Settings Drawer](./docs/theme-settings.png) |
+| **Node Details · Load & Network History** | **Node Details · Multi-Track Ping Latency** |
+| ![Node Load History](./docs/detail-load.png) | ![Node Ping Latency](./docs/detail-ping.png) |
 
-感谢 [Komari Monitor](https://github.com/komari-monitor/komari)、[Solid Glass](https://github.com/deeplethe/solid-glass) 与 Natural Earth。主题采用 [MIT License](./LICENSE)。相关接口和安装约定见 [Komari 主题开发指南](https://komari-document.pages.dev/dev/theme)。
+---
+### Quick Start
+
+1. Build the theme ZIP as shown below, for example `temp/komari-theme-pane-1.0.1.zip`. Do not extract it.
+2. Open your Komari Admin panel → **Theme Management**.
+3. Upload the ZIP, activate **Komari Pane**, and open your site's home page to view its nodes.
+4. Optionally set the hero wordmark, pinned servers, and announcement in the admin theme settings.
+
+---
+### Development & Build
+
+```bash
+npm install
+npm run package
+```
+
+The archive is written to `temp/komari-theme-pane-<version>.zip`. For local development, point the dev server at a running Komari backend to proxy API and WebSocket traffic:
+
+```bash
+VITE_API_TARGET=http://127.0.0.1:25774 npm run dev
+```
+
+---
+
+## Credits & License
+
+- **[Komari Monitor](https://github.com/komari-monitor/komari)** — Server monitoring backend and theme ecosystem
+- **[Solid Glass (`deeplethe/solid-glass`)](https://github.com/deeplethe/solid-glass)** — Physical glass surface tokens and component styling
+- **Repository**: [https://github.com/PRSSTRA/komari-theme-pane](https://github.com/PRSSTRA/komari-theme-pane)
+- **License**: Released under the [MIT License](./LICENSE) © 2026 **Prstra**

@@ -1,0 +1,32 @@
+/* Solid Glass upstream 233923dbbb62b8752297795b599a77fc4ca0cb8b. */
+@import "tailwindcss";
+@import "./solid-glass.css";
+
+/* https://deeplethe.github.io/solid-glass/create?preset=03011201011 */
+:root {
+  --background: oklch(0.925 0.008 286);
+  --panel: oklch(0.975 0.008 286 / 28%);
+  --card: oklch(0.98 0.008 286 / 40%);
+  --popover: oklch(0.985 0.008 286 / 86%);
+  --glass-rim: oklch(1 0 0 / 55%);
+  --glass-control-rim: oklch(1 0 0 / 50%);
+  --glass-shade: oklch(0.3 0.06 265 / 14%);
+  --glass-contact: oklch(0.25 0.03 265 / 3%);
+  --glass-lift: oklch(0.25 0.03 265 / 7%);
+}
+
+.dark {
+  --background: oklch(0.16 0.007 286);
+  --panel: oklch(1 0 0 / 3%);
+  --card: oklch(0.31 0.007 286 / 30%);
+  --popover: oklch(0.22 0.007 286 / 86%);
+  --glass-rim: oklch(1 0 0 / 8%);
+  --glass-control-rim: oklch(1 0 0 / 5%);
+  --glass-shade: oklch(0 0 0 / 30%);
+  --glass-contact: oklch(0 0 0 / 5%);
+  --glass-lift: oklch(0 0 0 / 11%);
+}
+
+@theme {
+  --font-sans: ui-sans-serif, system-ui, -apple-system, "Segoe UI", sans-serif;
+}
