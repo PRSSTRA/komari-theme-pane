@@ -272,6 +272,12 @@ function formatUptime(sec) {
   return d > 0 ? `${d}d ${h}h` : `${h}h`;
 }
 
+const capacityNumber = new Intl.NumberFormat("en", { maximumFractionDigits: 1, useGrouping: false });
+
+function formatCapacity(value) {
+  return capacityNumber.format(value);
+}
+
 function formatRateParts(mbps) {
   if (!Number.isFinite(mbps) || mbps <= 0) return { value: "0", unit: "B/s", text: "0 B/s" };
   const bps = mbps * 1024 * 1024;
@@ -2675,8 +2681,8 @@ function renderCardGrid(list) {
 
             <div class="grid ${compact ? "grid-cols-3 gap-2.5" : "grid-cols-1 gap-2"}">
               ${renderMeter("CPU", n.online ? `${n.cpu.toFixed(1)}%` : "—", n.online ? n.cpu : 0, "", "cpu")}
-              ${renderMeter("RAM", n.online && n.ramTotal ? `${ramPct.toFixed(0)}%` : "—", n.online ? ramPct : 0, compact || !n.online || !n.ramTotal ? "" : `${n.ramUsed.toFixed(1)}/${n.ramTotal}G`, "ram")}
-              ${renderMeter("Disk", n.hasTelemetry && n.diskTotal ? `${diskPct.toFixed(0)}%` : "—", diskPct, compact || !n.hasTelemetry || !n.diskTotal ? "" : `${n.diskUsed.toFixed(0)}/${n.diskTotal}G`, "disk")}
+              ${renderMeter("RAM", n.online && n.ramTotal ? `${ramPct.toFixed(0)}%` : "—", n.online ? ramPct : 0, compact || !n.online || !n.ramTotal ? "" : `${formatCapacity(n.ramUsed)}/${formatCapacity(n.ramTotal)}G`, "ram")}
+              ${renderMeter("Disk", n.hasTelemetry && n.diskTotal ? `${diskPct.toFixed(0)}%` : "—", diskPct, compact || !n.hasTelemetry || !n.diskTotal ? "" : `${formatCapacity(n.diskUsed)}/${formatCapacity(n.diskTotal)}G`, "disk")}
             </div>
 
             <div class="sg-inset-pane rounded-lg px-2.5 py-2 text-[11px]">
@@ -3761,7 +3767,7 @@ function renderDetailModal() {
     const loadLegendHtml = `
       <div class="flex flex-wrap items-center gap-4 text-[11px]" style="color: var(--sg-muted-fg);">
         <span class="flex items-center gap-1.5"><span class="h-[7px] w-[7px] rounded-[1.5px]" style="background: var(--sg-series-cpu);"></span>CPU (%) · <strong class="mono-num" style="color: var(--sg-fg);">${node.online ? node.cpu.toFixed(1) + "%" : "—"}</strong></span>
-        <span class="flex items-center gap-1.5"><span class="h-[7px] w-[7px] rounded-[1.5px]" style="background: var(--sg-series-ram);"></span>RAM (%) · <strong class="mono-num" style="color: var(--sg-fg);">${ramPctVal}</strong> <span class="mono-num text-[10.5px]" style="color: var(--sg-subtle-fg);">(${node.ramUsed.toFixed(1)} / ${node.ramTotal} GB)</span></span>
+        <span class="flex items-center gap-1.5"><span class="h-[7px] w-[7px] rounded-[1.5px]" style="background: var(--sg-series-ram);"></span>RAM (%) · <strong class="mono-num" style="color: var(--sg-fg);">${ramPctVal}</strong> ${node.online && node.ramTotal > 0 ? `<span class="mono-num text-[10.5px]" style="color: var(--sg-subtle-fg);">(${formatCapacity(node.ramUsed)} / ${formatCapacity(node.ramTotal)} GB)</span>` : ""}</span>
       </div>
     `;
     if (pingCount === 0) {
@@ -3854,7 +3860,7 @@ function renderDetailModal() {
   }
   sysRows.push([
     node.swapTotalGB > 0 ? (isZh ? "内存 / 交换" : "RAM / Swap") : (isZh ? "内存" : "RAM"),
-    `<span class="mono-num">${node.swapTotalGB > 0 ? `${node.ramTotal} GB / ${node.swapTotalGB} GB` : `${node.ramTotal} GB`}</span>`,
+    `<span class="mono-num">${node.ramTotal > 0 ? `${formatCapacity(node.ramTotal)} GB` : "—"}${node.swapTotalGB > 0 ? ` / ${formatCapacity(node.swapTotalGB)} GB` : ""}</span>`,
   ]);
   sysRows.push([
     isZh ? "负载 1m / 5m / 15m" : "Load 1m / 5m / 15m",
@@ -3963,7 +3969,7 @@ function renderDetailModal() {
       </div>
       <div class="sg-inset-pane rounded-lg p-2.5">
         <div class="text-[11px]" style="color: var(--sg-muted-fg);">Disk</div>
-        <div class="mt-1 text-sm font-semibold mono-num">${node.diskUsed.toFixed(0)} / ${node.diskTotal} GB</div>
+        <div class="mt-1 text-sm font-semibold mono-num">${node.hasTelemetry && node.diskTotal > 0 ? `${formatCapacity(node.diskUsed)} / ${formatCapacity(node.diskTotal)} GB` : "—"}</div>
       </div>
       <div class="sg-inset-pane rounded-lg p-2.5">
         <div class="text-[11px]" style="color: var(--sg-muted-fg);">TCP / UDP / Proc</div>
