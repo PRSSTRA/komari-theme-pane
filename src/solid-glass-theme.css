@@ -2,8 +2,10 @@
 @import "tailwindcss";
 @import "./solid-glass.css";
 
-/* https://deeplethe.github.io/solid-glass/create?preset=03011201011 */
+/* https://deeplethe.github.io/solid-glass/create?preset=03011202011 */
 :root {
+  --glass-blur: blur(48px) saturate(180%);
+  --glass-blur-control: blur(24px);
   --background: oklch(0.925 0.008 286);
   --panel: oklch(0.975 0.008 286 / 28%);
   --card: oklch(0.98 0.008 286 / 40%);
@@ -16,6 +18,7 @@
 }
 
 .dark {
+  --glass-blur: blur(48px);
   --background: oklch(0.16 0.007 286);
   --panel: oklch(1 0 0 / 3%);
   --card: oklch(0.31 0.007 286 / 30%);

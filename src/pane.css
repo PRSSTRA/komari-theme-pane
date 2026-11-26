@@ -6,7 +6,75 @@
   transition: background-color 180ms ease, color 180ms ease;
 }
 
+:root {
+  --sg-subtle-fg: oklch(0.56 0 0);
+  --sg-series-ct: var(--sg-series-cpu);
+  --sg-series-cu: var(--sg-warn);
+  --sg-series-cm: var(--sg-success);
+  --sg-series-ram: var(--sg-success);
+}
+
+:root:not(.dark) {
+  /* Remove the 3 colored ambient backdrop lights so translucent Zinc panes stay uniform everywhere. */
+  --light-1: transparent;
+  --light-2: transparent;
+  --light-3: transparent;
+
+  /* Align light-mode neutral chrome, edges, shadows, and states to the Zinc (hue 286) preset. */
+  --secondary: oklch(0.3 0.02 286 / 9%);
+  --muted: oklch(0.3 0.02 286 / 7%);
+  --accent: oklch(0.3 0.02 286 / 9%);
+  --border: oklch(0.3 0.02 286 / 13%);
+  --input: oklch(0.3 0.02 286 / 15%);
+  --glass-edge: oklch(0.38 0.03 286 / 10%);
+  --popover-edge: oklch(0.38 0.03 286 / 22%);
+  --popover-under: oklch(0.38 0.03 286 / 16%);
+  --glass-shade: oklch(0.3 0.06 286 / 14%);
+  --glass-contact: oklch(0.25 0.03 286 / 3%);
+  --glass-lift: oklch(0.25 0.03 286 / 7%);
+  --glass-state: oklch(0.3 0.02 286 / 8%);
+  --glass-state-rim: var(--glass-control-rim);
+  --glass-state-edge: var(--glass-edge);
+  --glass-state-armed: oklch(0.3 0.02 286 / 26%);
+  --hover: oklch(0.3 0.02 286 / 10%);
+  --hover-faint: oklch(0.3 0.02 286 / 5.5%);
+  --field-edge: var(--glass-edge);
+  --sg-subpane-edge: var(--glass-edge);
+  --well-shade: oklch(0.3 0.06 286 / 14%);
+  --knob-shade: oklch(0.3 0.06 286 / 30%);
+  --mark-edge: oklch(0.3 0.02 286 / 22%);
+  --mark-line: oklch(0.3 0.02 286 / 30%);
+
+  /* Composited Solid Glass Zinc ladder (preset 03011202011) for opaque mode and recessed wells. */
+  --pane-solid-panel: oklch(0.939 0.008 286);
+  --pane-solid-card: oklch(0.955 0.008 286);
+  --pane-solid-popover: oklch(0.977 0.007 286);
+  --sg-well-surface: var(--pane-solid-panel);
+
+  --sg-success: #56a879;
+  --sg-warn: #d49a52;
+  --sg-danger: #d96b63;
+  --sg-ink-fill: oklch(0.24 0 0 / 84%);
+  --sg-series-cpu: #4476a4;
+  --sg-tick-fg: #3e4450;
+  --sg-tick-shadow: 0 1px 2px rgba(255, 255, 255, 0.78);
+  --sg-wordmark-top: rgba(22, 24, 34, 0.28);
+  --sg-wordmark-bot: rgba(22, 24, 34, 0.07);
+  --sg-wordmark-alert-top: rgba(217, 107, 99, 0.44);
+  --sg-wordmark-alert-bot: rgba(217, 107, 99, 0.10);
+}
+
 :root.dark {
+  /* Match field borders to the Soft Rim control hairline (--glass-edge) in dark mode. */
+  --field-edge: var(--glass-edge);
+  --sg-subpane-edge: var(--glass-inner);
+
+  /* Composited Solid Glass Zinc ladder (preset 03011202011) for opaque mode and recessed wells. */
+  --pane-solid-panel: oklch(0.193 0.006 286);
+  --pane-solid-card: oklch(0.228 0.007 286);
+  --pane-solid-popover: oklch(0.218 0.007 286);
+  --sg-well-surface: var(--pane-solid-panel);
+
   --sg-success: #63ba89;
   --sg-warn: #dba559;
   --sg-danger: #da7269;
@@ -14,68 +82,94 @@
   --sg-series-cpu: #96c4ec;
   --sg-tick-fg: #c8ccd2;
   --sg-tick-shadow: 0 1px 2px rgba(0, 0, 0, 0.68);
-  --sg-recessed: oklch(0.193 0.007 286);
-  --pane-solid-panel: oklch(0.19 0.007 286);
-  --pane-solid-card: oklch(0.225 0.007 286);
-  --pane-solid-popover: oklch(0.22 0.007 286);
   --sg-wordmark-top: rgba(255, 255, 255, 0.28);
   --sg-wordmark-bot: rgba(255, 255, 255, 0.07);
   --sg-wordmark-alert-top: rgba(218, 114, 105, 0.44);
   --sg-wordmark-alert-bot: rgba(218, 114, 105, 0.10);
 }
 
-:root {
-  --sg-subtle-fg: oklch(0.56 0 0);
-  --sg-success: #56a879;
-  --sg-warn: #d49a52;
-  --sg-series-ct: var(--sg-series-cpu);
-  --sg-series-cu: var(--sg-warn);
-  --sg-series-cm: var(--sg-success);
-  --sg-danger: #d96b63;
-  --sg-ink-fill: oklch(0.24 0 0 / 84%);
-  --sg-series-cpu: #4476a4;
-  --sg-series-ram: var(--sg-success);
-  --sg-tick-fg: #3e4450;
-  --sg-tick-shadow: 0 1px 2px rgba(255, 255, 255, 0.78);
-  --sg-recessed: oklch(0.938 0.008 286);
-  --pane-solid-panel: oklch(0.947 0.008 286);
-  --pane-solid-card: oklch(0.958 0.008 286);
-  --pane-solid-popover: oklch(0.98 0.008 286);
-  --sg-wordmark-top: rgba(22, 24, 34, 0.28);
-  --sg-wordmark-bot: rgba(22, 24, 34, 0.07);
-  --sg-wordmark-alert-top: rgba(217, 107, 99, 0.44);
-  --sg-wordmark-alert-bot: rgba(217, 107, 99, 0.10);
+/* Unified overview panel heading bar: identical top inset, height, and title scale across Map, Network, and Events. */
+.sg-panel-header {
+  display: flex;
+  min-height: 2rem;
+  align-items: center;
+  justify-content: space-between;
+  gap: 0.375rem 0.75rem;
+}
+.sg-panel-title {
+  display: inline-flex;
+  min-width: 0;
+  align-items: center;
+  gap: 0.45rem;
+  font-size: 1rem;
+  font-weight: 600;
+  line-height: 1.2;
+  letter-spacing: -0.018em;
+  color: var(--foreground);
+  white-space: nowrap;
+}
+.sg-panel-title-icon {
+  width: 1rem;
+  height: 1rem;
+  flex-shrink: 0;
+  color: var(--muted-foreground);
+}
+.sg-detail-header {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 0.25rem 0.5rem;
+}
+.sg-detail-title {
+  display: inline-flex;
+  min-width: 0;
+  align-items: center;
+  gap: 0.45rem;
+  font-size: 0.9375rem;
+  font-weight: 600;
+  line-height: 1.2;
+  letter-spacing: -0.015em;
+  color: var(--foreground);
+  white-space: nowrap;
 }
 
-/* Keep the network panels' shadows neutral in light mode, as they are in dark mode. */
-:root:not(.dark) :is(#summary-bar, #detail-net-cell) {
-  --glass-contact: oklch(0.25 0 0 / 3%);
-  --glass-shade: oklch(0.3 0 0 / 14%);
-}
-
-/* Composite the chart panel over the page color, not the enclosing popover. */
-:is(#detail-chart-card, #detail-net-cell) {
-  background: linear-gradient(var(--panel), var(--panel)) var(--background);
+/* Detail chart panels and readout shells sit on their parent glass without a second blur or lift. */
+:is(#detail-chart-card, #detail-net-cell, .sg-spec-shell, .sg-table-shell) {
   -webkit-backdrop-filter: none;
   backdrop-filter: none;
-}
-.dark :is(#detail-chart-card, #detail-net-cell) {
-  background-color: color-mix(in oklab, var(--background), white 1.5%);
+  box-shadow:
+    inset 0 1px 0 var(--glass-rim),
+    inset 0 0 0 1px var(--glass-inner),
+    0 0 0 1px var(--glass-edge),
+    0 1px 2px var(--glass-contact);
 }
 
-/* Keep the outlines of the System Info and node table readouts. */
+/* Inset sub-panes (card traffic box, detail KPI tiles, billing card, drawer groups) use the same soft control highlight as outline buttons. */
+:is(div, li, section):not([data-slot]).border[class*="rounded-"]:not([class*="bg-"]):not(.border-dashed) {
+  border-width: 0;
+  box-shadow:
+    inset 0 1px 0 var(--glass-control-rim),
+    0 0 0 1px var(--sg-subpane-edge),
+    0 1px 2px var(--glass-contact);
+}
+
+/* Match detail charts and System Info shell to homepage panel/table tones instead of double-compositing over the popover. */
+:is(#detail-chart-card, #detail-net-cell) {
+  background-color: var(--sg-well-surface);
+}
+.sg-spec-shell {
+  background-color: var(--pane-solid-card);
+}
+
+/* Keep the recessed outlines and unified surface of System Info and node table readouts. */
 .sg-spec-body,
 .sg-table-body {
+  background-color: var(--sg-well-surface);
+  border-radius: max(0px, calc(var(--radius) - 6px));
   box-shadow: inset 0 0 0 1px var(--glass-edge), inset 0 1px 2px var(--well-shade);
 }
-.sg-spec-body {
-  background-color: var(--popover);
-}
-.sg-table-body {
-  background-color: var(--sg-recessed);
-}
 .sg-spec-row {
-  border-radius: calc(var(--radius-control) * 0.75);
+  border-radius: max(4px, calc(var(--radius) - 8px));
   transition: background-color 110ms ease;
 }
 @media (hover: hover) {
@@ -105,18 +199,48 @@
     transform 130ms cubic-bezier(0.16, 1, 0.3, 1);
 }
 
-/* Use the Soft Rim surface highlight on node badges and the online filter. */
-.km-node-badge,
-#btn-online-only {
-  --glass-control-rim: var(--glass-rim);
-}
-#btn-online-only {
-  --glass-state-rim: var(--glass-rim);
+/* Match outline buttons and toggles to the Soft Rim control hairline (--glass-edge) so the 1px top rim never merges with a bright border into a 2px bar. */
+:is([data-slot="button"], .group\/button):is([data-variant="outline"], .bg-background):not(:focus-visible):not([aria-invalid="true"]),
+:is([data-slot="toggle"], [data-slot="toggle-group-item"])[data-variant="outline"]:not([data-pressed]):not([aria-pressed="true"]):not(:focus-visible):not([aria-invalid="true"]) {
+  border-color: var(--glass-edge);
 }
 
-:is(.glass-chosen, .glass-held) {
-  --glass-state-rim: var(--glass-control-rim);
+/* Unify pressed/expanded states on standalone toolbar controls (#btn-online-only & #sort-select-trigger) across Light and Dark modes without 2px border+rim doubling. */
+:is(
+  [data-slot="toggle"][data-variant="outline"]:is([data-pressed], [aria-pressed="true"]),
+  [data-slot="select-trigger"][aria-expanded="true"]
+) {
+  background-color: var(--glass-state);
+  background-clip: padding-box;
+  box-shadow:
+    inset 0 1px 0 var(--glass-control-rim),
+    0 1px 2px var(--glass-contact),
+    var(--tw-ring-shadow, 0 0 #0000);
 }
+.dark :is(
+  [data-slot="toggle"][data-variant="outline"]:is([data-pressed], [aria-pressed="true"]),
+  [data-slot="select-trigger"][aria-expanded="true"]
+) {
+  background-color: color-mix(in oklch, var(--foreground) 12%, transparent);
+}
+:is(
+  [data-slot="toggle"][data-variant="outline"]:is([data-pressed], [aria-pressed="true"]),
+  [data-slot="select-trigger"][aria-expanded="true"]
+):not(:focus-visible):not([aria-invalid="true"]) {
+  border-color: var(--glass-edge);
+}
+
+/* Inside the view tab tray, the expanded options chevron wears the exact same raised glass pill as an active tab trigger (including padding-box clipping to prevent 2px rim doubling). */
+[data-slot="tabs-list"][data-variant="default"] > .sg-view-options-trigger.glass-held.border[aria-expanded="true"]:not(.border-0) {
+  border-color: var(--glass-edge);
+  background-color: var(--glass-control);
+  background-clip: padding-box;
+  box-shadow:
+    inset 0 1px 0 var(--glass-control-rim),
+    0 1px 2px var(--glass-contact),
+    var(--tw-ring-shadow, 0 0 #0000);
+}
+
 [data-slot="tabs-list"][data-variant="default"] {
   --well-rim: var(--glass-rim);
 }
@@ -134,6 +258,10 @@
   color: var(--sg-danger);
 }
 @media (hover: hover) {
+  .sg-pin-btn:not([data-pinned="true"]):hover {
+    background-color: var(--hover);
+    color: var(--foreground);
+  }
   .sg-pin-btn[data-pinned="true"]:hover {
     background-color: color-mix(in oklch, var(--sg-danger) 16%, transparent);
   }
@@ -155,8 +283,8 @@
     background-color: color-mix(in oklch, var(--sg-danger) 15%, transparent);
     color: var(--sg-danger);
     box-shadow:
-      inset 0 1px 0 var(--glass-control-rim),
-      inset 0 0 0 1px color-mix(in oklch, var(--sg-danger) 42%, transparent);
+      inset 0 1px 0 var(--glass-state-rim),
+      0 0 0 1px color-mix(in oklch, var(--sg-danger) 42%, transparent);
   }
 }
 
@@ -344,11 +472,14 @@ dialog.sg-native-dialog::backdrop {
     transform: none;
   }
 }
+[data-slot="tag"] {
+  border-radius: calc(var(--radius-control) * 0.6);
+}
 .sg-legend-chip {
   display: inline-flex;
   align-items: center;
   gap: 0.375rem;
-  border-radius: 6px;
+  border-radius: calc(var(--radius-control) * 0.6);
   padding: 2px 7px;
   margin: -2px 0;
   background: transparent;
@@ -418,8 +549,9 @@ html:not(.dark) .sg-flag {
 .sg-scroll-none::-webkit-scrollbar {
   display: none;
 }
-/* A segment follows the tray's outer curve at the tray's actual inset. */
+/* Match tab trays to the Solid Glass control radius so segments follow it concentrically. */
 [data-slot="tabs-list"][data-variant="default"] {
+  --radius: var(--radius-control);
   --km-tab-inset: 3px;
   padding: var(--km-tab-inset);
 }
@@ -526,12 +658,6 @@ html:not(.dark) .sg-flag {
   pointer-events: none;
 }
 
-/* Reduce card text showing through the two server toolbar menus. */
-#view-options-menu,
-#sort-select-menu {
-  background-color: color-mix(in oklab, var(--popover), var(--pane-solid-popover));
-}
-
 /* Reduce transparency on both surfaces and native top-layer controls. */
 #sg-stage[data-glass="opaque"] {
   --glass-blur: none;
@@ -539,11 +665,11 @@ html:not(.dark) .sg-flag {
   --panel: var(--pane-solid-panel);
   --card: var(--pane-solid-card);
   --popover: var(--pane-solid-popover);
-  --sg-recessed: var(--pane-solid-panel);
 }
 
 @media (prefers-reduced-transparency: reduce) {
-  :root {
+  :root,
+  :root.dark {
     --glass-blur: none;
     --glass-blur-control: none;
     --panel: var(--pane-solid-panel);
@@ -562,7 +688,7 @@ html:not(.dark) .sg-flag {
   grid-template-columns: var(--sg-table-cols);
 }
 .sg-table-row {
-  border-radius: calc(var(--radius-control) * 0.75);
+  border-radius: max(4px, calc(var(--radius) - 8px));
   transition: background-color 110ms ease;
 }
 .sg-table-row:hover {

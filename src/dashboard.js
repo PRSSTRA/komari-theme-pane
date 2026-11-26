@@ -399,10 +399,10 @@ function isNodeFeatured(node) {
   return Array.isArray(state.settings.featured_nodes) && state.settings.featured_nodes.includes(node.uuid);
 }
 
-const NODE_BADGE_CLASS = "km-node-badge inline-flex shrink-0 items-center gap-1 rounded-sm [--radius:var(--radius-control)] bg-secondary px-2 py-0.5 text-[11px] font-medium whitespace-nowrap";
+const NODE_BADGE_CLASS = "km-node-badge glass-chosen inline-flex h-[22px] shrink-0 items-center gap-1 rounded-sm [--radius:var(--radius-control)] px-1.5 text-[10.5px] whitespace-nowrap";
 
-function renderNodeBadge(content, { classes = "", buttonAttrs } = {}) {
-  const attrs = `data-slot="badge" data-variant="secondary" class="${NODE_BADGE_CLASS}${classes ? ` ${classes}` : ""}"`;
+function renderNodeBadge(content, { classes = "", tone = "text-muted-foreground", buttonAttrs } = {}) {
+  const attrs = `data-slot="tag" class="${NODE_BADGE_CLASS}${tone ? ` ${tone}` : ""}${classes ? ` ${classes}` : ""}"`;
   return buttonAttrs
     ? `<button type="button" ${attrs} ${buttonAttrs}>${content}</button>`
     : `<span ${attrs}>${content}</span>`;
@@ -930,12 +930,12 @@ function drawWorldMapCanvas() {
   }
   pwCache.serverHitList = hitList;
 
-  // Base map square palette (balanced light-mode graphite terminator matching dark-mode legibility without harsh black)
-  const dayBaseRgb = isLight ? [102, 108, 120] : [192, 198, 210];
-  const nightBaseRgb = isLight ? [60, 66, 78] : [192, 198, 210];
-  const flatBaseRgb = isLight ? [68, 74, 86] : [192, 198, 210];
-  const accentRgb = isLight ? [34, 38, 48] : [236, 240, 246];
-  const oceanRgb = isLight ? [70, 76, 88] : [196, 202, 214];
+  // Base map square palette calibrated to the Zinc (hue 286) glass preset
+  const dayBaseRgb = isLight ? [102, 102, 116] : [192, 192, 206];
+  const nightBaseRgb = isLight ? [62, 62, 74] : [192, 192, 206];
+  const flatBaseRgb = isLight ? [68, 68, 82] : [192, 192, 206];
+  const accentRgb = isLight ? [34, 34, 44] : [236, 236, 246];
+  const oceanRgb = isLight ? [72, 72, 86] : [196, 196, 210];
   const span = pitch * PW_CFG.markSize;
 
   for (let r = 0; r < rows; r++) {
@@ -1233,7 +1233,7 @@ function positionMapTooltip(cluster, interactive) {
         ${sorted.map((n) => {
           const color = nodeStatusColor(n);
           return `
-            <button type="button" data-pick-node="${escapeHtml(n.uuid)}" class="flex w-full items-center justify-between gap-2 rounded-md px-1.5 py-1 text-left transition-colors hover:bg-white/10">
+            <button type="button" data-pick-node="${escapeHtml(n.uuid)}" class="flex w-full items-center justify-between gap-2 rounded-sm px-1.5 py-1 text-left transition-colors hover:bg-white/10">
               <span class="flex min-w-0 items-center gap-1.5">
                 <span class="h-[6px] w-[6px] shrink-0 rounded-[1.5px]" style="background: ${color};"></span>
                 <span class="truncate">${escapeHtml(n.name)}</span>
@@ -1342,7 +1342,7 @@ function renderOverviewLayout() {
   }
 
   mapPanel.className = showMap
-    ? "glass-panel relative order-1 flex min-w-0 flex-col overflow-hidden rounded-lg p-4"
+    ? "glass-panel relative order-1 flex min-w-0 flex-col overflow-hidden rounded-lg px-4 pt-3.5 pb-4"
     : "hidden";
 
   if (mapViewport) {
@@ -1484,20 +1484,20 @@ function renderEventFeed() {
   if (!inner.dataset.inited) {
     inner.dataset.inited = "1";
     inner.innerHTML = `
-      <div class="flex min-h-7 shrink-0 items-center justify-between gap-2 px-4 pt-3.5 pb-2">
+      <div class="sg-panel-header shrink-0 px-4 pt-3.5 pb-2">
         <div class="flex min-w-0 items-center gap-2">
-          <span class="inline-flex min-w-0 items-center gap-1.5 text-xs font-semibold tracking-tight" style="color: var(--foreground);">
-            <svg class="h-3.5 w-3.5 shrink-0" style="color: var(--muted-foreground);" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><circle cx="12" cy="12" r="2"/><path d="M16.24 7.76a6 6 0 0 1 0 8.49m-8.48-.01a6 6 0 0 1 0-8.49m11.31-2.82a10 10 0 0 1 0 14.14m-14.14 0a10 10 0 0 1 0-14.14"/></svg>
+          <h2 class="sg-panel-title">
+            <svg class="sg-panel-title-icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.85" stroke-linecap="round" stroke-linejoin="round"><circle cx="12" cy="12" r="2"/><path d="M16.24 7.76a6 6 0 0 1 0 8.49m-8.48-.01a6 6 0 0 1 0-8.49m11.31-2.82a10 10 0 0 1 0 14.14m-14.14 0a10 10 0 0 1 0-14.14"/></svg>
             <span id="event-feed-title" class="truncate"></span>
-          </span>
-          <span id="event-feed-alert-badge" class="mono-num hidden shrink-0 items-center gap-1 text-[10.5px]" style="color: var(--muted-foreground);"><span class="h-[6px] w-[6px] rounded-[1.5px]" style="background: var(--sg-danger);"></span><span id="event-feed-alert-num"></span></span>
+          </h2>
+          <span id="event-feed-alert-badge" class="mono-num hidden shrink-0 items-center gap-1 text-[11px]" style="color: var(--muted-foreground);"><span class="h-[6px] w-[6px] rounded-[1.5px]" style="background: var(--sg-danger);"></span><span id="event-feed-alert-num"></span></span>
         </div>
-        <div id="event-filters" data-slot="tabs-list" data-variant="default" role="group" aria-labelledby="event-feed-title" class="inline-flex h-9 shrink-0 items-center gap-0.5 rounded-lg bg-muted">
-          <button type="button" data-slot="tabs-trigger" data-evfilter="all" class="inline-flex h-full cursor-pointer items-center justify-center gap-1.5 rounded-sm border border-transparent px-2.5 text-xs font-medium whitespace-nowrap text-muted-foreground transition-colors hover:text-foreground data-[active=true]:text-foreground focus-visible:z-10 focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-(--focus-line) md:px-3">
+        <div id="event-filters" data-slot="tabs-list" data-variant="default" role="group" aria-labelledby="event-feed-title" class="inline-flex h-8 shrink-0 items-center gap-0.5 rounded-lg bg-muted">
+          <button type="button" data-slot="tabs-trigger" data-evfilter="all" class="inline-flex h-full cursor-pointer items-center justify-center gap-1.5 rounded-sm border border-transparent px-2.5 text-xs font-medium whitespace-nowrap text-muted-foreground transition-colors hover:text-foreground data-[active=true]:text-foreground focus-visible:z-10 focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-(--focus-line)">
             <svg aria-hidden="true" class="h-3.5 w-3.5 shrink-0" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round"><path d="M4 6h16M4 12h16M4 18h16"/></svg>
             <span></span>
           </button>
-          <button type="button" data-slot="tabs-trigger" data-evfilter="alert" class="inline-flex h-full cursor-pointer items-center justify-center gap-1.5 rounded-sm border border-transparent px-2.5 text-xs font-medium whitespace-nowrap text-muted-foreground transition-colors hover:text-foreground data-[active=true]:text-foreground focus-visible:z-10 focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-(--focus-line) md:px-3">
+          <button type="button" data-slot="tabs-trigger" data-evfilter="alert" class="inline-flex h-full cursor-pointer items-center justify-center gap-1.5 rounded-sm border border-transparent px-2.5 text-xs font-medium whitespace-nowrap text-muted-foreground transition-colors hover:text-foreground data-[active=true]:text-foreground focus-visible:z-10 focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-(--focus-line)">
             <svg aria-hidden="true" class="h-3.5 w-3.5 shrink-0" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><path d="M10.27 4.99 2.84 18a2 2 0 0 0 1.74 3h14.84a2 2 0 0 0 1.74-3L13.73 4.99a2 2 0 0 0-3.46 0ZM12 9v4m0 4h.01"/></svg>
             <span></span>
           </button>
@@ -1543,7 +1543,7 @@ function renderEventFeed() {
     const evNode = state.nodes.find((x) => x.uuid === ev.nodeUuid);
     const evRegion = ev.region || (evNode ? evNode.region : "");
     return `
-    <button type="button" data-event-node="${escapeHtml(ev.nodeUuid)}" class="sg-event-row flex w-full items-start gap-2 rounded-lg px-2 py-1.5 text-left">
+    <button type="button" data-event-node="${escapeHtml(ev.nodeUuid)}" class="sg-event-row flex w-full items-start gap-2 rounded-sm px-2 py-1.5 text-left">
       <span class="mt-[5px] h-[6px] w-[6px] shrink-0 rounded-[1.5px]" style="background: ${eventSeverityColor(ev.severity)};"></span>
       <div class="min-w-0 flex-1">
         <div class="flex items-center justify-between gap-2">
@@ -1639,6 +1639,46 @@ function fillEasedVignette(ctx, x0, y0, x1, y1, rgbStr, maxAlpha, rx, ry, rw, rh
   ctx.fillRect(rx, ry, rw, rh);
 }
 
+// Fade out the chart ink to reveal the panel itself, without painting a second surface.
+function fadeNetworkSlats(ctx, W, H, upBarTopY, upBaseLineY, downHeaderY, downBarTopY, downBaseLineY, isDark) {
+  ctx.save();
+  ctx.globalCompositeOperation = "destination-out";
+  const mask = "0, 0, 0";
+  const verticalAlpha = isDark ? 0.38 : 0.42;
+  const topEnd = Math.min(H, Math.max(54, upBarTopY + 6));
+  fillEasedVignette(ctx, 0, 0, 0, topEnd, mask, verticalAlpha, 0, 0, W, topEnd);
+
+  const midStart = upBaseLineY + 2;
+  const midEnd = Math.min(H, Math.max(downHeaderY + 26, downBarTopY + 4));
+  fillEasedVignette(ctx, 0, midStart, 0, midEnd, mask, verticalAlpha, 0, midStart, W, midEnd - midStart);
+
+  const bottomStart = Math.min(H - 2, downBaseLineY + 2);
+  fillEasedVignette(ctx, 0, H, 0, bottomStart, mask, verticalAlpha, 0, bottomStart, W, H - bottomStart);
+
+  const rightWidth = Math.min(50, W * 0.22);
+  fillEasedVignette(ctx, W, 0, W - rightWidth, 0, mask, isDark ? 0.28 : 0.30, W - rightWidth, 0, rightWidth, H);
+  const leftWidth = Math.min(22, W * 0.09);
+  fillEasedVignette(ctx, 0, 0, leftWidth, 0, mask, isDark ? 0.18 : 0.20, 0, 0, leftWidth, H);
+  ctx.restore();
+}
+
+// Fade out detail chart ink transparently so the underlying panel tone shows through cleanly.
+function fadeDetailSlats(ctx, W, H, topEnd, bottomStart, isDark, midBand = null) {
+  ctx.save();
+  ctx.globalCompositeOperation = "destination-out";
+  const mask = "0, 0, 0";
+  fillEasedVignette(ctx, 0, 0, 0, topEnd, mask, isDark ? 0.38 : 0.42, 0, 0, W, topEnd);
+  if (midBand && midBand.end > midBand.start) {
+    fillEasedVignette(ctx, 0, midBand.start, 0, midBand.end, mask, isDark ? 0.38 : 0.40, 0, midBand.start, W, midBand.end - midBand.start);
+  }
+  const leftWidth = Math.min(54, W * 0.2);
+  fillEasedVignette(ctx, 0, 0, leftWidth, 0, mask, isDark ? 0.42 : 0.46, 0, 0, leftWidth, H);
+  fillEasedVignette(ctx, 0, H, 0, bottomStart, mask, isDark ? 0.36 : 0.40, 0, bottomStart, W, H - bottomStart);
+  const rightWidth = Math.min(22, W * 0.08);
+  fillEasedVignette(ctx, W, 0, W - rightWidth, 0, mask, isDark ? 0.20 : 0.22, W - rightWidth, 0, rightWidth, H);
+  ctx.restore();
+}
+
 function computeSlatWave(cx, cy, rectW, rectH) {
   const direction = (271 * Math.PI) / 180;
   const scale = 2.5;
@@ -1677,9 +1717,20 @@ function computeSlatWave(cx, cy, rectW, rectH) {
   return { light, tint };
 }
 
-const SLAT_BACKGROUND = {
-  dark: { rgb: [132, 134, 138], alpha: 0.068, vignette: "24, 24, 24" },
-  light: { rgb: [98, 104, 114], alpha: 0.058, vignette: "239, 239, 239" },
+// Unified Zinc-calibrated neutral ink for all micro-slat charts (network, load, and ping).
+const SLAT_GRID = {
+  dark: {
+    rgb: [134, 134, 144],
+    glint: [166, 166, 178],
+    alpha: 0.068,
+    guide: "rgba(255, 255, 255, 0.085)",
+  },
+  light: {
+    rgb: [98, 98, 112],
+    glint: [68, 68, 82],
+    alpha: 0.062,
+    guide: "rgba(68, 68, 86, 0.09)",
+  },
 };
 
 function drawNetSlatsChartCanvas() {
@@ -1784,9 +1835,10 @@ function drawNetSlatsChartCanvas() {
   };
 
   const isDark = state.theme === "dark";
-  const { rgb: baseRgb, alpha: dormantAlpha, vignette: vigRgb } = SLAT_BACKGROUND[state.theme];
-  const glintRgb = isDark ? [164, 166, 172] : [68, 74, 84];
-  const guideColor = isDark ? "rgba(255, 255, 255, 0.085)" : "rgba(30, 36, 48, 0.105)";
+  const grid = SLAT_GRID[state.theme];
+  const baseRgb = grid.rgb;
+  const gridRgb = baseRgb.join(", ");
+  const glintRgb = grid.glint;
   const rimColor = isDark ? "rgba(255, 255, 255, 0.22)" : "rgba(255, 255, 255, 0.44)";
 
   for (let c = 0; c < cols; c++) {
@@ -1854,31 +1906,17 @@ function drawNetSlatsChartCanvas() {
           textDim = (0.28 + 0.72 * downFade) * rightTickFade * leftEdgeFade * xBottomFade;
         }
         const hoverBoost = ((isUpHalf && r <= upBaseRow) || (!isUpHalf && r > splitRow && r <= downBaseRow)) && isHovered ? 1.8 : 1;
-        const alpha = (dormantAlpha * textDim * hoverBoost).toFixed(4);
-        ctx.fillStyle = `rgba(${baseRgb[0]}, ${baseRgb[1]}, ${baseRgb[2]}, ${alpha})`;
+        const alpha = (grid.alpha * textDim * hoverBoost).toFixed(4);
+        ctx.fillStyle = `rgba(${gridRgb}, ${alpha})`;
         ctx.fill();
       }
     }
   }
 
-  // Lighter, airier smooth optical vignettes strictly outside the lit bar bands
-  const topVigEnd = Math.min(rect.height, Math.max(54, upBarTopY + 6));
-  fillEasedVignette(ctx, 0, 0, 0, topVigEnd, vigRgb, isDark ? 0.38 : 0.42, 0, 0, rect.width, topVigEnd);
-
-  const midVigEnd = Math.min(rect.height, Math.max(downHeaderY + 26, downBarTopY + 4));
-  fillEasedVignette(ctx, 0, upBaseLineY + 2, 0, midVigEnd, vigRgb, isDark ? 0.38 : 0.42, 0, upBaseLineY + 2, rect.width, Math.max(0, midVigEnd - (upBaseLineY + 2)));
-
-  const botVigStart = Math.min(rect.height - 2, downBaseLineY + 2);
-  fillEasedVignette(ctx, 0, rect.height, 0, botVigStart, vigRgb, isDark ? 0.38 : 0.42, 0, botVigStart, rect.width, rect.height - botVigStart);
-
-  const rightVigW = Math.min(50, rect.width * 0.22);
-  fillEasedVignette(ctx, rect.width, 0, rect.width - rightVigW, 0, vigRgb, isDark ? 0.28 : 0.30, rect.width - rightVigW, 0, rightVigW, rect.height);
-
-  const leftVigW = Math.min(22, rect.width * 0.09);
-  fillEasedVignette(ctx, 0, 0, leftVigW, 0, vigRgb, isDark ? 0.18 : 0.20, 0, 0, leftVigW, rect.height);
+  fadeNetworkSlats(ctx, rect.width, rect.height, upBarTopY, upBaseLineY, downHeaderY, downBarTopY, downBaseLineY, isDark);
 
   ctx.save();
-  ctx.strokeStyle = guideColor;
+  ctx.strokeStyle = grid.guide;
   ctx.lineWidth = 1;
   ctx.setLineDash([2, 3]);
   [upBarTopY, upBarMidY, upBaseLineY, downBarTopY, downBarMidY, downBaseLineY].forEach((gy) => {
@@ -1943,12 +1981,12 @@ function renderSummary() {
       <div id="network-traffic-cell" class="relative flex min-h-0 flex-1 flex-col overflow-hidden">
         <canvas id="net-slats-canvas" class="absolute inset-0 block h-full w-full cursor-crosshair" aria-hidden="true"></canvas>
 
-        <div id="net-top-header" class="pointer-events-none relative z-10 flex flex-col gap-0.5 px-4 pt-3.5">
-          <div class="flex min-h-7 flex-wrap items-center justify-between gap-x-2.5 gap-y-0.5">
-            <span class="inline-flex shrink-0 items-center gap-1.5 whitespace-nowrap text-xs font-semibold tracking-tight" style="color: var(--foreground);">
-              <svg class="h-3.5 w-3.5 shrink-0" style="color: var(--muted-foreground);" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><path d="M22 12h-4l-3 9L9 3l-3 9H2"/></svg>
+        <div id="net-top-header" class="pointer-events-none relative z-10 flex flex-col gap-1 px-4 pt-3.5">
+          <div class="sg-panel-header flex-wrap">
+            <h2 class="sg-panel-title shrink-0">
+              <svg class="sg-panel-title-icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.85" stroke-linecap="round" stroke-linejoin="round"><path d="M22 12h-4l-3 9L9 3l-3 9H2"/></svg>
               <span id="net-title-label"></span>
-            </span>
+            </h2>
             <div class="flex flex-wrap items-center gap-x-2.5 gap-y-0.5 mono-num text-[10px] sm:text-[10.5px]">
               <span id="net-today" class="pointer-events-auto whitespace-nowrap" style="color: var(--sg-subtle-fg);"><span id="net-today-label"></span> <strong class="font-medium" style="color: var(--foreground);">—</strong></span>
               <span class="whitespace-nowrap" style="color: var(--sg-subtle-fg);"><span id="net-total-label"></span> <strong id="net-total-val" class="font-medium" style="color: var(--foreground);"></strong></span>
@@ -1987,7 +2025,7 @@ function renderSummary() {
           <span id="net-down-xend"></span>
         </div>
 
-        <div id="net-unified-tip" class="bg-popover pointer-events-none absolute z-20 hidden rounded-md px-1.5 py-0.5 mono-num text-[9.5px] whitespace-nowrap"></div>
+        <div id="net-unified-tip" class="bg-popover pointer-events-none absolute z-20 hidden rounded-sm px-1.5 py-0.5 mono-num text-[9.5px] whitespace-nowrap"></div>
       </div>
     `;
 
@@ -2190,7 +2228,7 @@ function renderViewOptionsMenu() {
         ${fields.map((f) => {
           const icon = VIEW_OPTION_ICONS[f.key] || "";
           return `
-            <div class="flex items-center justify-between gap-2.5 rounded-lg px-2 py-1.5 transition-colors hover:bg-[var(--hover-faint)]">
+            <div class="flex items-center justify-between gap-2.5 rounded-sm px-2 py-1.5 transition-colors hover:bg-[var(--hover-faint)]">
               <div class="flex min-w-0 items-center gap-2">
                 <span data-vo-icon="${f.key}" class="inline-flex shrink-0 items-center transition-colors duration-150">${icon}</span>
                 <div class="min-w-0">
@@ -2314,7 +2352,7 @@ function renderPinnedNodesDrawer() {
   if (listEl.dataset.sig !== nodeSig) {
     listEl.dataset.sig = nodeSig;
     listEl.innerHTML = state.nodes.map((n) => `
-      <div data-pin-row="${escapeHtml(n.uuid)}" class="sg-event-row flex cursor-pointer items-center justify-between gap-2.5 rounded-lg px-2 py-1.5">
+      <div data-pin-row="${escapeHtml(n.uuid)}" class="sg-event-row flex cursor-pointer items-center justify-between gap-2.5 rounded-sm px-2 py-1.5">
         <span class="flex min-w-0 flex-1 items-center gap-2">
           ${renderFlagBadge(n.region, "sm")}
           <span class="truncate text-xs" style="color: var(--foreground);">${escapeHtml(n.name)}</span>
@@ -2480,7 +2518,7 @@ function renderHeader() {
     swContainer.dataset.langSig = state.lang;
     swContainer.innerHTML = `
       <!-- Panel Card: World Map -->
-      <div class="border rounded-lg p-3.5">
+      <div class="border rounded-md p-3.5">
         <div class="flex items-center justify-between gap-3">
           <span class="inline-flex items-center gap-1.5 text-xs font-semibold tracking-tight" style="color: var(--foreground);">
             <svg class="h-3.5 w-3.5 shrink-0" style="color: var(--muted-foreground);" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><circle cx="12" cy="12" r="10"/><path d="M2 12h20"/><path d="M12 2a15.3 15.3 0 0 1 4 10 15.3 15.3 0 0 1-4 10 15.3 15.3 0 0 1-4-10 15.3 15.3 0 0 1 4-10z"/></svg>
@@ -2511,7 +2549,7 @@ function renderHeader() {
       </div>
 
       <!-- Panel Card: Network & Traffic -->
-      <div class="border rounded-lg p-3.5">
+      <div class="border rounded-md p-3.5">
         <div class="flex items-center justify-between gap-3">
           <span class="inline-flex items-center gap-1.5 text-xs font-semibold tracking-tight" style="color: var(--foreground);">
             <svg class="h-3.5 w-3.5 shrink-0" style="color: var(--muted-foreground);" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><path d="M22 12h-4l-3 9L9 3l-3 9H2"/></svg>
@@ -2522,7 +2560,7 @@ function renderHeader() {
       </div>
 
       <!-- Panel Card: Live Events -->
-      <div class="border rounded-lg p-3.5">
+      <div class="border rounded-md p-3.5">
         <div class="flex items-center justify-between gap-3">
           <span class="inline-flex items-center gap-1.5 text-xs font-semibold tracking-tight" style="color: var(--foreground);">
             <svg class="h-3.5 w-3.5 shrink-0" style="color: var(--muted-foreground);" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><circle cx="12" cy="12" r="2"/><path d="M16.24 7.76a6 6 0 0 1 0 8.49m-8.48-.01a6 6 0 0 1 0-8.49m11.31-2.82a10 10 0 0 1 0 14.14m-14.14 0a10 10 0 0 1 0-14.14"/></svg>
@@ -2533,7 +2571,7 @@ function renderHeader() {
       </div>
 
       <!-- Panel Card: Appearance & Performance -->
-      <div class="border space-y-2.5 rounded-lg p-3.5">
+      <div class="border space-y-2.5 rounded-md p-3.5">
         <div class="flex items-center gap-1.5 text-xs font-semibold tracking-tight" style="color: var(--foreground);">
           <svg class="h-3.5 w-3.5 shrink-0" style="color: var(--muted-foreground);" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><path d="M12 2 2 7l10 5 10-5-10-5Z"/><path d="m2 17 10 5 10-5"/><path d="m2 12 10 5 10-5"/></svg>
           <span>${isZh ? "外观与性能" : "Appearance & Performance"}</span>
@@ -2700,7 +2738,7 @@ function renderCardGrid(list) {
               ${renderMeter("Disk", n.hasTelemetry && n.diskTotal ? `${diskPct.toFixed(0)}%` : "—", diskPct, compact || !n.hasTelemetry || !n.diskTotal ? "" : `${formatCapacity(n.diskUsed)}/${formatCapacity(n.diskTotal)}G`, "disk")}
             </div>
 
-            <div class="border rounded-md [--glass-inner:var(--glass-rim)] px-2.5 py-2 text-[11px]">
+            <div class="border rounded-md px-2.5 py-2 text-[11px]">
               <div class="flex items-center justify-between mono-num">
                 <span style="color: var(--muted-foreground);">↑ <strong data-m-up class="font-medium" style="color: var(--foreground);">${formatRate(n.online ? n.netOut : 0)}</strong></span>
                 <span style="color: var(--muted-foreground);">↓ <strong data-m-down class="font-medium" style="color: var(--foreground);">${formatRate(n.online ? n.netIn : 0)}</strong></span>
@@ -2763,7 +2801,7 @@ function renderTableView(list) {
 
   return `
     <div class="px-4 pb-4 pt-1">
-      <div data-slot="table-container" class="bg-card overflow-hidden rounded-lg">
+      <div data-slot="table-container" class="sg-table-shell bg-card overflow-hidden rounded-lg">
         <div class="sg-scroll-thin overflow-x-auto">
           <div data-slot="table" role="table" class="km-ui-table w-full text-left text-xs" style="min-width: ${minTableWidth}px; --sg-table-cols: ${gridCols};">
             <!-- Bright outer top header slab (px-3 = 6px outer frame + 6px inner well padding for 1:1 column alignment) -->
@@ -2783,7 +2821,7 @@ function renderTableView(list) {
 
             <!-- Recessed rounded-rectangle shadow body well (zero row separators) -->
             <div class="px-1.5 pb-1.5">
-              <div data-slot="table-body" role="rowgroup" class="sg-table-body space-y-0.5 rounded-[9px] p-1.5">
+              <div data-slot="table-body" role="rowgroup" class="sg-table-body space-y-0.5 p-1.5">
                 ${list.map((n) => {
                   const ramPct = n.ramTotal > 0 ? n.ramUsed / n.ramTotal * 100 : 0;
                   const diskPct = n.diskTotal > 0 ? n.diskUsed / n.diskTotal * 100 : 0;
@@ -3044,8 +3082,7 @@ function drawDetailSlatsChartCanvas() {
   const samples = isLoad ? history.sample(plotCols, node.ramTotal * 2 ** 30) : history.sample(plotCols);
 
   const isDark = state.theme === "dark";
-  const { rgb: dormantBaseRgb, alpha: dormantAlpha, vignette: vigRgb } = SLAT_BACKGROUND[state.theme];
-  const guideColor = isDark ? "rgba(255, 255, 255, 0.085)" : "rgba(30, 36, 48, 0.105)";
+  const { rgb: dormantBaseRgb, alpha: dormantAlpha, guide: guideColor } = SLAT_GRID[state.theme];
 
   // Restrained low-saturation Solid Glass multi-series palettes (CPU=CT sky blue, RAM=CM=--sg-success online green)
   const seriesPalettes = isDark
@@ -3192,21 +3229,11 @@ function drawDetailSlatsChartCanvas() {
       }
     }
 
-    // Smooth edge vignettes over outer text & ticks + Network-&-Traffic-style downward separator at gapRowY
-    const topVigEnd = Math.min(H, cpuTopY + 4);
-    fillEasedVignette(ctx, 0, 0, 0, topVigEnd, vigRgb, isDark ? 0.38 : 0.42, 0, 0, W, topVigEnd);
-
-    const downVigEnd = Math.min(H, ramTopY + 12);
-    fillEasedVignette(ctx, 0, gapRowY, 0, downVigEnd, vigRgb, isDark ? 0.38 : 0.40, 0, gapRowY, W, downVigEnd - gapRowY);
-
-    const leftVigW = Math.min(54, W * 0.2);
-    fillEasedVignette(ctx, 0, 0, leftVigW, 0, vigRgb, isDark ? 0.42 : 0.46, 0, 0, leftVigW, H);
-
-    const botVigStart = Math.min(H - 2, ramBottomY + 2);
-    fillEasedVignette(ctx, 0, H, 0, botVigStart, vigRgb, isDark ? 0.36 : 0.40, 0, botVigStart, W, H - botVigStart);
-
-    const rightVigW = Math.min(22, W * 0.08);
-    fillEasedVignette(ctx, W, 0, W - rightVigW, 0, vigRgb, isDark ? 0.20 : 0.22, W - rightVigW, 0, rightVigW, H);
+    // Transparent edge fade over outer text & ticks + separator at gapRowY
+    fadeDetailSlats(ctx, W, H, Math.min(H, cpuTopY + 4), Math.min(H - 2, ramBottomY + 2), isDark, {
+      start: gapRowY,
+      end: Math.min(H, ramTopY + 12),
+    });
 
     // Full-width dashed horizontal reference lines (100% / 50% / 0% per track)
     ctx.save();
@@ -3419,18 +3446,8 @@ function drawDetailSlatsChartCanvas() {
       }
     }
 
-    // Smooth outer edge vignettes
-    const topVigEnd = Math.min(H, gridTopY + 4);
-    fillEasedVignette(ctx, 0, 0, 0, topVigEnd, vigRgb, isDark ? 0.38 : 0.42, 0, 0, W, topVigEnd);
-
-    const leftVigW = Math.min(54, W * 0.2);
-    fillEasedVignette(ctx, 0, 0, leftVigW, 0, vigRgb, isDark ? 0.42 : 0.46, 0, 0, leftVigW, H);
-
-    const botVigStart = Math.min(H - 2, gridBottomY + 2);
-    fillEasedVignette(ctx, 0, H, 0, botVigStart, vigRgb, isDark ? 0.36 : 0.40, 0, botVigStart, W, H - botVigStart);
-
-    const rightVigW = Math.min(22, W * 0.08);
-    fillEasedVignette(ctx, W, 0, W - rightVigW, 0, vigRgb, isDark ? 0.20 : 0.22, W - rightVigW, 0, rightVigW, H);
+    // Transparent edge fade over outer text & ticks
+    fadeDetailSlats(ctx, W, H, Math.min(H, gridTopY + 4), Math.min(H - 2, gridBottomY + 2), isDark);
 
     // Full-width dashed reference guides
     ctx.save();
@@ -3620,9 +3637,10 @@ function drawDetailNetSlatsCanvas() {
   };
 
   const isDark = state.theme === "dark";
-  const { rgb: baseRgb, alpha: dormantAlpha, vignette: vigRgb } = SLAT_BACKGROUND[state.theme];
-  const glintRgb = isDark ? [164, 166, 172] : [68, 74, 84];
-  const guideColor = isDark ? "rgba(255, 255, 255, 0.085)" : "rgba(30, 36, 48, 0.105)";
+  const grid = SLAT_GRID[state.theme];
+  const baseRgb = grid.rgb;
+  const gridRgb = baseRgb.join(", ");
+  const glintRgb = grid.glint;
   const rimColor = isDark ? "rgba(255, 255, 255, 0.22)" : "rgba(255, 255, 255, 0.44)";
 
   for (let c = 0; c < cols; c++) {
@@ -3688,31 +3706,17 @@ function drawDetailNetSlatsCanvas() {
           textDim = (0.28 + 0.72 * downFade) * rightTickFade * leftEdgeFade * xBottomFade;
         }
         const hoverBoost = ((isUpHalf && r <= upBaseRow) || (!isUpHalf && r > splitRow && r <= downBaseRow)) && isHovered ? 1.8 : 1;
-        const alpha = (dormantAlpha * textDim * hoverBoost).toFixed(4);
-        ctx.fillStyle = `rgba(${baseRgb[0]}, ${baseRgb[1]}, ${baseRgb[2]}, ${alpha})`;
+        const alpha = (grid.alpha * textDim * hoverBoost).toFixed(4);
+        ctx.fillStyle = `rgba(${gridRgb}, ${alpha})`;
         ctx.fill();
       }
     }
   }
 
-  // Lighter, airier smooth optical vignettes synced 1:1 with homepage Network & Traffic
-  const topVigEnd = Math.min(H, Math.max(54, upBarTopY + 6));
-  fillEasedVignette(ctx, 0, 0, 0, topVigEnd, vigRgb, isDark ? 0.38 : 0.42, 0, 0, W, topVigEnd);
-
-  const midVigEnd = Math.min(H, Math.max(downHeaderY + 26, downBarTopY + 4));
-  fillEasedVignette(ctx, 0, upBaseLineY + 2, 0, midVigEnd, vigRgb, isDark ? 0.38 : 0.42, 0, upBaseLineY + 2, W, Math.max(0, midVigEnd - (upBaseLineY + 2)));
-
-  const botVigStart = Math.min(H - 2, downBaseLineY + 2);
-  fillEasedVignette(ctx, 0, H, 0, botVigStart, vigRgb, isDark ? 0.38 : 0.42, 0, botVigStart, W, H - botVigStart);
-
-  const rightVigW = Math.min(50, W * 0.22);
-  fillEasedVignette(ctx, W, 0, W - rightVigW, 0, vigRgb, isDark ? 0.28 : 0.30, W - rightVigW, 0, rightVigW, H);
-
-  const leftVigW = Math.min(22, W * 0.09);
-  fillEasedVignette(ctx, 0, 0, leftVigW, 0, vigRgb, isDark ? 0.18 : 0.20, 0, 0, leftVigW, H);
+  fadeNetworkSlats(ctx, W, H, upBarTopY, upBaseLineY, downHeaderY, downBarTopY, downBaseLineY, isDark);
 
   ctx.save();
-  ctx.strokeStyle = guideColor;
+  ctx.strokeStyle = grid.guide;
   ctx.lineWidth = 1;
   ctx.setLineDash([2, 3]);
   [upBarTopY, upBarMidY, upBaseLineY, downBarTopY, downBarMidY, downBaseLineY].forEach((gy) => {
@@ -3754,6 +3758,17 @@ function drawDetailNetSlatsCanvas() {
   setTxt("dnet-down-ymid", fmtRateTick(downMax * 0.5));
   setTxt("dnet-down-xstart", history ? fmtClock(history.startTime) : "");
   setTxt("dnet-down-xend", history ? fmtClock(history.endTime) : "");
+}
+
+function renderDetailSegments(attribute, options, selected, label, { titleTabs = false } = {}) {
+  const triggerTextClass = titleTabs ? "text-[13px] font-semibold tracking-[-0.01em]" : "text-xs font-medium";
+  return `
+    <div data-slot="tabs-list" data-variant="default" role="group" aria-label="${label}" class="inline-flex h-8 items-center gap-0.5 rounded-lg bg-muted p-[3px]">
+      ${options.map(([value, text, iconSvg = ""]) => {
+        const active = value === selected;
+        return `<button type="button" data-slot="tabs-trigger" ${attribute}="${value}" data-active="${active}" aria-pressed="${active}" class="inline-flex h-full cursor-pointer items-center justify-center gap-1.5 rounded-sm border border-transparent px-2.5 ${triggerTextClass} whitespace-nowrap text-muted-foreground transition-colors hover:text-foreground data-[active=true]:text-foreground focus-visible:z-10 focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-(--focus-line)">${iconSvg}<span>${text}</span></button>`;
+      }).join("")}
+    </div>`;
 }
 
 function renderDetailModal() {
@@ -3893,38 +3908,45 @@ function renderDetailModal() {
   }
   sysRows.push([
     node.tags.length > 0 ? (isZh ? "分组 / 标签" : "Group / Tags") : (isZh ? "分组" : "Group"),
-    `<span class="inline-flex flex-wrap items-center justify-end gap-1"><span style="color: var(--foreground);">${escapeHtml(formatGroupLabel(normalizeGroupName(node.group)))}</span>${node.tags.map((tg) => `<span data-slot="tag" class="glass-chosen inline-flex h-[22px] items-center rounded-sm px-1.5 text-[10.5px] text-muted-foreground">${escapeHtml(tg)}</span>`).join("")}</span>`,
+    `<span class="inline-flex flex-wrap items-center justify-end gap-1"><span style="color: var(--foreground);">${escapeHtml(formatGroupLabel(normalizeGroupName(node.group)))}</span>${node.tags.map((tg) => `<span data-slot="tag" class="glass-chosen inline-flex h-[22px] items-center rounded-sm [--radius:var(--radius-control)] px-1.5 text-[10.5px] text-muted-foreground">${escapeHtml(tg)}</span>`).join("")}</span>`,
   ]);
 
-  // Full-width 4-column Billing & Renewal card (ONLY rendered when logged in AND node has billing data; separator-free like server cards)
+  const DETAIL_LOAD_ICON_SVG = `<svg aria-hidden="true" class="h-3.5 w-3.5 shrink-0" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.85" stroke-linecap="round" stroke-linejoin="round"><path d="M3 3v16a2 2 0 0 0 2 2h16"/><path d="M18 17V9"/><path d="M13 17V5"/><path d="M8 17v-3"/></svg>`;
+  const DETAIL_PING_ICON_SVG = `<svg aria-hidden="true" class="h-3.5 w-3.5 shrink-0" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.85" stroke-linecap="round" stroke-linejoin="round"><path d="M12 20h.01"/><path d="M2 8.82a15 15 0 0 1 20 0"/><path d="M5 12.859a10 10 0 0 1 14 0"/><path d="M8.5 16.429a5 5 0 0 1 7 0"/></svg>`;
+  const DETAIL_CPU_ICON_SVG = `<svg aria-hidden="true" class="sg-panel-title-icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.85" stroke-linecap="round" stroke-linejoin="round"><rect width="16" height="16" x="4" y="4" rx="2"/><rect width="6" height="6" x="9" y="9" rx="1"/><path d="M15 2v2M15 20v2M2 15h2M2 9h2M20 15h2M20 9h2M9 2v2M9 20v2"/></svg>`;
+  const DETAIL_BILLING_ICON_SVG = `<svg aria-hidden="true" class="sg-panel-title-icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.85" stroke-linecap="round" stroke-linejoin="round"><rect width="20" height="14" x="2" y="5" rx="2"/><line x1="2" x2="22" y1="10" y2="10"/></svg>`;
+
+  // Full-width 4-column Billing & Renewal card (ONLY rendered when logged in AND node has billing data; matches System Info shell + recessed well)
   const billingCardHtml = state.loggedIn && hasBilling
     ? `
-      <div class="border mt-3 rounded-lg px-3.5 pt-3 pb-3.5">
-        <div class="mb-2.5 flex items-center justify-between gap-2">
-          <span class="text-xs font-semibold tracking-tight">${isZh ? "续费信息" : "Billing & Renewal"}</span>
+      <div class="sg-spec-shell bg-card mt-3.5 flex flex-col overflow-hidden rounded-lg">
+        <div class="sg-detail-header px-3.5 py-3">
+          <h2 class="sg-detail-title">${DETAIL_BILLING_ICON_SVG}<span>${isZh ? "续费信息" : "Billing & Renewal"}</span></h2>
           ${node.region ? `<span class="mono-num text-[10px]" style="color: var(--sg-subtle-fg);">${escapeHtml(node.region)}</span>` : ""}
         </div>
-        <div class="grid grid-cols-2 gap-x-4 gap-y-3 sm:grid-cols-4">
-          <div class="min-w-0">
-            <div class="text-[11px]" style="color: var(--muted-foreground);">${isZh ? "续费周期" : "Cycle"}</div>
-            <div class="mt-1 text-xs font-medium mono-num" style="color: var(--foreground);">${cycleLabel}</div>
-          </div>
-          <div class="min-w-0">
-            <div class="text-[11px]" style="color: var(--muted-foreground);">${isZh ? "到期日" : "Expires"}</div>
-            <div class="mt-1 flex flex-wrap items-baseline gap-x-1.5 text-xs font-medium mono-num" style="color: var(--foreground);">
-              <span>${escapeHtml(node.expiredDate || "—")}</span>
-              ${expireRemainTxt ? `<span class="text-[10.5px] font-normal" style="color: ${expireBadgeColor};">${expireRemainTxt}</span>` : ""}
+        <div class="px-1.5 pb-1.5">
+          <div class="sg-spec-body grid grid-cols-2 gap-x-4 gap-y-3 px-3 py-2.5 sm:grid-cols-4">
+            <div class="min-w-0">
+              <div class="text-[11px]" style="color: var(--muted-foreground);">${isZh ? "续费周期" : "Cycle"}</div>
+              <div class="mt-1 text-xs font-medium mono-num" style="color: var(--foreground);">${cycleLabel}</div>
             </div>
-          </div>
-          <div class="min-w-0">
-            <div class="text-[11px]" style="color: var(--muted-foreground);">${isZh ? "续费金额" : "Amount"}</div>
-            <div class="mt-1 text-xs font-medium mono-num" style="color: var(--foreground);">${escapeHtml(formatPriceLabel(node.billingAmount || node.price) || "—")}</div>
-          </div>
-          <div class="min-w-0">
-            <div class="text-[11px]" style="color: var(--muted-foreground);">${isZh ? "自动续期标记" : "Auto-Renewal"}</div>
-            <div class="mt-1 inline-flex items-center gap-1.5 text-xs font-medium" style="color: ${node.autoRenewal ? "var(--foreground)" : "var(--muted-foreground)"};">
-              <span class="h-[6px] w-[6px] shrink-0 rounded-[1.5px]" style="background: ${node.autoRenewal ? "var(--sg-success)" : "var(--sg-subtle-fg)"};"></span>
-              <span>${node.autoRenewal ? (isZh ? "已标记" : "Enabled") : (isZh ? "未标记" : "Manual")}</span>
+            <div class="min-w-0">
+              <div class="text-[11px]" style="color: var(--muted-foreground);">${isZh ? "到期日" : "Expires"}</div>
+              <div class="mt-1 flex flex-wrap items-baseline gap-x-1.5 text-xs font-medium mono-num" style="color: var(--foreground);">
+                <span>${escapeHtml(node.expiredDate || "—")}</span>
+                ${expireRemainTxt ? `<span class="text-[10.5px] font-normal" style="color: ${expireBadgeColor};">${expireRemainTxt}</span>` : ""}
+              </div>
+            </div>
+            <div class="min-w-0">
+              <div class="text-[11px]" style="color: var(--muted-foreground);">${isZh ? "续费金额" : "Amount"}</div>
+              <div class="mt-1 text-xs font-medium mono-num" style="color: var(--foreground);">${escapeHtml(formatPriceLabel(node.billingAmount || node.price) || "—")}</div>
+            </div>
+            <div class="min-w-0">
+              <div class="text-[11px]" style="color: var(--muted-foreground);">${isZh ? "自动续期标记" : "Auto-Renewal"}</div>
+              <div class="mt-1 inline-flex items-center gap-1.5 text-xs font-medium" style="color: ${node.autoRenewal ? "var(--foreground)" : "var(--muted-foreground)"};">
+                <span class="h-[6px] w-[6px] shrink-0 rounded-[1.5px]" style="background: ${node.autoRenewal ? "var(--sg-success)" : "var(--sg-subtle-fg)"};"></span>
+                <span>${node.autoRenewal ? (isZh ? "已标记" : "Enabled") : (isZh ? "未标记" : "Manual")}</span>
+              </div>
             </div>
           </div>
         </div>
@@ -3950,24 +3972,19 @@ function renderDetailModal() {
   ].filter(Boolean);
 
   const chartHeaderLeftHtml = pingCount !== 0
-    ? `
-      <div data-slot="tabs-list" data-variant="default" class="inline-flex items-center gap-0.5 rounded-lg bg-muted p-[3px] h-8">
-        <button type="button" data-slot="tabs-trigger" data-dtab="load" data-active="${state.detailTab === "load"}" class="inline-flex h-full cursor-pointer items-center justify-center gap-1.5 rounded-sm border border-transparent font-medium whitespace-nowrap text-muted-foreground transition-colors hover:text-foreground data-[active=true]:text-foreground focus-visible:z-10 focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-(--focus-line) px-2.5 text-xs">${t("loadTab")}</button>
-        <button type="button" data-slot="tabs-trigger" data-dtab="ping" data-active="${state.detailTab === "ping"}" class="inline-flex h-full cursor-pointer items-center justify-center gap-1.5 rounded-sm border border-transparent font-medium whitespace-nowrap text-muted-foreground transition-colors hover:text-foreground data-[active=true]:text-foreground focus-visible:z-10 focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-(--focus-line) px-2.5 text-xs">${t("pingTab")}</button>
-      </div>
-    `
-    : `<span class="inline-flex h-8 items-center text-xs font-semibold tracking-tight" style="color: var(--foreground);">${t("loadTab")}</span>`;
+    ? renderDetailSegments("data-dtab", [["load", t("loadTab"), DETAIL_LOAD_ICON_SVG], ["ping", t("pingTab"), DETAIL_PING_ICON_SVG]], state.detailTab, isZh ? "图表类型" : "Chart type", { titleTabs: true })
+    : `<h2 class="sg-detail-title h-8"><svg aria-hidden="true" class="sg-panel-title-icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.85" stroke-linecap="round" stroke-linejoin="round"><path d="M3 3v16a2 2 0 0 0 2 2h16"/><path d="M18 17V9"/><path d="M13 17V5"/><path d="M8 17v-3"/></svg><span>${t("loadTab")}</span></h2>`;
 
   dialog.innerHTML = `
     <div class="flex items-start justify-between gap-3">
       <div class="min-w-0 flex-1">
         <div class="flex flex-wrap items-center gap-2">
           ${renderFlagBadge(node.region, "lg")}
-          <h1 id="detail-title" class="min-w-0 truncate text-base font-semibold tracking-tight">${escapeHtml(node.name)}</h1>
+          <h1 id="detail-title" class="min-w-0 truncate text-[17px] font-semibold tracking-[-0.02em]">${escapeHtml(node.name)}</h1>
           ${renderNodeBadge(`
             <span aria-hidden="true" class="h-[6px] w-[6px] shrink-0 rounded-[1.5px] bg-current"></span>
             <span>${node.online ? t("online") : t("offline")}</span>
-          `, { classes: node.online ? "text-(--sg-success)" : "text-(--sg-danger)" })}
+          `, { tone: node.online ? "text-(--sg-success)" : "text-(--sg-danger)" })}
           ${detailPinActionHtml}
         </div>
         <div class="mt-1 truncate text-xs" style="color: var(--muted-foreground);">${escapeHtml(subtitleParts.join(" · "))}</div>
@@ -3979,22 +3996,22 @@ function renderDetailModal() {
     </div>
 
     <div class="mt-4 grid grid-cols-2 gap-2.5 sm:grid-cols-4">
-      <div class="border rounded-lg p-2.5">
+      <div class="border rounded-md p-2.5">
         <div class="text-[11px]" style="color: var(--muted-foreground);">${isZh ? "在线时长" : "Uptime"}</div>
         <div class="mt-1 text-sm font-semibold mono-num" style="color: ${node.online ? "var(--foreground)" : "var(--muted-foreground)"};">${node.online ? formatUptime(node.uptimeSec) : (isZh ? "离线" : "Offline")}</div>
       </div>
-      <div class="border rounded-lg p-2.5">
+      <div class="border rounded-md p-2.5">
         <div class="flex items-center justify-between gap-1 text-[11px]" style="color: var(--muted-foreground);">
           <span>${hasQuota ? (isZh ? "月流量配额" : "Monthly Quota") : (isZh ? "累计流量" : "Total Traffic")}</span>
           ${hasQuota ? `<span class="mono-num text-[10px]" style="color: ${quotaPctColor};">${Math.round(quotaPct)}%</span>` : `<span class="text-[10px]" style="color: var(--sg-subtle-fg);">${isZh ? "不限" : "Unlimited"}</span>`}
         </div>
         <div class="mt-1 text-sm font-semibold mono-num">${hasQuota ? `${node.trafficUsedTB.toFixed(2)} / ${node.trafficLimitTB} TB` : formatTrafficGB(node.totalUpGB + node.totalDownGB)}</div>
       </div>
-      <div class="border rounded-lg p-2.5">
+      <div class="border rounded-md p-2.5">
         <div class="text-[11px]" style="color: var(--muted-foreground);">Disk</div>
         <div class="mt-1 text-sm font-semibold mono-num">${node.hasTelemetry && node.diskTotal > 0 ? `${formatCapacity(node.diskUsed)} / ${formatCapacity(node.diskTotal)} GB` : "—"}</div>
       </div>
-      <div class="border rounded-lg p-2.5">
+      <div class="border rounded-md p-2.5">
         <div class="text-[11px]" style="color: var(--muted-foreground);">TCP / UDP / Proc</div>
         <div class="mt-1 text-sm font-semibold mono-num">${node.tcp} / ${node.udp} / ${node.proc}</div>
       </div>
@@ -4005,9 +4022,7 @@ function renderDetailModal() {
       <div class="relative z-10 px-3.5 pt-3.5 pb-1">
         <div class="mb-2.5 flex flex-wrap items-center justify-between gap-2">
           ${chartHeaderLeftHtml}
-          <div data-slot="tabs-list" data-variant="default" class="inline-flex items-center gap-0.5 rounded-lg bg-muted p-[3px] h-7 mono-num">
-            ${[1, 6, 24].map((h) => `<button type="button" data-slot="tabs-trigger" data-dhours="${h}" data-active="${state.detailHours === h}" class="inline-flex h-full cursor-pointer items-center justify-center gap-1.5 rounded-sm border border-transparent font-medium whitespace-nowrap text-muted-foreground transition-colors hover:text-foreground data-[active=true]:text-foreground focus-visible:z-10 focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-(--focus-line) px-2 text-[11px]">${h}h</button>`).join("")}
-          </div>
+          ${renderDetailSegments("data-dhours", [[1, "1h"], [6, "6h"], [24, "24h"]], state.detailHours, isZh ? "时间范围" : "Time range")}
         </div>
         <div id="detail-legend-slot">${legendHtml}</div>
       </div>
@@ -4015,7 +4030,7 @@ function renderDetailModal() {
         <span id="detail-history-status" class="absolute inset-0 grid place-items-center text-xs empty:hidden" role="status" style="color: var(--muted-foreground);">${historyStatus(state.detailTab)}</span>
         <div id="detail-yticks" class="absolute inset-0"></div>
         <div id="detail-xticks" class="absolute inset-0"></div>
-        <div id="detail-slats-tip" class="bg-popover pointer-events-none absolute z-20 hidden max-w-[calc(100%-16px)] flex-wrap items-center gap-y-0.5 rounded-md px-2 py-1 mono-num text-[10px]"></div>
+        <div id="detail-slats-tip" class="bg-popover pointer-events-none absolute z-20 hidden max-w-[calc(100%-16px)] flex-wrap items-center gap-y-0.5 rounded-sm px-2 py-1 mono-num text-[10px]"></div>
       </div>
     </div>
 
@@ -4024,12 +4039,12 @@ function renderDetailModal() {
       <div id="detail-net-cell" class="glass-panel relative flex min-h-[320px] flex-col overflow-hidden rounded-lg">
         <canvas id="detail-net-canvas" class="absolute inset-0 block h-full w-full cursor-crosshair" aria-hidden="true"></canvas>
 
-        <div id="dnet-top-header" class="pointer-events-none relative z-10 flex flex-col gap-1 px-3.5 pt-2.5">
-          <div class="flex flex-wrap items-center justify-between gap-x-2 gap-y-0.5">
-            <span class="inline-flex shrink-0 items-center gap-1.5 whitespace-nowrap text-xs font-semibold tracking-tight" style="color: var(--foreground);">
-              <svg class="h-3.5 w-3.5 shrink-0" style="color: var(--muted-foreground);" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><path d="M22 12h-4l-3 9L9 3l-3 9H2"/></svg>
+        <div id="dnet-top-header" class="pointer-events-none relative z-10 flex flex-col gap-1.5 px-3.5 pt-3">
+          <div class="sg-detail-header flex-wrap">
+            <h2 class="sg-detail-title shrink-0">
+              <svg aria-hidden="true" class="sg-panel-title-icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.85" stroke-linecap="round" stroke-linejoin="round"><path d="M22 12h-4l-3 9L9 3l-3 9H2"/></svg>
               <span>${isZh ? "网络与流量" : "Network & Traffic"}</span>
-            </span>
+            </h2>
             <div class="flex flex-wrap items-center gap-x-2 gap-y-0.5 mono-num text-[10px]" style="color: var(--sg-subtle-fg);">
               <span class="whitespace-nowrap">↑ <strong class="font-medium" style="color: var(--foreground);">${formatTrafficGB(node.totalUpGB)}</strong></span>
               <span class="whitespace-nowrap">↓ <strong class="font-medium" style="color: var(--foreground);">${formatTrafficGB(node.totalDownGB)}</strong></span>
@@ -4060,17 +4075,16 @@ function renderDetailModal() {
           <span id="dnet-down-xend"></span>
         </div>
 
-        <div id="dnet-tip" class="bg-popover pointer-events-none absolute z-20 hidden rounded-md px-1.5 py-0.5 mono-num text-[9.5px] whitespace-nowrap"></div>
+        <div id="dnet-tip" class="bg-popover pointer-events-none absolute z-20 hidden rounded-sm px-1.5 py-0.5 mono-num text-[9.5px] whitespace-nowrap"></div>
       </div>
 
-      <!-- Right Card: System Info Spec Card (Bright top header slab + recessed rounded-rect shadow body, zero row separators) -->
-      <div class="glass-panel flex flex-col overflow-hidden rounded-lg">
-        <div class="flex items-center justify-between px-3.5 py-2.5">
-          <span class="text-xs font-semibold tracking-tight" style="color: var(--foreground);">${isZh ? "系统信息" : "System Info"}</span>
+      <div class="sg-spec-shell bg-card flex flex-col overflow-hidden rounded-lg">
+        <div class="sg-detail-header px-3.5 py-3">
+          <h2 class="sg-detail-title">${DETAIL_CPU_ICON_SVG}<span>${isZh ? "系统信息" : "System Info"}</span></h2>
           ${node.arch ? `<span class="mono-num text-[10px]" style="color: var(--sg-subtle-fg);">${escapeHtml(node.arch)}</span>` : ""}
         </div>
         <div class="flex flex-1 flex-col px-1.5 pb-1.5">
-          <div class="sg-spec-body flex-1 space-y-0.5 rounded-[9px] p-1.5">
+          <div class="sg-spec-body flex-1 space-y-0.5 p-1.5">
             ${sysRows
               .map(
                 ([k, v]) => `
@@ -4260,10 +4274,9 @@ function renderDetailModal() {
 
   const syncDetailChartInPlace = (rebuildLegend) => {
     dialog.querySelectorAll("[data-dtab]").forEach((b) => {
-      b.setAttribute("data-active", String(b.getAttribute("data-dtab") === state.detailTab));
-    });
-    dialog.querySelectorAll("[data-dhours]").forEach((b) => {
-      b.setAttribute("data-active", String(Number(b.getAttribute("data-dhours")) === state.detailHours));
+      const active = String(b.dataset.dtab === state.detailTab);
+      b.setAttribute("data-active", active);
+      b.setAttribute("aria-pressed", active);
     });
     if (rebuildLegend) {
       const slot = document.getElementById("detail-legend-slot");
