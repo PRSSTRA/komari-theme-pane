@@ -53,6 +53,16 @@
   --glass-shade: oklch(0.3 0 0 / 14%);
 }
 
+/* Composite the chart panel over the page color, not the enclosing popover. */
+:is(#detail-chart-card, #detail-net-cell) {
+  background: linear-gradient(var(--panel), var(--panel)) var(--background);
+  -webkit-backdrop-filter: none;
+  backdrop-filter: none;
+}
+.dark :is(#detail-chart-card, #detail-net-cell) {
+  background-color: color-mix(in oklab, var(--background), white 1.5%);
+}
+
 /* Keep the outlines of the System Info and node table readouts. */
 .sg-spec-body,
 .sg-table-body {
