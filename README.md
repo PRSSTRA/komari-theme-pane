@@ -17,25 +17,19 @@
 
 ### 核心特性
 
-- **Solid Glass 三层物理材质与性能模式**
-  - 严格区分三层玻璃厚度：`glass-panel`（顶部总览面板与工具栏）、`bg-card`（节点卡片、统计卡与图表卡）与 `bg-popover`（弹出层与详情弹窗），表面保持中性灰并仅以语义色标示运行状态。
-  - 原生支持 **深色 / 浅色 / 跟随系统** 外观切换（同步 `localStorage["appearance"]`）与 **中 / 英** 双语切换（同步 `localStorage["language"]`）。
-  - 支持 `reduce_transparency`（`data-glass="opaque"`）低透明高性能模式，在低性能设备上关闭 backdrop-filter 模糊的同时保留边缘高光与层级对比。
+- **外观与材质**：采用 Solid Glass 玻璃视觉风格，支持深色 / 浅色 / 跟随系统切换、中英双语切换，以及低透明高性能模式。
+- **世界地图**：点阵式全球节点分布图，支持实时太阳晨昏线、重合节点聚合或展开显示，点击可直达节点详情。
+- **遥测与历史图表**：实时展示全网与单节点网络速率及流量汇总，详情页支持 CPU / 内存负载历史，以及多轨 Ping 延迟与丢包可视化。
+- **多视图与筛选**：提供标准卡片、紧凑卡片与列表三种视图，支持分组、搜索、仅看在线筛选及多维度排序。
+- **访客偏好配置**：内置主题配置抽屉，访客可按个人习惯调整界面显示，并支持一键恢复站点默认。
 
-- **208×96 半调点阵世界地图**
-  - 基于 `208×96` Halftone Pattern Waves 点阵渲染全球轮廓，实时绘制太阳晨昏线（Solar Terminator）与 `UTC+8` 时钟。
-  - 支持 `cluster`（聚合气泡）与 `spread`（微距展开）两种重合节点展示模式，鼠标悬浮自动钳位在视口内并可点击直达节点详情。
-  - 内置智能城市关键词与 ISO-2 地区码双级坐标解析，未配置地域或无法识别坐标的节点自动跳过绘制，避免错误落点。
+### 界面预览
 
-- **5.5×5.5 Micro Slats 遥测图表**
-  - 首页「网络与流量」面板采用 `5.5×5.5` 微型条栅 Canvas 实时绘制全网聚合上/下行速率，右上角真实汇总全节点 `↑ 总上行 / ↓ 总下行` 累计流量。
-  - 节点详情弹窗提供自适应速率刻度的单节点网络图表，以及 **CPU / RAM 负载历史** 与 **多轨 Ping 延迟图表**（1–3 轨独立分隔，支持点击图例芯片单轨全高放大）。
-  - Ping 图表支持 **L1 丢包与超时可视化**：部分丢包在柱顶以警示红提示，100% 超时渲染半透明红柱与亮红顶盖。
-
-- **多形态视图与访客本地偏好**
-  - 支持 **标准卡片（`comfortable`）**、**紧凑卡片（`compact`）** 与 **内凹表体列表视图（Recessed Table）** 三种浏览形态。
-  - 全链路速率与流量采用自适应单位（`B/s`–`GB/s` 与 `B`–`PB`），所有实时数字启用 `tabular-nums` 等宽对齐防抖动；支持大洲规范化分组标签栏、关键词搜索、仅看在线筛选与多维度排序。
-  - 访客可通过右上角「主题配置」抽屉按个人习惯覆盖面板显隐与性能模式（持久化于 `localStorage["komari_pane_prefs_v1"]`），并支持**一键恢复站点默认**。
+| 列表视图（浅色主题） | 主题配置抽屉 |
+| :---: | :---: |
+| ![列表视图](./docs/table-view.png) | ![主题配置抽屉](./docs/theme-settings.png) |
+| **节点详情 · 负载与网络历史** | **节点详情 · 多轨 Ping 延迟** |
+| ![节点详情负载历史](./docs/detail-load.png) | ![节点详情 Ping 延迟](./docs/detail-ping.png) |
 
 ---
 
@@ -74,15 +68,19 @@ VITE_API_TARGET=http://127.0.0.1:25774 npm run dev
 
 ### Highlights
 
-- **Solid Glass 3-Tier Materiality**: Calibrated neutral glass hierarchy (`glass-panel`, `bg-card`, `bg-popover`) with Dark / Light / System appearance (`localStorage["appearance"]`), bilingual `zh-CN` / `en` UI (`localStorage["language"]`), and a `reduce_transparency` (`data-glass="opaque"`) high-performance mode.
+- **Appearance & Materiality**: Solid Glass styling with Dark / Light / System modes, Chinese & English UI, and a reduced-transparency performance mode.
+- **World Map**: Dot-matrix global node map with a live solar terminator, overlap clustering or spreading, and quick access to node details.
+- **Telemetry & Charts**: Live aggregate and per-node network throughput, traffic totals, CPU/RAM load history, and multi-track Ping latency with packet-loss visualization.
+- **Multiple Views & Filtering**: Switch between standard cards, compact cards, and table view, with group tabs, search, online filtering, and sorting.
+- **Visitor Preferences**: Built-in settings drawer for customizing local display options with one-click reset to site defaults.
 
-- **208×96 Halftone World Map**: Pattern Waves dot-matrix projection featuring a live solar terminator, UTC+8 clock, `cluster | spread` overlap modes, and smart city-keyword + ISO-2 coordinate resolution.
+### Screenshots
 
-- **5.5×5.5 Micro Slats Telemetry Charts**: High-precision canvas slat charts for aggregate and per-node network throughput, CPU/RAM load history, and multi-track Ping latency with L1 packet-loss / 100% timeout visualization and single-track zoom.
-
-- **Card, Compact & Recessed Table Views**: Supports `comfortable` / `compact` cards and a recessed table view with adaptive `B/s`–`GB/s` and `B`–`PB` units (`tabular-nums`), continent-normalized group tabs, and a visitor local preference drawer (`localStorage["komari_pane_prefs_v1"]`) with one-click reset to site defaults.
-
-- **Live Telemetry**: Streams node telemetry over Komari's `/api/clients` WebSocket. Billing and expiry figures are visible only when signed in and the billing display is enabled.
+| Table View (Light Theme) | Theme Settings Drawer |
+| :---: | :---: |
+| ![Table View](./docs/table-view.png) | ![Theme Settings Drawer](./docs/theme-settings.png) |
+| **Node Details · Load & Network History** | **Node Details · Multi-Track Ping Latency** |
+| ![Node Load History](./docs/detail-load.png) | ![Node Ping Latency](./docs/detail-ping.png) |
 
 ---
 ### Quick Start
