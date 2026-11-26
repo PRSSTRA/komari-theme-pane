@@ -1492,9 +1492,15 @@ function renderEventFeed() {
           </span>
           <span id="event-feed-alert-badge" class="mono-num hidden shrink-0 items-center gap-1 text-[10.5px]" style="color: var(--muted-foreground);"><span class="h-[6px] w-[6px] rounded-[1.5px]" style="background: var(--sg-danger);"></span><span id="event-feed-alert-num"></span></span>
         </div>
-        <div data-slot="tabs-list" data-variant="default" role="tablist" class="inline-flex items-center gap-0.5 rounded-lg bg-muted p-[3px] h-7 shrink-0">
-          <button type="button" role="tab" data-slot="tabs-trigger" data-evfilter="all" data-active="true" aria-selected="true" class="inline-flex h-full cursor-pointer items-center justify-center gap-1.5 rounded-sm border border-transparent font-medium whitespace-nowrap text-muted-foreground transition-colors hover:text-foreground data-[active=true]:text-foreground focus-visible:z-10 focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-(--focus-line) px-2 text-[11px]"></button>
-          <button type="button" role="tab" data-slot="tabs-trigger" data-evfilter="alert" data-active="false" aria-selected="false" class="inline-flex h-full cursor-pointer items-center justify-center gap-1.5 rounded-sm border border-transparent font-medium whitespace-nowrap text-muted-foreground transition-colors hover:text-foreground data-[active=true]:text-foreground focus-visible:z-10 focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-(--focus-line) px-2 text-[11px]"></button>
+        <div id="event-filters" data-slot="tabs-list" data-variant="default" role="group" aria-labelledby="event-feed-title" class="inline-flex h-9 shrink-0 items-center gap-0.5 rounded-lg bg-muted">
+          <button type="button" data-slot="tabs-trigger" data-evfilter="all" class="inline-flex h-full cursor-pointer items-center justify-center gap-1.5 rounded-sm border border-transparent px-2.5 text-xs font-medium whitespace-nowrap text-muted-foreground transition-colors hover:text-foreground data-[active=true]:text-foreground focus-visible:z-10 focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-(--focus-line) md:px-3">
+            <svg aria-hidden="true" class="h-3.5 w-3.5 shrink-0" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round"><path d="M4 6h16M4 12h16M4 18h16"/></svg>
+            <span></span>
+          </button>
+          <button type="button" data-slot="tabs-trigger" data-evfilter="alert" class="inline-flex h-full cursor-pointer items-center justify-center gap-1.5 rounded-sm border border-transparent px-2.5 text-xs font-medium whitespace-nowrap text-muted-foreground transition-colors hover:text-foreground data-[active=true]:text-foreground focus-visible:z-10 focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-(--focus-line) md:px-3">
+            <svg aria-hidden="true" class="h-3.5 w-3.5 shrink-0" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><path d="M10.27 4.99 2.84 18a2 2 0 0 0 1.74 3h14.84a2 2 0 0 0 1.74-3L13.73 4.99a2 2 0 0 0-3.46 0ZM12 9v4m0 4h.01"/></svg>
+            <span></span>
+          </button>
         </div>
       </div>
       <p id="event-connection-status" role="status" class="empty:hidden px-4 pb-2 text-[11px]" style="color: var(--sg-warn);"></p>
@@ -1527,8 +1533,8 @@ function renderEventFeed() {
     const key = btn.getAttribute("data-evfilter");
     const active = state.eventFilter === key;
     btn.setAttribute("data-active", String(active));
-    btn.setAttribute("aria-selected", String(active));
-    btn.textContent = key === "all" ? t("eventsAll") : t("eventsAlerts");
+    btn.setAttribute("aria-pressed", String(active));
+    btn.lastElementChild.textContent = key === "all" ? t("eventsAll") : t("eventsAlerts");
   });
 
   const listEl = document.getElementById("event-feed-list");
