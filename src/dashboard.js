@@ -234,7 +234,7 @@ function renderFlagBadge(region, size = "md") {
     return `<span class="sg-flag sg-flag-${size}" aria-label="${code}" title="${code}">${svg}</span>`;
   }
   const fallbackLabel = code || (state.lang === "zh-CN" ? "未设置地区" : "Region unset");
-  return `<span class="sg-flag sg-flag-${size}" style="background: var(--sg-muted); color: var(--sg-muted-fg);" aria-label="${fallbackLabel}" title="${fallbackLabel}"><svg viewBox="0 0 24 18" class="h-full w-full"><g transform="translate(3,0) scale(0.75)" fill="none" stroke="currentColor" stroke-width="1.9" stroke-linecap="round" stroke-linejoin="round"><circle cx="12" cy="12" r="7.5"/><path d="M4.5 12h15"/><path d="M12 4.5a11.5 11.5 0 0 1 3 7.5 11.5 11.5 0 0 1-3 7.5 11.5 11.5 0 0 1-3-7.5 11.5 11.5 0 0 1 3-7.5z"/></g></svg></span>`;
+  return `<span class="sg-flag sg-flag-${size}" style="background: var(--muted); color: var(--muted-foreground);" aria-label="${fallbackLabel}" title="${fallbackLabel}"><svg viewBox="0 0 24 18" class="h-full w-full"><g transform="translate(3,0) scale(0.75)" fill="none" stroke="currentColor" stroke-width="1.9" stroke-linecap="round" stroke-linejoin="round"><circle cx="12" cy="12" r="7.5"/><path d="M4.5 12h15"/><path d="M12 4.5a11.5 11.5 0 0 1 3 7.5 11.5 11.5 0 0 1-3 7.5 11.5 11.5 0 0 1-3-7.5 11.5 11.5 0 0 1 3-7.5z"/></g></svg></span>`;
 }
 
 const CITY_EN_MAP = {
@@ -399,9 +399,9 @@ function isNodeFeatured(node) {
 function renderPinnedBadge(nodeUuid, interactive = false) {
   if (interactive && state.loggedIn && nodeUuid) {
     const tip = state.lang === "zh-CN" ? "点击取消置顶" : "Click to unpin";
-    return `<button type="button" data-slot="badge" data-variant="brand" data-unpin-node="${nodeUuid}" title="${tip}" aria-label="${tip}" class="sg-pin-badge-btn gap-1 px-1.5 py-0.5 text-[10px]">${PIN_BADGE_ICON_SVG}<span>${t("pinned")}</span></button>`;
+    return `<button type="button" data-slot="badge" data-variant="outline" data-unpin-node="${nodeUuid}" title="${tip}" aria-label="${tip}" class="inline-flex items-center rounded-sm whitespace-nowrap font-medium text-foreground sg-pin-badge-btn gap-1 px-1.5 py-0.5 text-[10px]">${PIN_BADGE_ICON_SVG}<span>${t("pinned")}</span></button>`;
   }
-  return `<span data-slot="badge" data-variant="brand" class="gap-1 px-1.5 py-0.5 text-[10px]">${PIN_BADGE_ICON_SVG}<span>${t("pinned")}</span></span>`;
+  return `<span data-slot="badge" data-variant="outline" class="inline-flex items-center rounded-sm whitespace-nowrap font-medium text-foreground gap-1 px-1.5 py-0.5 text-[10px]">${PIN_BADGE_ICON_SVG}<span>${t("pinned")}</span></span>`;
 }
 
 function getFilteredNodes() {
@@ -1196,7 +1196,7 @@ function positionMapTooltip(cluster, interactive) {
         </div>
         <span class="h-[6px] w-[6px] shrink-0 rounded-[1.5px]" style="background: ${color};"></span>
       </div>
-      <div class="mt-1.5 flex items-center justify-between mono-num text-[10.5px]" style="color: var(--sg-muted-fg);">
+      <div class="mt-1.5 flex items-center justify-between mono-num text-[10.5px]" style="color: var(--muted-foreground);">
         <span>CPU ${n.online ? n.cpu.toFixed(1) + "%" : "—"}</span>
         <span>↑ ${n.online ? formatRate(n.netOut) : "0 B/s"}</span>
       </div>
@@ -1206,12 +1206,12 @@ function positionMapTooltip(cluster, interactive) {
     const cityLabel = formatCityName(nodes[0].city || nodes[0].region);
     const onlineCnt = nodes.filter((n) => n.online).length;
     tooltip.innerHTML = `
-      <div class="mb-1.5 flex items-center justify-between gap-2 border-b pb-1.5" style="border-color: var(--sg-border);">
+      <div class="mb-1.5 flex items-center justify-between gap-2 border-b pb-1.5" style="border-color: var(--border);">
         <div class="flex items-center gap-1.5 font-medium">
           ${renderFlagBadge(nodes[0].region, "sm")}
           <span>${cityLabel}</span>
         </div>
-        <span class="mono-num text-[10px]" style="color: var(--sg-muted-fg);">${onlineCnt}/${nodes.length} ${t("online")}</span>
+        <span class="mono-num text-[10px]" style="color: var(--muted-foreground);">${onlineCnt}/${nodes.length} ${t("online")}</span>
       </div>
       <div class="max-h-36 space-y-1 overflow-y-auto">
         ${sorted.map((n) => {
@@ -1222,7 +1222,7 @@ function positionMapTooltip(cluster, interactive) {
                 <span class="h-[6px] w-[6px] shrink-0 rounded-[1.5px]" style="background: ${color};"></span>
                 <span class="truncate">${escapeHtml(n.name)}</span>
               </span>
-              <span class="mono-num shrink-0 text-[10px]" style="color: var(--sg-muted-fg);">${n.online ? n.cpu.toFixed(0) + "%" : t("offline")}</span>
+              <span class="mono-num shrink-0 text-[10px]" style="color: var(--muted-foreground);">${n.online ? n.cpu.toFixed(0) + "%" : t("offline")}</span>
             </button>
           `;
         }).join("")}
@@ -1326,7 +1326,7 @@ function renderOverviewLayout() {
   }
 
   mapPanel.className = showMap
-    ? "sg-panel sg-glass-backdrop relative order-1 flex min-w-0 flex-col overflow-hidden rounded-xl p-4"
+    ? "glass-panel relative order-1 flex min-w-0 flex-col overflow-hidden rounded-lg p-4"
     : "hidden";
 
   if (mapViewport) {
@@ -1346,26 +1346,26 @@ function renderOverviewLayout() {
   } else if (visibleCount === 3) {
     // When 3 panels are enabled and width < xl (not enough for 3 columns), Network & Traffic drops to full-width row 2 (order-3)
     // while Live Events swaps up beside the map (order-2); on xl+, Network & Traffic sits in the middle column (xl:order-2).
-    summaryPanel.className = "sg-panel sg-glass-backdrop relative order-3 flex h-[280px] min-w-0 flex-col overflow-hidden rounded-xl lg:col-span-2 xl:order-2 xl:col-span-1 xl:h-full xl:min-h-0";
+    summaryPanel.className = "glass-panel relative order-3 flex h-[280px] min-w-0 flex-col overflow-hidden rounded-lg lg:col-span-2 xl:order-2 xl:col-span-1 xl:h-full xl:min-h-0";
   } else if (showMap) {
-    summaryPanel.className = "sg-panel sg-glass-backdrop relative order-2 flex h-full min-h-[280px] min-w-0 flex-col overflow-hidden rounded-xl lg:min-h-0";
+    summaryPanel.className = "glass-panel relative order-2 flex h-full min-h-[280px] min-w-0 flex-col overflow-hidden rounded-lg lg:min-h-0";
   } else {
-    summaryPanel.className = "sg-panel sg-glass-backdrop relative order-1 flex h-[320px] min-w-0 flex-col overflow-hidden rounded-xl sm:h-[340px]";
+    summaryPanel.className = "glass-panel relative order-1 flex h-[320px] min-w-0 flex-col overflow-hidden rounded-lg sm:h-[340px]";
   }
 
   if (!showEvents) {
     eventPanel.className = "hidden";
   } else if (visibleCount === 3) {
-    eventPanel.className = "sg-panel sg-glass-backdrop relative order-2 flex min-h-[240px] min-w-0 flex-col overflow-hidden rounded-xl lg:min-h-0 xl:order-3";
+    eventPanel.className = "glass-panel relative order-2 flex min-h-[240px] min-w-0 flex-col overflow-hidden rounded-lg lg:min-h-0 xl:order-3";
     if (eventInner) eventInner.className = "flex max-h-[260px] min-h-0 flex-1 flex-col lg:absolute lg:inset-0 lg:max-h-none";
   } else if (visibleCount === 2 && showMap) {
-    eventPanel.className = "sg-panel sg-glass-backdrop relative order-2 flex min-h-[260px] min-w-0 flex-col overflow-hidden rounded-xl lg:min-h-0";
+    eventPanel.className = "glass-panel relative order-2 flex min-h-[260px] min-w-0 flex-col overflow-hidden rounded-lg lg:min-h-0";
     if (eventInner) eventInner.className = "flex max-h-[260px] min-h-0 flex-1 flex-col lg:absolute lg:inset-0 lg:max-h-none";
   } else if (visibleCount === 2) {
-    eventPanel.className = "sg-panel sg-glass-backdrop relative order-2 flex h-[320px] min-w-0 flex-col overflow-hidden rounded-xl sm:h-[340px]";
+    eventPanel.className = "glass-panel relative order-2 flex h-[320px] min-w-0 flex-col overflow-hidden rounded-lg sm:h-[340px]";
     if (eventInner) eventInner.className = "flex h-full min-h-0 flex-1 flex-col";
   } else {
-    eventPanel.className = "sg-panel sg-glass-backdrop relative order-1 flex h-[300px] min-w-0 flex-col overflow-hidden rounded-xl";
+    eventPanel.className = "glass-panel relative order-1 flex h-[300px] min-w-0 flex-col overflow-hidden rounded-lg";
     if (eventInner) eventInner.className = "flex h-full min-h-0 flex-1 flex-col";
   }
 }
@@ -1470,15 +1470,15 @@ function renderEventFeed() {
     inner.innerHTML = `
       <div class="flex min-h-7 shrink-0 items-center justify-between gap-2 px-4 pt-3.5 pb-2">
         <div class="flex min-w-0 items-center gap-2">
-          <span class="inline-flex min-w-0 items-center gap-1.5 text-xs font-semibold tracking-tight" style="color: var(--sg-fg);">
-            <svg class="h-3.5 w-3.5 shrink-0" style="color: var(--sg-muted-fg);" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><circle cx="12" cy="12" r="2"/><path d="M16.24 7.76a6 6 0 0 1 0 8.49m-8.48-.01a6 6 0 0 1 0-8.49m11.31-2.82a10 10 0 0 1 0 14.14m-14.14 0a10 10 0 0 1 0-14.14"/></svg>
+          <span class="inline-flex min-w-0 items-center gap-1.5 text-xs font-semibold tracking-tight" style="color: var(--foreground);">
+            <svg class="h-3.5 w-3.5 shrink-0" style="color: var(--muted-foreground);" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><circle cx="12" cy="12" r="2"/><path d="M16.24 7.76a6 6 0 0 1 0 8.49m-8.48-.01a6 6 0 0 1 0-8.49m11.31-2.82a10 10 0 0 1 0 14.14m-14.14 0a10 10 0 0 1 0-14.14"/></svg>
             <span id="event-feed-title" class="truncate"></span>
           </span>
-          <span id="event-feed-alert-badge" class="mono-num hidden shrink-0 items-center gap-1 text-[10.5px]" style="color: var(--sg-muted-fg);"><span class="h-[6px] w-[6px] rounded-[1.5px]" style="background: var(--sg-danger);"></span><span id="event-feed-alert-num"></span></span>
+          <span id="event-feed-alert-badge" class="mono-num hidden shrink-0 items-center gap-1 text-[10.5px]" style="color: var(--muted-foreground);"><span class="h-[6px] w-[6px] rounded-[1.5px]" style="background: var(--sg-danger);"></span><span id="event-feed-alert-num"></span></span>
         </div>
-        <div data-slot="tabs-list" data-variant="default" role="tablist" class="h-7 shrink-0">
-          <button type="button" role="tab" data-slot="tabs-trigger" data-evfilter="all" data-active="true" aria-selected="true" class="px-2 text-[11px]"></button>
-          <button type="button" role="tab" data-slot="tabs-trigger" data-evfilter="alert" data-active="false" aria-selected="false" class="px-2 text-[11px]"></button>
+        <div data-slot="tabs-list" data-variant="default" role="tablist" class="inline-flex items-center gap-0.5 rounded-lg bg-muted p-[3px] h-7 shrink-0">
+          <button type="button" role="tab" data-slot="tabs-trigger" data-evfilter="all" data-active="true" aria-selected="true" class="inline-flex h-full cursor-pointer items-center justify-center gap-1.5 rounded-sm border border-transparent font-medium whitespace-nowrap text-muted-foreground transition-colors hover:text-foreground data-[active=true]:text-foreground focus-visible:z-10 focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-(--focus-line) px-2 text-[11px]"></button>
+          <button type="button" role="tab" data-slot="tabs-trigger" data-evfilter="alert" data-active="false" aria-selected="false" class="inline-flex h-full cursor-pointer items-center justify-center gap-1.5 rounded-sm border border-transparent font-medium whitespace-nowrap text-muted-foreground transition-colors hover:text-foreground data-[active=true]:text-foreground focus-visible:z-10 focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-(--focus-line) px-2 text-[11px]"></button>
         </div>
       </div>
       <p id="event-connection-status" role="status" class="empty:hidden px-4 pb-2 text-[11px]" style="color: var(--sg-warn);"></p>
@@ -1527,16 +1527,16 @@ function renderEventFeed() {
         <div class="flex items-center justify-between gap-2">
           <span class="flex min-w-0 items-center gap-1.5 text-[11.5px] font-medium">
             ${renderFlagBadge(evRegion, "sm")}
-            <span class="truncate" style="color: var(--sg-fg);">${escapeHtml(ev.nodeName)}</span>
+            <span class="truncate" style="color: var(--foreground);">${escapeHtml(ev.nodeName)}</span>
           </span>
           <span class="mono-num shrink-0 text-[10px]" style="color: var(--sg-subtle-fg);">${ev.timeStr}</span>
         </div>
-        <div class="mt-0.5 truncate text-[10.5px] mono-num" style="color: var(--sg-muted-fg);">${escapeHtml(formatEventMessage(ev))}</div>
+        <div class="mt-0.5 truncate text-[10.5px] mono-num" style="color: var(--muted-foreground);">${escapeHtml(formatEventMessage(ev))}</div>
       </div>
     </button>
   `;
   }).join("") : `
-    <div class="flex h-full min-h-[140px] flex-col items-center justify-center gap-2 text-center text-[11.5px]" style="color: var(--sg-muted-fg);">
+    <div class="flex h-full min-h-[140px] flex-col items-center justify-center gap-2 text-center text-[11.5px]" style="color: var(--muted-foreground);">
       <span class="h-[6px] w-[6px] rounded-[1.5px]" style="background: ${state.connection === 'live' ? 'var(--sg-success)' : 'var(--sg-warn)'};"></span>
       <span>${state.connection === 'live' ? t(state.eventFilter === "alert" ? "eventsEmptyAlerts" : "eventsHealthy") : connectionMessage()}</span>
     </div>
@@ -1919,17 +1919,17 @@ function renderSummary() {
 
         <div id="net-top-header" class="pointer-events-none relative z-10 flex flex-col gap-0.5 px-4 pt-3.5">
           <div class="flex min-h-7 flex-wrap items-center justify-between gap-x-2.5 gap-y-0.5">
-            <span class="inline-flex shrink-0 items-center gap-1.5 whitespace-nowrap text-xs font-semibold tracking-tight" style="color: var(--sg-fg);">
-              <svg class="h-3.5 w-3.5 shrink-0" style="color: var(--sg-muted-fg);" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><path d="M22 12h-4l-3 9L9 3l-3 9H2"/></svg>
+            <span class="inline-flex shrink-0 items-center gap-1.5 whitespace-nowrap text-xs font-semibold tracking-tight" style="color: var(--foreground);">
+              <svg class="h-3.5 w-3.5 shrink-0" style="color: var(--muted-foreground);" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><path d="M22 12h-4l-3 9L9 3l-3 9H2"/></svg>
               <span id="net-title-label"></span>
             </span>
             <div class="flex flex-wrap items-center gap-x-2.5 gap-y-0.5 mono-num text-[10px] sm:text-[10.5px]">
-              <span id="net-today" class="pointer-events-auto whitespace-nowrap" style="color: var(--sg-subtle-fg);"><span id="net-today-label"></span> <strong class="font-medium" style="color: var(--sg-fg);">—</strong></span>
-              <span class="whitespace-nowrap" style="color: var(--sg-subtle-fg);"><span id="net-total-label"></span> <strong id="net-total-val" class="font-medium" style="color: var(--sg-fg);"></strong></span>
+              <span id="net-today" class="pointer-events-auto whitespace-nowrap" style="color: var(--sg-subtle-fg);"><span id="net-today-label"></span> <strong class="font-medium" style="color: var(--foreground);">—</strong></span>
+              <span class="whitespace-nowrap" style="color: var(--sg-subtle-fg);"><span id="net-total-label"></span> <strong id="net-total-val" class="font-medium" style="color: var(--foreground);"></strong></span>
             </div>
           </div>
           <div class="flex items-baseline justify-between gap-2">
-            <span id="net-up-label" class="whitespace-nowrap text-[10.5px]" style="color: var(--sg-muted-fg);"></span>
+            <span id="net-up-label" class="whitespace-nowrap text-[10.5px]" style="color: var(--muted-foreground);"></span>
             <span class="mono-num whitespace-nowrap text-[11.5px] font-semibold"><span id="net-up-rate"></span> <span id="net-up-unit" class="text-[9.5px] font-normal" style="color: var(--sg-subtle-fg);"></span></span>
           </div>
         </div>
@@ -1946,7 +1946,7 @@ function renderSummary() {
         </div>
 
         <div id="net-down-header" class="pointer-events-none absolute inset-x-0 z-10 flex items-baseline justify-between gap-2 px-4">
-          <span id="net-down-label" class="text-[10.5px]" style="color: var(--sg-muted-fg);"></span>
+          <span id="net-down-label" class="text-[10.5px]" style="color: var(--muted-foreground);"></span>
           <span class="mono-num text-[11.5px] font-semibold"><span id="net-down-rate"></span> <span id="net-down-unit" class="text-[9.5px] font-normal" style="color: var(--sg-subtle-fg);"></span></span>
         </div>
 
@@ -1961,7 +1961,7 @@ function renderSummary() {
           <span id="net-down-xend"></span>
         </div>
 
-        <div id="net-unified-tip" class="sg-popover pointer-events-none absolute z-20 hidden rounded-md px-1.5 py-0.5 mono-num text-[9.5px] whitespace-nowrap"></div>
+        <div id="net-unified-tip" class="bg-popover pointer-events-none absolute z-20 hidden rounded-md px-1.5 py-0.5 mono-num text-[9.5px] whitespace-nowrap"></div>
       </div>
     `;
 
@@ -2061,7 +2061,7 @@ function renderSortSelect() {
   if (lastSortMenuSig !== sig) {
     lastSortMenuSig = sig;
     menu.innerHTML = SORT_OPTIONS.map((opt) => `
-      <button type="button" role="option" data-slot="select-item" data-sort-val="${opt.value}" class="flex w-full items-center justify-between gap-2 px-2.5 py-1.5 text-left" style="color: var(--sg-fg);">
+      <button type="button" role="option" data-slot="select-item" data-sort-val="${opt.value}" class="focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-(--focus-line) rounded-sm hover:bg-accent focus-visible:bg-accent flex w-full items-center justify-between gap-2 px-2.5 py-1.5 text-left" style="color: var(--foreground);">
         <span class="inline-flex items-center gap-2">
           <span data-sort-icon class="inline-flex items-center">${opt.icon}</span>
           <span>${t(opt.key)}</span>
@@ -2083,9 +2083,10 @@ function renderSortSelect() {
 
   menu.querySelectorAll("[data-sort-val]").forEach((btn) => {
     const selected = btn.getAttribute("data-sort-val") === state.sortBy;
-    btn.setAttribute("data-selected", String(selected));
+    btn.setAttribute("aria-selected", String(selected));
+    btn.classList.toggle("glass-chosen", selected);
     const ic = btn.querySelector("[data-sort-icon]");
-    if (ic) ic.style.color = selected ? "var(--sg-fg)" : "var(--sg-muted-fg)";
+    if (ic) ic.style.color = selected ? "var(--foreground)" : "var(--muted-foreground)";
     const ck = btn.querySelector("[data-sort-check]");
     if (ck) ck.style.opacity = selected ? "1" : "0";
   });
@@ -2145,10 +2146,10 @@ function renderViewOptionsMenu() {
     const densityBlock = isCard
       ? `
         <div class="mb-3 space-y-1.5">
-          <div class="text-[11px] font-medium" style="color: var(--sg-muted-fg);">${en ? "Card Density" : "卡片密度"}</div>
-          <div data-slot="tabs-list" data-variant="default" class="flex h-8 w-full">
-            <button type="button" data-slot="tabs-trigger" data-vo-density="comfortable" class="flex-1 px-2 text-xs">${en ? "Standard" : "标准"}</button>
-            <button type="button" data-slot="tabs-trigger" data-vo-density="compact" class="flex-1 px-2 text-xs">${en ? "Compact" : "紧凑"}</button>
+          <div class="text-[11px] font-medium" style="color: var(--muted-foreground);">${en ? "Card Density" : "卡片密度"}</div>
+          <div data-slot="tabs-list" data-variant="default" class="items-center gap-0.5 rounded-lg bg-muted p-[3px] flex h-8 w-full">
+            <button type="button" data-slot="tabs-trigger" data-vo-density="comfortable" class="inline-flex h-full cursor-pointer items-center justify-center gap-1.5 rounded-sm border border-transparent font-medium whitespace-nowrap text-muted-foreground transition-colors hover:text-foreground data-[active=true]:text-foreground focus-visible:z-10 focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-(--focus-line) flex-1 px-2 text-xs">${en ? "Standard" : "标准"}</button>
+            <button type="button" data-slot="tabs-trigger" data-vo-density="compact" class="inline-flex h-full cursor-pointer items-center justify-center gap-1.5 rounded-sm border border-transparent font-medium whitespace-nowrap text-muted-foreground transition-colors hover:text-foreground data-[active=true]:text-foreground focus-visible:z-10 focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-(--focus-line) flex-1 px-2 text-xs">${en ? "Compact" : "紧凑"}</button>
           </div>
         </div>
       `
@@ -2156,22 +2157,22 @@ function renderViewOptionsMenu() {
 
     menu.innerHTML = `
       <div class="mb-2.5 flex items-center">
-        <span class="text-[11px] font-semibold tracking-tight" style="color: var(--sg-fg);">${headerTitle}</span>
+        <span class="text-[11px] font-semibold tracking-tight" style="color: var(--foreground);">${headerTitle}</span>
       </div>
       ${densityBlock}
       <div class="space-y-1">
         ${fields.map((f) => {
           const icon = VIEW_OPTION_ICONS[f.key] || "";
           return `
-            <div class="flex items-center justify-between gap-2.5 rounded-lg px-2 py-1.5 transition-colors hover:bg-[var(--sg-hover-faint)]">
+            <div class="flex items-center justify-between gap-2.5 rounded-lg px-2 py-1.5 transition-colors hover:bg-[var(--hover-faint)]">
               <div class="flex min-w-0 items-center gap-2">
                 <span data-vo-icon="${f.key}" class="inline-flex shrink-0 items-center transition-colors duration-150">${icon}</span>
                 <div class="min-w-0">
-                  <div class="truncate text-xs" style="color: var(--sg-fg);">${f.label}</div>
+                  <div class="truncate text-xs" style="color: var(--foreground);">${f.label}</div>
                   ${f.sub ? `<div class="mono-num truncate text-[10px]" style="color: var(--sg-subtle-fg);">${f.sub}</div>` : ""}
                 </div>
               </div>
-              <button type="button" role="switch" data-slot="switch" data-vo-sw="${f.key}" class="shrink-0">
+              <button type="button" role="switch" data-slot="switch" data-vo-sw="${f.key}" class="shrink-0 bg-muted focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-(--focus-line)">
                 <span data-slot="switch-thumb"></span>
               </button>
             </div>
@@ -2215,9 +2216,9 @@ function renderViewOptionsMenu() {
     const k = btn.getAttribute("data-vo-sw");
     const checked = Boolean(state.settings[k]);
     btn.setAttribute("aria-checked", String(checked));
-    btn.setAttribute("data-checked", String(checked));
+    btn.toggleAttribute("data-checked", checked);
     const ic = menu.querySelector(`[data-vo-icon="${k}"]`);
-    if (ic) ic.style.color = checked ? "var(--sg-fg)" : "var(--sg-muted-fg)";
+    if (ic) ic.style.color = checked ? "var(--foreground)" : "var(--muted-foreground)";
   });
 
   // Keep #view-options-menu strictly within viewport (left >= 12px and right <= vw - 12px)
@@ -2289,9 +2290,9 @@ function renderPinnedNodesDrawer() {
       <div data-pin-row="${escapeHtml(n.uuid)}" class="sg-event-row flex cursor-pointer items-center justify-between gap-2.5 rounded-lg px-2 py-1.5">
         <span class="flex min-w-0 flex-1 items-center gap-2">
           ${renderFlagBadge(n.region, "sm")}
-          <span class="truncate text-xs" style="color: var(--sg-fg);">${escapeHtml(n.name)}</span>
+          <span class="truncate text-xs" style="color: var(--foreground);">${escapeHtml(n.name)}</span>
         </span>
-        <button type="button" role="switch" data-slot="switch" data-pin-sw="${escapeHtml(n.uuid)}" class="shrink-0" aria-label="${escapeHtml(n.name)}">
+        <button type="button" role="switch" data-slot="switch" data-pin-sw="${escapeHtml(n.uuid)}" class="shrink-0 bg-muted focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-(--focus-line)" aria-label="${escapeHtml(n.name)}">
           <span data-slot="switch-thumb"></span>
         </button>
       </div>
@@ -2312,7 +2313,7 @@ function renderPinnedNodesDrawer() {
     const checked = pinnedSet.has(n.uuid);
     if (sw) {
       sw.setAttribute("aria-checked", String(checked));
-      sw.setAttribute("data-checked", String(checked));
+      sw.toggleAttribute("data-checked", checked);
     }
     if (row) {
       const hay = `${n.name} ${n.region} ${n.city} ${escapeHtml(formatCityName(n.city))} ${normalizeGroupName(n.group)} ${escapeHtml(formatGroupLabel(normalizeGroupName(n.group)))}`.toLowerCase();
@@ -2328,6 +2329,7 @@ function renderHeader() {
   state.theme = resolveAppearance(state.appearance);
   document.documentElement.lang = state.lang;
   document.documentElement.style.colorScheme = state.theme;
+  document.documentElement.classList.toggle("dark", state.theme === "dark");
   const stage = document.getElementById("sg-stage");
   stage.setAttribute("data-theme", state.theme);
   stage.setAttribute("data-glass", state.settings.reduce_transparency ? "opaque" : "translucent");
@@ -2457,7 +2459,7 @@ function renderHeader() {
   // Render Panel-Grouped Managed Settings Cards once per language, then patch switches & tabs in-place for smooth animations
   const swContainer = document.getElementById("managed-switches");
   const swHtml = (key) => `
-    <button type="button" role="switch" data-slot="switch" data-sw="${key}" class="shrink-0">
+    <button type="button" role="switch" data-slot="switch" data-sw="${key}" class="shrink-0 bg-muted focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-(--focus-line)">
       <span data-slot="switch-thumb"></span>
     </button>
   `;
@@ -2466,10 +2468,10 @@ function renderHeader() {
     swContainer.dataset.langSig = state.lang;
     swContainer.innerHTML = `
       <!-- Panel Card: World Map -->
-      <div class="sg-inset-pane rounded-xl p-3.5">
+      <div class="border rounded-lg p-3.5">
         <div class="flex items-center justify-between gap-3">
-          <span class="inline-flex items-center gap-1.5 text-xs font-semibold tracking-tight" style="color: var(--sg-fg);">
-            <svg class="h-3.5 w-3.5 shrink-0" style="color: var(--sg-muted-fg);" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><circle cx="12" cy="12" r="10"/><path d="M2 12h20"/><path d="M12 2a15.3 15.3 0 0 1 4 10 15.3 15.3 0 0 1-4 10 15.3 15.3 0 0 1-4-10 15.3 15.3 0 0 1 4-10z"/></svg>
+          <span class="inline-flex items-center gap-1.5 text-xs font-semibold tracking-tight" style="color: var(--foreground);">
+            <svg class="h-3.5 w-3.5 shrink-0" style="color: var(--muted-foreground);" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><circle cx="12" cy="12" r="10"/><path d="M2 12h20"/><path d="M12 2a15.3 15.3 0 0 1 4 10 15.3 15.3 0 0 1-4 10 15.3 15.3 0 0 1-4-10 15.3 15.3 0 0 1 4-10z"/></svg>
             <span>${t("mapTitle")}</span>
           </span>
           ${swHtml("show_world_map")}
@@ -2477,30 +2479,30 @@ function renderHeader() {
 
         <div id="drawer-map-subopts" class="mt-3 space-y-2.5 transition-opacity duration-200">
           <div class="space-y-1.5">
-            <div class="text-[11px]" style="color: var(--sg-muted-fg);">${isZh ? "同区策略" : "Overlap Strategy"}</div>
-            <div data-slot="tabs-list" data-variant="default" class="flex h-8 w-full">
-              <button type="button" data-slot="tabs-trigger" data-overlap="cluster" class="overlap-btn flex-1 px-2 text-xs">${isZh ? "聚合" : "Cluster"}</button>
-              <button type="button" data-slot="tabs-trigger" data-overlap="spread" class="overlap-btn flex-1 px-2 text-xs">${isZh ? "微散开" : "Spread"}</button>
+            <div class="text-[11px]" style="color: var(--muted-foreground);">${isZh ? "同区策略" : "Overlap Strategy"}</div>
+            <div data-slot="tabs-list" data-variant="default" class="items-center gap-0.5 rounded-lg bg-muted p-[3px] flex h-8 w-full">
+              <button type="button" data-slot="tabs-trigger" data-overlap="cluster" class="inline-flex h-full cursor-pointer items-center justify-center gap-1.5 rounded-sm border border-transparent font-medium whitespace-nowrap text-muted-foreground transition-colors hover:text-foreground data-[active=true]:text-foreground focus-visible:z-10 focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-(--focus-line) overlap-btn flex-1 px-2 text-xs">${isZh ? "聚合" : "Cluster"}</button>
+              <button type="button" data-slot="tabs-trigger" data-overlap="spread" class="inline-flex h-full cursor-pointer items-center justify-center gap-1.5 rounded-sm border border-transparent font-medium whitespace-nowrap text-muted-foreground transition-colors hover:text-foreground data-[active=true]:text-foreground focus-visible:z-10 focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-(--focus-line) overlap-btn flex-1 px-2 text-xs">${isZh ? "微散开" : "Spread"}</button>
             </div>
           </div>
 
           <div class="flex items-center justify-between gap-3 pt-0.5">
-            <span class="text-xs" style="color: var(--sg-muted-fg);">${isZh ? "地图时间显示" : "Map Clock (UTC+8)"}</span>
+            <span class="text-xs" style="color: var(--muted-foreground);">${isZh ? "地图时间显示" : "Map Clock (UTC+8)"}</span>
             ${swHtml("show_map_clock")}
           </div>
 
           <div class="flex items-center justify-between gap-3">
-            <span class="text-xs" style="color: var(--sg-muted-fg);">${isZh ? "地图昼夜晨昏线" : "Solar Terminator"}</span>
+            <span class="text-xs" style="color: var(--muted-foreground);">${isZh ? "地图昼夜晨昏线" : "Solar Terminator"}</span>
             ${swHtml("show_solar_terminator")}
           </div>
         </div>
       </div>
 
       <!-- Panel Card: Network & Traffic -->
-      <div class="sg-inset-pane rounded-xl p-3.5">
+      <div class="border rounded-lg p-3.5">
         <div class="flex items-center justify-between gap-3">
-          <span class="inline-flex items-center gap-1.5 text-xs font-semibold tracking-tight" style="color: var(--sg-fg);">
-            <svg class="h-3.5 w-3.5 shrink-0" style="color: var(--sg-muted-fg);" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><path d="M22 12h-4l-3 9L9 3l-3 9H2"/></svg>
+          <span class="inline-flex items-center gap-1.5 text-xs font-semibold tracking-tight" style="color: var(--foreground);">
+            <svg class="h-3.5 w-3.5 shrink-0" style="color: var(--muted-foreground);" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><path d="M22 12h-4l-3 9L9 3l-3 9H2"/></svg>
             <span>${t("networkTitle")}</span>
           </span>
           ${swHtml("show_summary_bar")}
@@ -2508,10 +2510,10 @@ function renderHeader() {
       </div>
 
       <!-- Panel Card: Live Events -->
-      <div class="sg-inset-pane rounded-xl p-3.5">
+      <div class="border rounded-lg p-3.5">
         <div class="flex items-center justify-between gap-3">
-          <span class="inline-flex items-center gap-1.5 text-xs font-semibold tracking-tight" style="color: var(--sg-fg);">
-            <svg class="h-3.5 w-3.5 shrink-0" style="color: var(--sg-muted-fg);" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><circle cx="12" cy="12" r="2"/><path d="M16.24 7.76a6 6 0 0 1 0 8.49m-8.48-.01a6 6 0 0 1 0-8.49m11.31-2.82a10 10 0 0 1 0 14.14m-14.14 0a10 10 0 0 1 0-14.14"/></svg>
+          <span class="inline-flex items-center gap-1.5 text-xs font-semibold tracking-tight" style="color: var(--foreground);">
+            <svg class="h-3.5 w-3.5 shrink-0" style="color: var(--muted-foreground);" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><circle cx="12" cy="12" r="2"/><path d="M16.24 7.76a6 6 0 0 1 0 8.49m-8.48-.01a6 6 0 0 1 0-8.49m11.31-2.82a10 10 0 0 1 0 14.14m-14.14 0a10 10 0 0 1 0-14.14"/></svg>
             <span>${t("eventsTitle")}</span>
           </span>
           ${swHtml("show_event_feed")}
@@ -2519,13 +2521,13 @@ function renderHeader() {
       </div>
 
       <!-- Panel Card: Appearance & Performance -->
-      <div class="sg-inset-pane space-y-2.5 rounded-xl p-3.5">
-        <div class="flex items-center gap-1.5 text-xs font-semibold tracking-tight" style="color: var(--sg-fg);">
-          <svg class="h-3.5 w-3.5 shrink-0" style="color: var(--sg-muted-fg);" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><path d="M12 2 2 7l10 5 10-5-10-5Z"/><path d="m2 17 10 5 10-5"/><path d="m2 12 10 5 10-5"/></svg>
+      <div class="border space-y-2.5 rounded-lg p-3.5">
+        <div class="flex items-center gap-1.5 text-xs font-semibold tracking-tight" style="color: var(--foreground);">
+          <svg class="h-3.5 w-3.5 shrink-0" style="color: var(--muted-foreground);" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><path d="M12 2 2 7l10 5 10-5-10-5Z"/><path d="m2 17 10 5 10-5"/><path d="m2 12 10 5 10-5"/></svg>
           <span>${isZh ? "外观与性能" : "Appearance & Performance"}</span>
         </div>
         <div class="flex items-center justify-between gap-3">
-          <span class="text-xs" style="color: var(--sg-muted-fg);">${isZh ? "低透明高性能模式" : "Reduce Transparency"}</span>
+          <span class="text-xs" style="color: var(--muted-foreground);">${isZh ? "低透明高性能模式" : "Reduce Transparency"}</span>
           ${swHtml("reduce_transparency")}
         </div>
       </div>
@@ -2558,7 +2560,7 @@ function renderHeader() {
     const k = btn.getAttribute("data-sw");
     const checked = Boolean(state.settings[k]);
     btn.setAttribute("aria-checked", String(checked));
-    btn.setAttribute("data-checked", String(checked));
+    btn.toggleAttribute("data-checked", checked);
   });
   swContainer.querySelectorAll(".overlap-btn").forEach((btn) => {
     const active = btn.getAttribute("data-overlap") === state.mapOverlapMode;
@@ -2613,7 +2615,7 @@ function renderGroups() {
       const label = formatGroupLabel(g);
       const spanAll = idx === 0 && groups.length % 2 === 1;
       return `
-        <button type="button" role="tab" data-slot="tabs-trigger" data-group="${escapeHtml(g)}" data-span-all="${spanAll}" class="shrink-0 whitespace-nowrap px-2.5 text-xs">
+        <button type="button" role="tab" data-slot="tabs-trigger" data-group="${escapeHtml(g)}" data-span-all="${spanAll}" class="inline-flex h-full cursor-pointer items-center justify-center gap-1.5 rounded-sm border border-transparent font-medium whitespace-nowrap text-muted-foreground transition-colors hover:text-foreground data-[active=true]:text-foreground focus-visible:z-10 focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-(--focus-line) shrink-0 whitespace-nowrap px-2.5 text-xs">
           <span>${escapeHtml(label)}</span>
           <span class="mono-num text-[11px] opacity-65">${counts[g]}</span>
         </button>
@@ -2640,12 +2642,12 @@ function renderMeter(label, valueText, pct, subText, metricKey) {
   return `
     <div class="space-y-1">
       <div class="flex items-center justify-between text-[11px]">
-        <span style="color: var(--sg-muted-fg);">${label}</span>
-        <span data-m-val="${metricKey}" class="mono-num font-medium" style="color: ${pct >= 70 ? color : "var(--sg-fg)"};">
+        <span style="color: var(--muted-foreground);">${label}</span>
+        <span data-m-val="${metricKey}" class="mono-num font-medium" style="color: ${pct >= 70 ? color : "var(--foreground)"};">
           ${valueText}${subText ? `<span class="ml-1 font-normal" style="color: var(--sg-subtle-fg);">${subText}</span>` : ""}
         </span>
       </div>
-      <div data-slot="progress-track" class="h-1.5 w-full overflow-hidden rounded-full">
+      <div data-slot="progress-track" class="bg-muted h-1.5 w-full overflow-hidden rounded-full">
         <div data-m-bar="${metricKey}" data-slot="progress-indicator" class="h-full rounded-full" style="width: ${Math.min(100, Math.max(0, pct))}%; background: ${color};"></div>
       </div>
     </div>
@@ -2664,7 +2666,7 @@ function renderCardGrid(list) {
         const dotColor = nodeStatusColor(n);
 
         return `
-          <article data-slot="card" data-node="${escapeHtml(n.uuid)}" tabindex="0" class="km-node-card sg-card sg-card-interactive relative flex cursor-pointer flex-col rounded-xl ${compact ? "gap-3 p-4" : "gap-4 p-5"} ${!n.online ? "opacity-65" : ""}">
+          <article data-slot="card" data-node="${escapeHtml(n.uuid)}" tabindex="0" class="km-node-card bg-card hover:bg-card/80 relative flex cursor-pointer flex-col rounded-lg ${compact ? "gap-3 p-4" : "gap-4 p-5"} ${!n.online ? "opacity-65" : ""}">
             <div class="flex items-center justify-between gap-2">
               <div class="min-w-0">
                 <div class="flex items-center gap-2">
@@ -2673,7 +2675,7 @@ function renderCardGrid(list) {
                   ${isNodeFeatured(n) ? renderPinnedBadge(n.uuid, true) : ""}
                 </div>
               </div>
-              <span data-slot="badge" data-variant="secondary" class="shrink-0 px-2 py-0.5 text-[11px] mono-num">
+              <span data-slot="badge" data-variant="secondary" class="inline-flex items-center rounded-sm whitespace-nowrap font-medium bg-secondary shrink-0 px-2 py-0.5 text-[11px] mono-num">
                 <span data-m-dot class="h-[6px] w-[6px] rounded-[1.5px]" style="background: ${dotColor};"></span>
                 <span data-m-uptime>${n.online ? formatUptime(n.uptimeSec) : t("offline")}</span>
               </span>
@@ -2685,10 +2687,10 @@ function renderCardGrid(list) {
               ${renderMeter("Disk", n.hasTelemetry && n.diskTotal ? `${diskPct.toFixed(0)}%` : "—", diskPct, compact || !n.hasTelemetry || !n.diskTotal ? "" : `${formatCapacity(n.diskUsed)}/${formatCapacity(n.diskTotal)}G`, "disk")}
             </div>
 
-            <div class="sg-inset-pane rounded-lg px-2.5 py-2 text-[11px]">
+            <div class="border rounded-lg px-2.5 py-2 text-[11px]">
               <div class="flex items-center justify-between mono-num">
-                <span style="color: var(--sg-muted-fg);">↑ <strong data-m-up class="font-medium" style="color: var(--sg-fg);">${formatRate(n.online ? n.netOut : 0)}</strong></span>
-                <span style="color: var(--sg-muted-fg);">↓ <strong data-m-down class="font-medium" style="color: var(--sg-fg);">${formatRate(n.online ? n.netIn : 0)}</strong></span>
+                <span style="color: var(--muted-foreground);">↑ <strong data-m-up class="font-medium" style="color: var(--foreground);">${formatRate(n.online ? n.netOut : 0)}</strong></span>
+                <span style="color: var(--muted-foreground);">↓ <strong data-m-down class="font-medium" style="color: var(--foreground);">${formatRate(n.online ? n.netIn : 0)}</strong></span>
               </div>
               ${state.settings.show_total_traffic ? `
                 <div class="mt-1 flex items-center justify-between mono-num text-[10.5px]" style="color: var(--sg-subtle-fg);">
@@ -2702,7 +2704,7 @@ function renderCardGrid(list) {
                     <span>${t("quota")}</span>
                     <span>${n.trafficUsedTB.toFixed(2)} / ${n.trafficLimitTB.toFixed(1)} TB (${quotaPct.toFixed(0)}%)</span>
                   </div>
-                  <div data-slot="progress-track" class="h-1 w-full overflow-hidden rounded-full">
+                  <div data-slot="progress-track" class="bg-muted h-1 w-full overflow-hidden rounded-full">
                     <div data-slot="progress-indicator" class="h-full rounded-full" style="width: ${Math.min(100, quotaPct)}%; background: ${toneColor(quotaPct)};"></div>
                   </div>
                 </div>
@@ -2712,11 +2714,11 @@ function renderCardGrid(list) {
             ${(state.settings.show_tags || state.settings.show_load_temp || (state.loggedIn && state.settings.show_pricing)) ? `
               <div class="mt-auto flex min-h-[24px] flex-wrap items-center justify-between gap-2 pt-0.5 text-[11px]" style="color: var(--sg-subtle-fg);">
                 <div class="flex flex-wrap items-center gap-1.5">
-                  ${state.settings.show_tags ? n.tags.slice(0, compact ? 2 : 3).map((tag) => `<span data-slot="tag">${escapeHtml(tag)}</span>`).join("") : ""}
+                  ${state.settings.show_tags ? n.tags.slice(0, compact ? 2 : 3).map((tag) => `<span data-slot="tag" class="glass-chosen inline-flex h-[22px] items-center rounded-sm px-1.5 text-[10.5px] text-muted-foreground">${escapeHtml(tag)}</span>`).join("") : ""}
                 </div>
                 <div class="flex items-center gap-2 mono-num">
                   ${state.settings.show_load_temp && n.online ? `<span data-m-load>L ${n.load.toFixed(2)}</span>${n.temp > 0 ? `<span>${n.temp.toFixed(0)}°C</span>` : ""}` : ""}
-                  ${state.loggedIn && state.settings.show_pricing && (Boolean(n.price) || n.expireDays !== null) ? `<span style="color: var(--sg-muted-fg);">${escapeHtml(formatPriceLabel(n.price))}${n.price && n.expireDays !== null ? " · " : ""}${n.expireDays !== null ? `${n.expireDays}d` : ""}</span>` : ""}
+                  ${state.loggedIn && state.settings.show_pricing && (Boolean(n.price) || n.expireDays !== null) ? `<span style="color: var(--muted-foreground);">${escapeHtml(formatPriceLabel(n.price))}${n.price && n.expireDays !== null ? " · " : ""}${n.expireDays !== null ? `${n.expireDays}d` : ""}</span>` : ""}
                 </div>
               </div>
             ` : ""}
@@ -2744,16 +2746,16 @@ function renderTableView(list) {
 
   const gridCols = cols.map((c) => c.track).join(" ");
   const minTableWidth = cols.reduce((acc, c) => acc + c.min, 24);
-  const dirLegend = `<span class="ml-1 mono-num text-[10px] font-normal"><span style="color: var(--sg-fg);">↑</span><span style="color: var(--sg-subtle-fg);">/↓</span></span>`;
+  const dirLegend = `<span class="ml-1 mono-num text-[10px] font-normal"><span style="color: var(--foreground);">↑</span><span style="color: var(--sg-subtle-fg);">/↓</span></span>`;
 
   return `
     <div class="px-4 pb-4 pt-1">
-      <div data-slot="table-container" class="sg-table-shell overflow-hidden rounded-xl">
+      <div data-slot="table-container" class="bg-card overflow-hidden rounded-lg">
         <div class="sg-scroll-thin overflow-x-auto">
           <div data-slot="table" role="table" class="km-ui-table w-full text-left text-xs" style="min-width: ${minTableWidth}px; --sg-table-cols: ${gridCols};">
             <!-- Bright outer top header slab (px-3 = 6px outer frame + 6px inner well padding for 1:1 column alignment) -->
             <div data-slot="table-header" role="rowgroup" class="px-3">
-              <div role="row" class="sg-table-grid items-center py-2.5 text-[11px] font-medium" style="color: var(--sg-muted-fg);">
+              <div role="row" class="sg-table-grid items-center py-2.5 text-[11px] font-medium" style="color: var(--muted-foreground);">
                 <div role="columnheader" class="min-w-0 px-2.5">${en ? "Node / Region" : "节点 / 区域"}</div>
                 <div role="columnheader" class="min-w-0 px-2.5">CPU</div>
                 <div role="columnheader" class="min-w-0 px-2.5">${en ? "RAM" : "内存"}</div>
@@ -2780,7 +2782,7 @@ function renderTableView(list) {
                   const totDownParts = formatTrafficPartsGB(n.totalDownGB);
 
                   const miniBar = (pct, key) => `
-                    <div data-slot="progress-track" class="mt-1 h-1 w-14 overflow-hidden rounded-full">
+                    <div data-slot="progress-track" class="bg-muted mt-1 h-1 w-14 overflow-hidden rounded-full">
                       <div ${key ? `data-m-bar="${key}"` : ""} data-slot="progress-indicator" class="h-full rounded-full" style="width: ${pct}%; background: ${toneColor(pct)};"></div>
                     </div>
                   `;
@@ -2797,11 +2799,11 @@ function renderTableView(list) {
                         <div class="mt-0.5 truncate pl-3.5 text-[11px]" style="color: var(--sg-subtle-fg);">${escapeHtml(formatGroupLabel(normalizeGroupName(n.group)))}${state.settings.show_tags && n.tags.length ? ` · ${escapeHtml(n.tags.slice(0, 2).join(" / "))}` : ""}</div>
                       </div>
                       <div role="cell" class="min-w-0 px-2.5 mono-num">
-                        <div data-m-val="cpu" style="color: ${n.cpu >= 70 ? toneColor(n.cpu) : "var(--sg-fg)"};">${n.online ? `${n.cpu.toFixed(1)}%` : "—"}</div>
+                        <div data-m-val="cpu" style="color: ${n.cpu >= 70 ? toneColor(n.cpu) : "var(--foreground)"};">${n.online ? `${n.cpu.toFixed(1)}%` : "—"}</div>
                         ${miniBar(n.online ? n.cpu : 0, "cpu")}
                       </div>
                       <div role="cell" class="min-w-0 px-2.5 mono-num">
-                        <div style="color: ${ramPct >= 70 ? toneColor(ramPct) : "var(--sg-fg)"};">${n.online && n.ramTotal ? `${ramPct.toFixed(0)}%` : "—"}</div>
+                        <div style="color: ${ramPct >= 70 ? toneColor(ramPct) : "var(--foreground)"};">${n.online && n.ramTotal ? `${ramPct.toFixed(0)}%` : "—"}</div>
                         ${miniBar(n.online ? ramPct : 0, "")}
                       </div>
                       <div role="cell" class="min-w-0 px-2.5 mono-num">
@@ -2813,7 +2815,7 @@ function renderTableView(list) {
                           <span data-m-up>${upParts.value}</span>
                           <span data-m-up-unit style="color: var(--sg-subtle-fg);">${upParts.unit}</span>
                         </div>
-                        <div class="sg-rate-line" style="color: var(--sg-muted-fg);">
+                        <div class="sg-rate-line" style="color: var(--muted-foreground);">
                           <span data-m-down>${downParts.value}</span>
                           <span data-m-down-unit style="color: var(--sg-subtle-fg);">${downParts.unit}</span>
                         </div>
@@ -2824,7 +2826,7 @@ function renderTableView(list) {
                             <span data-m-totup>${totUpParts.value}</span>
                             <span data-m-totup-unit style="color: var(--sg-subtle-fg);">${totUpParts.unit}</span>
                           </div>
-                          <div class="sg-traffic-line" style="color: var(--sg-muted-fg);">
+                          <div class="sg-traffic-line" style="color: var(--muted-foreground);">
                             <span data-m-totdown>${totDownParts.value}</span>
                             <span data-m-totdown-unit style="color: var(--sg-subtle-fg);">${totDownParts.unit}</span>
                           </div>
@@ -2865,7 +2867,7 @@ function renderNodes() {
   const list = getFilteredNodes();
   nodeMarkup.innerHTML = list.length
     ? (state.view === 'card' ? renderCardGrid(list) : renderTableView(list))
-    : `<p class="py-14 text-center text-xs" style="color: var(--sg-muted-fg);" role="status">${emptyNodesMessage()}</p>`;
+    : `<p class="py-14 text-center text-xs" style="color: var(--muted-foreground);" role="status">${emptyNodesMessage()}</p>`;
   morphdom(nodesContainer, nodeMarkup, {
     childrenOnly: true,
     getNodeKey: element => element.id || element.dataset?.node,
@@ -3774,9 +3776,9 @@ function renderDetailModal() {
   const buildDetailLegendHtml = () => {
     const pf = state.detailPingFocus;
     const loadLegendHtml = `
-      <div class="flex flex-wrap items-center gap-4 text-[11px]" style="color: var(--sg-muted-fg);">
-        <span class="flex items-center gap-1.5"><span class="h-[7px] w-[7px] rounded-[1.5px]" style="background: var(--sg-series-cpu);"></span>CPU (%) · <strong class="mono-num" style="color: var(--sg-fg);">${node.online ? node.cpu.toFixed(1) + "%" : "—"}</strong></span>
-        <span class="flex items-center gap-1.5"><span class="h-[7px] w-[7px] rounded-[1.5px]" style="background: var(--sg-series-ram);"></span>RAM (%) · <strong class="mono-num" style="color: var(--sg-fg);">${ramPctVal}</strong> ${node.online && node.ramTotal > 0 ? `<span class="mono-num text-[10.5px]" style="color: var(--sg-subtle-fg);">(${formatCapacity(node.ramUsed)} / ${formatCapacity(node.ramTotal)} GB)</span>` : ""}</span>
+      <div class="flex flex-wrap items-center gap-4 text-[11px]" style="color: var(--muted-foreground);">
+        <span class="flex items-center gap-1.5"><span class="h-[7px] w-[7px] rounded-[1.5px]" style="background: var(--sg-series-cpu);"></span>CPU (%) · <strong class="mono-num" style="color: var(--foreground);">${node.online ? node.cpu.toFixed(1) + "%" : "—"}</strong></span>
+        <span class="flex items-center gap-1.5"><span class="h-[7px] w-[7px] rounded-[1.5px]" style="background: var(--sg-series-ram);"></span>RAM (%) · <strong class="mono-num" style="color: var(--foreground);">${ramPctVal}</strong> ${node.online && node.ramTotal > 0 ? `<span class="mono-num text-[10.5px]" style="color: var(--sg-subtle-fg);">(${formatCapacity(node.ramUsed)} / ${formatCapacity(node.ramTotal)} GB)</span>` : ""}</span>
       </div>
     `;
     if (pingCount === 0) {
@@ -3794,7 +3796,7 @@ function renderDetailModal() {
           const latTxt = sp.latest?.value == null ? "—" : `${Math.round(sp.latest.value)}ms`;
           const inner = `
             <span class="h-[7px] w-[7px] rounded-[1.5px]" style="background: ${sp.swatch};"></span>
-            <span>${escapeHtml(sp.name)} · <strong class="mono-num" style="color: var(--sg-fg);">${latTxt}</strong> · <span class="mono-num" style="color: ${lossColor};">${lossTxt}</span></span>
+            <span>${escapeHtml(sp.name)} · <strong class="mono-num" style="color: var(--foreground);">${latTxt}</strong> · <span class="mono-num" style="color: ${lossColor};">${lossTxt}</span></span>
           `;
           if (!interactive || !canIsolate) {
             return `<span class="sg-legend-chip" style="${!canIsolate ? "cursor: default;" : ""}">${inner}</span>`;
@@ -3880,36 +3882,36 @@ function renderDetailModal() {
   }
   sysRows.push([
     node.tags.length > 0 ? (isZh ? "分组 / 标签" : "Group / Tags") : (isZh ? "分组" : "Group"),
-    `<span class="inline-flex flex-wrap items-center justify-end gap-1"><span style="color: var(--sg-fg);">${escapeHtml(formatGroupLabel(normalizeGroupName(node.group)))}</span>${node.tags.map((tg) => `<span data-slot="tag" class="px-1.5 py-0 text-[10px] leading-[18px]">${escapeHtml(tg)}</span>`).join("")}</span>`,
+    `<span class="inline-flex flex-wrap items-center justify-end gap-1"><span style="color: var(--foreground);">${escapeHtml(formatGroupLabel(normalizeGroupName(node.group)))}</span>${node.tags.map((tg) => `<span data-slot="tag" class="glass-chosen inline-flex h-[22px] items-center rounded-sm px-1.5 text-[10.5px] text-muted-foreground">${escapeHtml(tg)}</span>`).join("")}</span>`,
   ]);
 
   // Full-width 4-column Billing & Renewal card (ONLY rendered when logged in AND node has billing data; separator-free like server cards)
   const billingCardHtml = state.loggedIn && hasBilling
     ? `
-      <div class="sg-inset-pane mt-3 rounded-xl px-3.5 pt-3 pb-3.5">
+      <div class="border mt-3 rounded-lg px-3.5 pt-3 pb-3.5">
         <div class="mb-2.5 flex items-center justify-between gap-2">
           <span class="text-xs font-semibold tracking-tight">${isZh ? "续费信息" : "Billing & Renewal"}</span>
           ${node.region ? `<span class="mono-num text-[10px]" style="color: var(--sg-subtle-fg);">${escapeHtml(node.region)}</span>` : ""}
         </div>
         <div class="grid grid-cols-2 gap-x-4 gap-y-3 sm:grid-cols-4">
           <div class="min-w-0">
-            <div class="text-[11px]" style="color: var(--sg-muted-fg);">${isZh ? "续费周期" : "Cycle"}</div>
-            <div class="mt-1 text-xs font-medium mono-num" style="color: var(--sg-fg);">${cycleLabel}</div>
+            <div class="text-[11px]" style="color: var(--muted-foreground);">${isZh ? "续费周期" : "Cycle"}</div>
+            <div class="mt-1 text-xs font-medium mono-num" style="color: var(--foreground);">${cycleLabel}</div>
           </div>
           <div class="min-w-0">
-            <div class="text-[11px]" style="color: var(--sg-muted-fg);">${isZh ? "到期日" : "Expires"}</div>
-            <div class="mt-1 flex flex-wrap items-baseline gap-x-1.5 text-xs font-medium mono-num" style="color: var(--sg-fg);">
+            <div class="text-[11px]" style="color: var(--muted-foreground);">${isZh ? "到期日" : "Expires"}</div>
+            <div class="mt-1 flex flex-wrap items-baseline gap-x-1.5 text-xs font-medium mono-num" style="color: var(--foreground);">
               <span>${escapeHtml(node.expiredDate || "—")}</span>
               ${expireRemainTxt ? `<span class="text-[10.5px] font-normal" style="color: ${expireBadgeColor};">${expireRemainTxt}</span>` : ""}
             </div>
           </div>
           <div class="min-w-0">
-            <div class="text-[11px]" style="color: var(--sg-muted-fg);">${isZh ? "续费金额" : "Amount"}</div>
-            <div class="mt-1 text-xs font-medium mono-num" style="color: var(--sg-fg);">${escapeHtml(formatPriceLabel(node.billingAmount || node.price) || "—")}</div>
+            <div class="text-[11px]" style="color: var(--muted-foreground);">${isZh ? "续费金额" : "Amount"}</div>
+            <div class="mt-1 text-xs font-medium mono-num" style="color: var(--foreground);">${escapeHtml(formatPriceLabel(node.billingAmount || node.price) || "—")}</div>
           </div>
           <div class="min-w-0">
-            <div class="text-[11px]" style="color: var(--sg-muted-fg);">${isZh ? "自动续期标记" : "Auto-Renewal"}</div>
-            <div class="mt-1 inline-flex items-center gap-1.5 text-xs font-medium" style="color: ${node.autoRenewal ? "var(--sg-fg)" : "var(--sg-muted-fg)"};">
+            <div class="text-[11px]" style="color: var(--muted-foreground);">${isZh ? "自动续期标记" : "Auto-Renewal"}</div>
+            <div class="mt-1 inline-flex items-center gap-1.5 text-xs font-medium" style="color: ${node.autoRenewal ? "var(--foreground)" : "var(--muted-foreground)"};">
               <span class="h-[6px] w-[6px] shrink-0 rounded-[1.5px]" style="background: ${node.autoRenewal ? "var(--sg-success)" : "var(--sg-subtle-fg)"};"></span>
               <span>${node.autoRenewal ? (isZh ? "已标记" : "Enabled") : (isZh ? "未标记" : "Manual")}</span>
             </div>
@@ -3922,7 +3924,7 @@ function renderDetailModal() {
   const isPinned = isNodeFeatured(node);
   const detailPinActionHtml = state.loggedIn
     ? `
-      <button id="btn-detail-pin" type="button" data-slot="button" data-variant="outline" data-pinned="${isPinned}" class="sg-pin-btn inline-flex h-[22px] shrink-0 items-center gap-1 px-2 text-[11px] font-medium" title="${isPinned ? (isZh ? "取消置顶" : "Unpin server") : (isZh ? "置顶服务器" : "Pin server")}">
+      <button id="btn-detail-pin" type="button" data-slot="button" data-variant="outline" data-pinned="${isPinned}" class="rounded-lg cursor-pointer transition-colors disabled:cursor-not-allowed disabled:opacity-50 focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-(--focus-line) border border-transparent sg-pin-btn inline-flex h-[22px] shrink-0 items-center gap-1 px-2 text-[11px] font-medium" title="${isPinned ? (isZh ? "取消置顶" : "Unpin server") : (isZh ? "置顶服务器" : "Pin server")}">
         ${PIN_BTN_ICON_SVG}
         <span id="detail-pin-label">${isPinned ? (isZh ? "取消置顶" : "Unpin") : t("pinned")}</span>
       </button>
@@ -3937,12 +3939,12 @@ function renderDetailModal() {
 
   const chartHeaderLeftHtml = pingCount !== 0
     ? `
-      <div data-slot="tabs-list" data-variant="default" class="h-8">
-        <button type="button" data-slot="tabs-trigger" data-dtab="load" data-active="${state.detailTab === "load"}" class="px-2.5 text-xs">${t("loadTab")}</button>
-        <button type="button" data-slot="tabs-trigger" data-dtab="ping" data-active="${state.detailTab === "ping"}" class="px-2.5 text-xs">${t("pingTab")}</button>
+      <div data-slot="tabs-list" data-variant="default" class="inline-flex items-center gap-0.5 rounded-lg bg-muted p-[3px] h-8">
+        <button type="button" data-slot="tabs-trigger" data-dtab="load" data-active="${state.detailTab === "load"}" class="inline-flex h-full cursor-pointer items-center justify-center gap-1.5 rounded-sm border border-transparent font-medium whitespace-nowrap text-muted-foreground transition-colors hover:text-foreground data-[active=true]:text-foreground focus-visible:z-10 focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-(--focus-line) px-2.5 text-xs">${t("loadTab")}</button>
+        <button type="button" data-slot="tabs-trigger" data-dtab="ping" data-active="${state.detailTab === "ping"}" class="inline-flex h-full cursor-pointer items-center justify-center gap-1.5 rounded-sm border border-transparent font-medium whitespace-nowrap text-muted-foreground transition-colors hover:text-foreground data-[active=true]:text-foreground focus-visible:z-10 focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-(--focus-line) px-2.5 text-xs">${t("pingTab")}</button>
       </div>
     `
-    : `<span class="inline-flex h-8 items-center text-xs font-semibold tracking-tight" style="color: var(--sg-fg);">${t("loadTab")}</span>`;
+    : `<span class="inline-flex h-8 items-center text-xs font-semibold tracking-tight" style="color: var(--foreground);">${t("loadTab")}</span>`;
 
   dialog.innerHTML = `
     <div class="flex items-start justify-between gap-3">
@@ -3950,79 +3952,79 @@ function renderDetailModal() {
         <div class="flex flex-wrap items-center gap-2">
           ${renderFlagBadge(node.region, "lg")}
           <h1 id="detail-title" class="min-w-0 truncate text-base font-semibold tracking-tight">${escapeHtml(node.name)}</h1>
-          <span data-slot="badge" data-variant="secondary" class="shrink-0 px-2 py-0.5 text-[11px] mono-num" style="color: ${node.online ? "var(--sg-success)" : "var(--sg-danger)"};">
+          <span data-slot="badge" data-variant="secondary" class="inline-flex items-center rounded-sm whitespace-nowrap font-medium bg-secondary shrink-0 px-2 py-0.5 text-[11px] mono-num" style="color: ${node.online ? "var(--sg-success)" : "var(--sg-danger)"};">
             <span class="h-[6px] w-[6px] rounded-[1.5px]" style="background: ${node.online ? "var(--sg-success)" : "var(--sg-danger)"};"></span>
             ${node.online ? t("online") : t("offline")}
           </span>
           ${detailPinActionHtml}
         </div>
-        <div class="mt-1 truncate text-xs" style="color: var(--sg-muted-fg);">${escapeHtml(subtitleParts.join(" · "))}</div>
+        <div class="mt-1 truncate text-xs" style="color: var(--muted-foreground);">${escapeHtml(subtitleParts.join(" · "))}</div>
         ${node.public_remark ? `<div class="mt-0.5 truncate text-[11px]" style="color: var(--sg-subtle-fg);">${escapeHtml(node.public_remark)}</div>` : ""}
       </div>
-      <button id="btn-close-detail" type="button" data-slot="button" data-variant="ghost" aria-label="关闭" autofocus class="inline-flex h-7 w-7 shrink-0 items-center justify-center">
+      <button id="btn-close-detail" type="button" data-slot="button" data-variant="ghost" aria-label="关闭" autofocus class="rounded-lg cursor-pointer transition-colors disabled:cursor-not-allowed disabled:opacity-50 focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-(--focus-line) text-muted-foreground hover:bg-accent hover:text-foreground inline-flex h-7 w-7 shrink-0 items-center justify-center">
         <svg class="h-4 w-4" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8"><path d="M18 6 6 18M6 6l12 12"/></svg>
       </button>
     </div>
 
     <div class="mt-4 grid grid-cols-2 gap-2.5 sm:grid-cols-4">
-      <div class="sg-inset-pane rounded-lg p-2.5">
-        <div class="text-[11px]" style="color: var(--sg-muted-fg);">${isZh ? "在线时长" : "Uptime"}</div>
-        <div class="mt-1 text-sm font-semibold mono-num" style="color: ${node.online ? "var(--sg-fg)" : "var(--sg-muted-fg)"};">${node.online ? formatUptime(node.uptimeSec) : (isZh ? "离线" : "Offline")}</div>
+      <div class="border rounded-lg p-2.5">
+        <div class="text-[11px]" style="color: var(--muted-foreground);">${isZh ? "在线时长" : "Uptime"}</div>
+        <div class="mt-1 text-sm font-semibold mono-num" style="color: ${node.online ? "var(--foreground)" : "var(--muted-foreground)"};">${node.online ? formatUptime(node.uptimeSec) : (isZh ? "离线" : "Offline")}</div>
       </div>
-      <div class="sg-inset-pane rounded-lg p-2.5">
-        <div class="flex items-center justify-between gap-1 text-[11px]" style="color: var(--sg-muted-fg);">
+      <div class="border rounded-lg p-2.5">
+        <div class="flex items-center justify-between gap-1 text-[11px]" style="color: var(--muted-foreground);">
           <span>${hasQuota ? (isZh ? "月流量配额" : "Monthly Quota") : (isZh ? "累计流量" : "Total Traffic")}</span>
           ${hasQuota ? `<span class="mono-num text-[10px]" style="color: ${quotaPctColor};">${Math.round(quotaPct)}%</span>` : `<span class="text-[10px]" style="color: var(--sg-subtle-fg);">${isZh ? "不限" : "Unlimited"}</span>`}
         </div>
         <div class="mt-1 text-sm font-semibold mono-num">${hasQuota ? `${node.trafficUsedTB.toFixed(2)} / ${node.trafficLimitTB} TB` : formatTrafficGB(node.totalUpGB + node.totalDownGB)}</div>
       </div>
-      <div class="sg-inset-pane rounded-lg p-2.5">
-        <div class="text-[11px]" style="color: var(--sg-muted-fg);">Disk</div>
+      <div class="border rounded-lg p-2.5">
+        <div class="text-[11px]" style="color: var(--muted-foreground);">Disk</div>
         <div class="mt-1 text-sm font-semibold mono-num">${node.hasTelemetry && node.diskTotal > 0 ? `${formatCapacity(node.diskUsed)} / ${formatCapacity(node.diskTotal)} GB` : "—"}</div>
       </div>
-      <div class="sg-inset-pane rounded-lg p-2.5">
-        <div class="text-[11px]" style="color: var(--sg-muted-fg);">TCP / UDP / Proc</div>
+      <div class="border rounded-lg p-2.5">
+        <div class="text-[11px]" style="color: var(--muted-foreground);">TCP / UDP / Proc</div>
         <div class="mt-1 text-sm font-semibold mono-num">${node.tcp} / ${node.udp} / ${node.proc}</div>
       </div>
     </div>
 
-    <div id="detail-chart-card" class="km-load-chart sg-chart-inset relative mt-4 overflow-hidden rounded-xl">
+    <div id="detail-chart-card" class="km-load-chart glass-panel relative mt-4 overflow-hidden rounded-lg">
       <canvas id="detail-slats-canvas" class="absolute inset-0 block h-full w-full cursor-crosshair" aria-hidden="true"></canvas>
       <div class="relative z-10 px-3.5 pt-3.5 pb-1">
         <div class="mb-2.5 flex flex-wrap items-center justify-between gap-2">
           ${chartHeaderLeftHtml}
-          <div data-slot="tabs-list" data-variant="default" class="h-7 mono-num">
-            ${[1, 6, 24].map((h) => `<button type="button" data-slot="tabs-trigger" data-dhours="${h}" data-active="${state.detailHours === h}" class="px-2 text-[11px]">${h}h</button>`).join("")}
+          <div data-slot="tabs-list" data-variant="default" class="inline-flex items-center gap-0.5 rounded-lg bg-muted p-[3px] h-7 mono-num">
+            ${[1, 6, 24].map((h) => `<button type="button" data-slot="tabs-trigger" data-dhours="${h}" data-active="${state.detailHours === h}" class="inline-flex h-full cursor-pointer items-center justify-center gap-1.5 rounded-sm border border-transparent font-medium whitespace-nowrap text-muted-foreground transition-colors hover:text-foreground data-[active=true]:text-foreground focus-visible:z-10 focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-(--focus-line) px-2 text-[11px]">${h}h</button>`).join("")}
           </div>
         </div>
         <div id="detail-legend-slot">${legendHtml}</div>
       </div>
       <div id="detail-plot-area" class="pointer-events-none relative z-10 h-[212px] w-full" style="min-height:${Math.max(212, 42 * (pingCount ?? 0) + 36)}px">
-        <span id="detail-history-status" class="absolute inset-0 grid place-items-center text-xs empty:hidden" role="status" style="color: var(--sg-muted-fg);">${historyStatus(state.detailTab)}</span>
+        <span id="detail-history-status" class="absolute inset-0 grid place-items-center text-xs empty:hidden" role="status" style="color: var(--muted-foreground);">${historyStatus(state.detailTab)}</span>
         <div id="detail-yticks" class="absolute inset-0"></div>
         <div id="detail-xticks" class="absolute inset-0"></div>
-        <div id="detail-slats-tip" class="sg-popover pointer-events-none absolute z-20 hidden max-w-[calc(100%-16px)] flex-wrap items-center gap-y-0.5 rounded-md px-2 py-1 mono-num text-[10px]"></div>
+        <div id="detail-slats-tip" class="bg-popover pointer-events-none absolute z-20 hidden max-w-[calc(100%-16px)] flex-wrap items-center gap-y-0.5 rounded-md px-2 py-1 mono-num text-[10px]"></div>
       </div>
     </div>
 
     <div class="mt-3.5 grid grid-cols-1 gap-3 md:grid-cols-[1.06fr_1.18fr]">
       <!-- Left Card: Node Network & Traffic Micro Slats Chart (1:1 synced with homepage Network & Traffic depth) -->
-      <div id="detail-net-cell" class="sg-chart-inset relative flex min-h-[320px] flex-col overflow-hidden rounded-xl">
+      <div id="detail-net-cell" class="glass-panel relative flex min-h-[320px] flex-col overflow-hidden rounded-lg">
         <canvas id="detail-net-canvas" class="absolute inset-0 block h-full w-full cursor-crosshair" aria-hidden="true"></canvas>
 
         <div id="dnet-top-header" class="pointer-events-none relative z-10 flex flex-col gap-1 px-3.5 pt-2.5">
           <div class="flex flex-wrap items-center justify-between gap-x-2 gap-y-0.5">
-            <span class="inline-flex shrink-0 items-center gap-1.5 whitespace-nowrap text-xs font-semibold tracking-tight" style="color: var(--sg-fg);">
-              <svg class="h-3.5 w-3.5 shrink-0" style="color: var(--sg-muted-fg);" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><path d="M22 12h-4l-3 9L9 3l-3 9H2"/></svg>
+            <span class="inline-flex shrink-0 items-center gap-1.5 whitespace-nowrap text-xs font-semibold tracking-tight" style="color: var(--foreground);">
+              <svg class="h-3.5 w-3.5 shrink-0" style="color: var(--muted-foreground);" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><path d="M22 12h-4l-3 9L9 3l-3 9H2"/></svg>
               <span>${isZh ? "网络与流量" : "Network & Traffic"}</span>
             </span>
             <div class="flex flex-wrap items-center gap-x-2 gap-y-0.5 mono-num text-[10px]" style="color: var(--sg-subtle-fg);">
-              <span class="whitespace-nowrap">↑ <strong class="font-medium" style="color: var(--sg-fg);">${formatTrafficGB(node.totalUpGB)}</strong></span>
-              <span class="whitespace-nowrap">↓ <strong class="font-medium" style="color: var(--sg-fg);">${formatTrafficGB(node.totalDownGB)}</strong></span>
+              <span class="whitespace-nowrap">↑ <strong class="font-medium" style="color: var(--foreground);">${formatTrafficGB(node.totalUpGB)}</strong></span>
+              <span class="whitespace-nowrap">↓ <strong class="font-medium" style="color: var(--foreground);">${formatTrafficGB(node.totalDownGB)}</strong></span>
             </div>
           </div>
           <div class="flex items-baseline justify-between gap-2">
-            <span class="whitespace-nowrap text-[10.5px]" style="color: var(--sg-muted-fg);">↑ ${isZh ? "上行" : "Upload"}</span>
+            <span class="whitespace-nowrap text-[10.5px]" style="color: var(--muted-foreground);">↑ ${isZh ? "上行" : "Upload"}</span>
             ${(() => { const p = formatRateParts(node.online ? node.netOut : 0); return `<span class="mono-num whitespace-nowrap text-[11.5px] font-semibold">${p.value} <span class="text-[9.5px] font-normal" style="color: var(--sg-subtle-fg);">${p.unit}</span></span>`; })()}
           </div>
         </div>
@@ -4035,7 +4037,7 @@ function renderDetailModal() {
         </div>
 
         <div id="dnet-down-header" class="pointer-events-none absolute inset-x-0 z-10 flex items-baseline justify-between gap-2 px-3.5">
-          <span class="text-[10.5px]" style="color: var(--sg-muted-fg);">↓ ${isZh ? "下行" : "Download"}</span>
+          <span class="text-[10.5px]" style="color: var(--muted-foreground);">↓ ${isZh ? "下行" : "Download"}</span>
           ${(() => { const p = formatRateParts(node.online ? node.netIn : 0); return `<span class="mono-num text-[11.5px] font-semibold">${p.value} <span class="text-[9.5px] font-normal" style="color: var(--sg-subtle-fg);">${p.unit}</span></span>`; })()}
         </div>
 
@@ -4046,13 +4048,13 @@ function renderDetailModal() {
           <span id="dnet-down-xend"></span>
         </div>
 
-        <div id="dnet-tip" class="sg-popover pointer-events-none absolute z-20 hidden rounded-md px-1.5 py-0.5 mono-num text-[9.5px] whitespace-nowrap"></div>
+        <div id="dnet-tip" class="bg-popover pointer-events-none absolute z-20 hidden rounded-md px-1.5 py-0.5 mono-num text-[9.5px] whitespace-nowrap"></div>
       </div>
 
       <!-- Right Card: System Info Spec Card (Bright top header slab + recessed rounded-rect shadow body, zero row separators) -->
-      <div class="sg-spec-shell flex flex-col overflow-hidden rounded-xl">
+      <div class="glass-panel flex flex-col overflow-hidden rounded-lg">
         <div class="flex items-center justify-between px-3.5 py-2.5">
-          <span class="text-xs font-semibold tracking-tight" style="color: var(--sg-fg);">${isZh ? "系统信息" : "System Info"}</span>
+          <span class="text-xs font-semibold tracking-tight" style="color: var(--foreground);">${isZh ? "系统信息" : "System Info"}</span>
           ${node.arch ? `<span class="mono-num text-[10px]" style="color: var(--sg-subtle-fg);">${escapeHtml(node.arch)}</span>` : ""}
         </div>
         <div class="flex flex-1 flex-col px-1.5 pb-1.5">
@@ -4061,8 +4063,8 @@ function renderDetailModal() {
               .map(
                 ([k, v]) => `
                   <div class="sg-spec-row flex items-center justify-between gap-3 px-2 py-1.5 text-xs">
-                    <span class="shrink-0" style="color: var(--sg-muted-fg);">${k}</span>
-                    <span class="min-w-0 text-right font-medium" style="color: var(--sg-fg);">${v}</span>
+                    <span class="shrink-0" style="color: var(--muted-foreground);">${k}</span>
+                    <span class="min-w-0 text-right font-medium" style="color: var(--foreground);">${v}</span>
                   </div>
                 `
               )
@@ -4137,7 +4139,7 @@ function renderDetailModal() {
             : "";
           const color = timedOut ? "var(--sg-danger)" : s.swatch;
           const range = !commonRange && ranges[i] ? ` <span style="color:var(--sg-subtle-fg);">${ranges[i]}</span>` : "";
-          return `<span class="inline-flex items-center gap-1"><span class="inline-block h-[6px] w-[6px] rounded-[1.5px]" style="background:${color};"></span><span style="color:var(--sg-muted-fg);">${escapeHtml(s.label)}</span> <strong${timedOut ? ` style="color:${color};"` : ""}>${value}</strong>${lossSuffix}${range}</span>`;
+          return `<span class="inline-flex items-center gap-1"><span class="inline-block h-[6px] w-[6px] rounded-[1.5px]" style="background:${color};"></span><span style="color:var(--muted-foreground);">${escapeHtml(s.label)}</span> <strong${timedOut ? ` style="color:${color};"` : ""}>${value}</strong>${lossSuffix}${range}</span>`;
         }).join('<span class="mx-1 opacity-40">·</span>');
         detailTip.innerHTML = `<span style="color:var(--sg-subtle-fg);">${timeTxt}</span><span class="mx-1.5 opacity-40">|</span>${itemsHtml}`;
         detailTip.style.transform = "none";
